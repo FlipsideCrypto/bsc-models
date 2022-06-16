@@ -1,0 +1,42 @@
+version: 2
+models:
+  - name: core__fact_transactions
+    description: '{{ doc("bsc_tx_table_doc") }}'  
+
+    columns:
+      - name: BLOCK_NUMBER
+        description: '{{ doc("bsc_block_number") }}'   
+      - name: BLOCK_TIMESTAMP
+        description: '{{ doc("bsc_block_timestamp") }}'
+      - name: BLOCK_HASH
+        description: '{{ doc("bsc_tx_block_hash") }}' 
+      - name: TX_HASH
+        description: '{{ doc("bsc_tx_hash") }}' 
+      - name: NONCE
+        description: '{{ doc("bsc_tx_nonce") }}' 
+      - name: POSITION
+        description: '{{ doc("bsc_tx_position") }}' 
+      - name: FROM_ADDRESS
+        description: '{{ doc("bsc_from_address") }}' 
+      - name: TO_ADDRESS
+        description: '{{ doc("bsc_to_address") }}' 
+      - name: BNB_VALUE
+        description: '{{ doc("bsc_value") }}' 
+      - name: TX_FEE
+        description: '{{ doc("bsc_tx_fee") }}' 
+      - name: GAS_PRICE
+        description: '{{ doc("bsc_tx_gas_price") }}' 
+      - name: GAS_LIMIT
+        description: '{{ doc("bsc_tx_gas_limit") }}' 
+      - name: GAS_USED
+        description: '{{ doc("bsc_tx_gas_used") }}'
+      - name: CUMULATIVE_GAS_USED
+        description: '{{ doc("bsc_cumulative_gas_used") }}' 
+      - name: STATUS
+        description: '{{ doc("bsc_tx_status") }}' 
+      - name: TX_JSON
+        description: '{{ doc("bsc_tx_json") }}'
+      - name: INPUT_DATA
+        description: '{{ doc("bsc_tx_input_data") }}'
+      - name: ORIGIN_FUNCTION_SIGNATURE 
+        description: '{{ doc("bsc_tx_origin_sig") }}'

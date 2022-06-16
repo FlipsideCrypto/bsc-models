@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: prod
+    database: chainwalkers
+    schema: prod
+    tables:
+      - name: bsc_blocks
+      - name: bsc_txs
+  
