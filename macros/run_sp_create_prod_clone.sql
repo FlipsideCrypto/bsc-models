@@ -3,7 +3,7 @@
     call bsc._internal.create_prod_clone(
         'bsc',
         'bsc_dev',
-        'bsc_dev'
+        'internal_dev'
     );
 {% endset %}
     {% do run_query(clone_query) %}
