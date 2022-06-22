@@ -29,7 +29,7 @@ The documentation included here details the design of the BSC tables and views a
 - [fact_event_logs](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_event_logs)
 - [fact_traces](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_traces)
 - [fact_transactions](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_transactions)
-- [dim_contracts](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__dim_contracts)
+- [dim_labels](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__dim_labels)
 
 ## **Data Model Overview**
 
