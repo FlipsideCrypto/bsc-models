@@ -7,4 +7,9 @@ sources:
     tables:
       - name: bsc_blocks
       - name: bsc_txs
+  - name: crosschain
+    database: flipside_prod_db
+    schema: crosschain
+    tables:
+      - name: address_labels
   
