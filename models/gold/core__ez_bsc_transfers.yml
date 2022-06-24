@@ -1,0 +1,32 @@
+version: 2
+models:
+  - name: core__ez_bsc_transfers
+    description: '{{ doc("bsc_ez_transfer_table_doc") }}'
+      
+    columns:
+      - name: BLOCK_NUMBER
+        description: '{{ doc("bsc_block_number") }}'
+      - name: BLOCK_TIMESTAMP
+        description: '{{ doc("bsc_block_timestamp") }}'
+      - name: TX_HASH
+        description: '{{ doc("bsc_transfer_tx_hash") }}'
+      - name: ETH_FROM_ADDRESS
+        description: '{{ doc("bsc_transfer_from_address") }}'
+      - name: ETH_TO_ADDRESS
+        description: '{{ doc("bsc_transfer_to_address") }}'
+      - name: AMOUNT
+        description: '{{ doc("bsc_eth_amount") }}'
+      - name: TOKEN_PRICE
+        description: '{{ doc("bsc_transfer_token_price") }}'
+      - name: AMOUNT_USD
+        description: '{{ doc("bsc_eth_amount_usd") }}' 
+      - name: HAS_PRICE
+        description: '{{ doc("bsc_transfer_has_price") }}' 
+      - name: ORIGIN_FUNCTION_SIGNATURE
+        description: '{{ doc("bsc_origin_sig") }}'
+      - name: ORIGIN_FROM_ADDRESS
+        description: '{{ doc("bsc_origin_from") }}'
+      - name: ORIGIN_TO_ADDRESS
+        description: '{{ doc("bsc_origin_to") }}'
+      - name: IDENTIFIER
+        description: '{{ doc("bsc_traces_identifier") }}'
