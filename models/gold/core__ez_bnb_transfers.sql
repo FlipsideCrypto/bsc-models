@@ -20,9 +20,9 @@ WITH bnb_base AS (
     WHERE
         bnb_value > 0
         AND tx_status = 'SUCCESS'
-        and gas_used is not null
+        AND gas_used IS NOT NULL
 ),
-eth_price AS (
+token_prices AS (
     SELECT
         HOUR,
         AVG(price) AS bnb_price
@@ -32,8 +32,7 @@ eth_price AS (
             'fact_hourly_token_prices'
         ) }}
     WHERE
-        token_address IS NULL
-        AND symbol IS NULL
+        token_address = LOWER('0x418D75f65a02b3D53B2418FB8E1fe493759c7605')
     GROUP BY
         HOUR
 )
@@ -49,12 +48,12 @@ SELECT
     A.to_address AS bnb_to_address,
     A.bnb_value AS amount,
     ROUND(
-        A.bnb_value * eth_price,
+        A.bnb_value * bnb_price,
         2
     ) AS amount_usd
 FROM
     bnb_base A
-    LEFT JOIN bnb_price
+    LEFT JOIN token_prices
     ON DATE_TRUNC(
         'hour',
         block_timestamp
