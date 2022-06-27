@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: core__ez_bsc_transfers
+  - name: core__ez_bnb_transfers
     description: '{{ doc("bsc_ez_transfer_table_doc") }}'
       
     columns:
