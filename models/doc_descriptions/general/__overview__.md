@@ -30,6 +30,8 @@ The documentation included here details the design of the BSC tables and views a
 - [fact_traces](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_traces)
 - [fact_transactions](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_transactions)
 - [dim_labels](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__dim_labels)
+- [fact_token_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_token_transfers)
+- [ez_bnb_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_bnb_transfers)
 
 ## **Data Model Overview**
 
