@@ -1,5 +1,5 @@
 {% docs bsc_traces_value %}
 
-The amount of MATIC transferred in this trace.
+The amount of BNB transferred in this trace.
 
 {% enddocs %}
