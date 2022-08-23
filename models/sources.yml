@@ -17,4 +17,14 @@ sources:
     schema: core
     tables:
       - name: fact_hourly_token_prices
-  
+  - name: bsc_pools
+    database: BSC
+    schema: bronze
+    tables:
+      - name: SUSHI_DIM_DEX_POOLS
+      - name: SUSHI_DIM_KASHI_PAIRS 
+  - name: prices
+    database: FLIPSIDE_PROD_DB
+    schema: SILVER
+    tables:
+      - name: prices_v2
