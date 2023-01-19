@@ -5,7 +5,15 @@
   persist_docs ={ "relation": true,
   "columns": true },
   unique_key = '_log_id',
-  cluster_by = ['block_timestamp::DATE']
+  cluster_by = ['block_timestamp::DATE'],
+  meta={
+      'database_tags':{
+          'table': {
+              'PROTOCOL': 'SUSHI',
+              'PURPOSE': 'DEFI, DEX'
+          }
+      }
+  }
 ) }}
 
 with borrow_txns as (
