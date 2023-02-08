@@ -16,4 +16,4 @@ GROUP BY
     1,
     2
 HAVING
-    COUNT(*) > 100
+    COUNT(*) > 250
