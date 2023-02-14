@@ -1,23 +1,23 @@
 version: 2
 models:
   - name: sushi__dim_kashi_pairs
-    description: 'This table contains details on different Kashi pairs belonging to sushiswap on the BSC blockchain'
+    description: Deprecating soon
        
 
-    columns:
-      - name: PAIR_ADDRESS
-        description: '{{ doc("lending_pool_address") }}'
-      - name: PAIR_NAME
-        description: '{{ doc("lending_lending_pool") }}'
-      - name: ASSET_SYMBOL
-        description: '{{ doc("lending_symbol") }}' 
-      - name: ASSET_ADDRESS
-        description: '{{ doc("lending_asset_address") }}' 
-      - name: COLLATERAL_SYMBOL
-        description: '{{ doc("collateral_symbol") }}'
-      - name: COLLATERAL_ADDRESS
-        description: '{{ doc("collateral_address") }}'
-      - name: ASSET_DECIMALS   
-        description: '{{ doc("bsc_decimals") }}'
-      - name: COLLATERAL_DECIMALS
-        description: '{{ doc("bsc_decimals") }}'
+    # columns:
+    #   - name: PAIR_ADDRESS
+    #     description: '{{ doc("lending_pool_address") }}'
+    #   - name: PAIR_NAME
+    #     description: '{{ doc("lending_lending_pool") }}'
+    #   - name: ASSET_SYMBOL
+    #     description: '{{ doc("lending_symbol") }}' 
+    #   - name: ASSET_ADDRESS
+    #     description: '{{ doc("lending_asset_address") }}' 
+    #   - name: COLLATERAL_SYMBOL
+    #     description: '{{ doc("collateral_symbol") }}'
+    #   - name: COLLATERAL_ADDRESS
+    #     description: '{{ doc("collateral_address") }}'
+    #   - name: ASSET_DECIMALS   
+    #     description: '{{ doc("bsc_decimals") }}'
+    #   - name: COLLATERAL_DECIMALS
+    #     description: '{{ doc("bsc_decimals") }}'
