@@ -1,5 +1,5 @@
 bsc:
-  target: prod
+  target: dev
   outputs:
     dev:
       type: snowflake

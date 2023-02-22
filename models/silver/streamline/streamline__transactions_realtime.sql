@@ -1,13 +1,12 @@
 {{ config (
     materialized = "view",
     post_hook = if_data_call_function(
-        func = "{{this.schema}}.udf_json_rpc(object_construct('sql_source', '{{this.identifier}}', 'external_table', 'blocks', 'exploded_key','data', 'method', 'eth_getBlockByNumber', 'producer_limit_size', 40000000, 'producer_batch_size',5000, 'worker_batch_size',500))",
+        func = "{{this.schema}}.udf_json_rpc(object_construct('sql_source', '{{this.identifier}}', 'external_table', 'transactions', 'exploded_key','data_-_result_-_transactions', 'method', 'eth_getBlockByNumber', 'producer_limit_size', 40000000, 'producer_batch_size',10000, 'worker_batch_size',1000))",
         target = "{{this.schema}}.{{this.identifier}}"
     )
 ) }}
 
 WITH last_3_days AS (
-
     {% if var('STREAMLINE_RUN_HISTORY')%}
         SELECT 
             0 AS block_number
@@ -31,7 +30,7 @@ tbl AS (
             ''
         ) AS block_number_hex
     FROM
-        {{ ref("streamline__blocks") }}
+        {{ ref("streamline__transactions") }}
     WHERE
         (
             block_number >= (
@@ -51,7 +50,7 @@ tbl AS (
             ''
         ) AS block_number_hex
     FROM
-        {{ ref("streamline__complete_blocks") }}
+        {{ ref("streamline__complete_transactions") }}
     WHERE
         block_number >= (
             SELECT
@@ -66,7 +65,7 @@ SELECT
     CONCAT(
         block_number_hex,
         '_-_',
-        'false'
+        'true'
     ) AS params
 FROM
     tbl
