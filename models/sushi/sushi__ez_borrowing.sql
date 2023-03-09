@@ -5,14 +5,9 @@
   "columns": true },
   unique_key = '_log_id',
   cluster_by = ['block_timestamp::DATE'],
-  meta={
-      'database_tags':{
-          'table': {
-              'PROTOCOL': 'SUSHI',
-              'PURPOSE': 'DEFI, DEX'
-          }
-      }
-  }
+  meta ={ 'database_tags':{ 'table':{ 'PROTOCOL': 'SUSHI',
+  'PURPOSE': 'DEFI, DEX' }} },
+  enabled = FALSE
 ) }}
 
 WITH borrow_txns AS (
@@ -449,13 +444,27 @@ AND HOUR :: DATE IN (
   SELECT
     DISTINCT block_timestamp :: DATE
   FROM
-       (select * from borrow
-   UNION
-   select * from repay
-   UNION
-   select * from add_coll_in_separate_txn
-   UNION
-   select * from remove_coll_in_separate_txn)
+    (
+      SELECT
+        *
+      FROM
+        borrow
+      UNION
+      SELECT
+        *
+      FROM
+        repay
+      UNION
+      SELECT
+        *
+      FROM
+        add_coll_in_separate_txn
+      UNION
+      SELECT
+        *
+      FROM
+        remove_coll_in_separate_txn
+    )
 )
 {% else %}
   AND HOUR :: DATE >= '2021-09-01'
