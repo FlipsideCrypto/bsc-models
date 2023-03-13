@@ -1,52 +1,57 @@
 {% docs __overview__ %}
 
-# Welcome to the Flipside Crypto BSC Models Documentation!
-
-# NOTE: Data is in 'lite mode' - meaning, historical data have not yet been backfilled. Please see min(block_timestamp)
-
-## **What is Flipside?**
-
-[Flipside Crypto](https://flipsidecrypto.xyz/earn) provides Community Enabled Crypto Analytics, allowing our users to create and share data insights on the crypto projects they care most about.
-
-**Flipside Crypto puts pre-modeled and labeled blockchain data in the hands of communities.**
-
-Through dashboard and visualization tools, as well as auto-generated API endpoints, data analysts can easily create queries that answer any question via a tool called [Velocity](https://app.flipsidecrypto.com/velocity?nav=Discover).
-
-**Community members earn bounties for answering questions with data.**
-
-Bounties provide incentive and direction, so crypto projects can quickly source the data insights they need in order to grow.
-
-**Flipside works directly with leading crypto projects to reward on-demand analytics through structured bounty programs.**
-
-Questions sourced directly from the community provide insight into what communities care about as well as analytics needed to drive ecosystem engagement and growth.
+# Welcome to the Flipside Crypto Binance Smart Chain Models Documentation!
 
 ## **What does this documentation cover?**
-The documentation included here details the design of the BSC tables and views available via [Flipside Crypto.](https://flipsidecrypto.xyz/earn) For more information on how these models are built, please see [the github repository.](https://github.com/FlipsideCrypto/bsc-models)
+The documentation included here details the design of the BSC tables and views available via [Flipside Crypto.](https://flipsidecrypto.xyz/) For more information on how these models are built, please see [the github repository.](https://github.com/FlipsideCrypto/bsc-models)
 
-### **Quick Links to Table Documentation**
+## **How do I use these docs?**
+The easiest way to navigate this documentation is to use the Quick Links below. These links will take you to the documentation for each table, which contains a description, a list of the columns, and other helpful information.
 
+If you are experienced with dbt docs, feel free to use the sidebar to navigate the documentation, as well as explore the relationships between tables and the logic building them.
+
+There is more information on how to use dbt docs in the last section of this document.
+
+## **Quick Links to Table Documentation**
+
+**Click on the links below to jump to the documentation for each schema.**
+
+### Core Tables (bsc.core)
+
+**Dimension Tables:**
+- [dim_labels](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__dim_labels)
+
+**Fact Tables:**
 - [fact_blocks](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_blocks)
 - [fact_event_logs](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_event_logs)
+- [fact_token_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_token_transfers)
 - [fact_traces](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_traces)
 - [fact_transactions](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_transactions)
-- [dim_labels](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__dim_labels)
-- [fact_token_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_token_transfers)
-- [ez_bnb_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_bnb_transfers)
+
+**Convenience Tables:**
+- [ez_eth_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_eth_transfers)
+
+## **Helpful User-Defined Functions (UDFs)**
+
+UDFs are custom functions built by the Flipside team that can be used in your queries to make your life easier.
+
+Helpful UDFs for working with EVM data:
+```sql
+-- Convert a hex encoded value to an integer with ethereum.public.udf_hex_to_int(FIELD::string)
+select '0xFC3C88'::string as hex_value, ethereum.public.udf_hex_to_int('0xFC3C88') as int_value
+```
 
 ## **Data Model Overview**
 
-The BSC models are built a few different ways, but the core fact table are built using three layers of sql models: **bronze, silver, and gold (or core).**
+The BSC models are built a few different ways, but the core fact tables are built using three layers of sql models: **bronze, silver, and gold (or core).**
 
 - Bronze: Data is loaded in from the source as a view
 - Silver: All necessary parsing, filtering, de-duping, and other transformations are done here
-- Gold (or core): Final views and tables that are available in Velocity
+- Gold (or core): Final views and tables that are available publicly
 
 The dimension tables are sourced from a variety of on-chain and off-chain sources.
 
-Convenience views (denoted ez_) are a combination of different fact and dimension tables. 
-
-A user-defined-function (UDF) is available to decode hex encoded values to integers in this database. You can call this UDF by using `bsc.public.udf_hex_to_int(FIELD)`.
-
+Convenience views (denoted ez_) are a combination of different fact and dimension tables. These views are built to make it easier to query the data.
 
 ## **Using dbt docs**
 ### Navigation
@@ -69,13 +74,10 @@ Note that you can also right-click on models to interactively filter and explore
 
 
 ### **More information**
-- [Flipside](https://flipsidecrypto.xyz/earn)
-- [Velocity](https://app.flipsidecrypto.com/velocity?nav=Discover)
+- [Flipside](https://flipsidecrypto.xyz)
 - [Tutorials](https://docs.flipsidecrypto.com/our-data/tutorials)
 - [Github](https://github.com/FlipsideCrypto/bsc-models)
 - [Query Editor Shortcuts](https://docs.flipsidecrypto.com/velocity/query-editor-shortcuts)
 - [What is dbt?](https://docs.getdbt.com/docs/introduction)
-
-
 
 {% enddocs %}
