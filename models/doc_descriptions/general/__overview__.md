@@ -29,7 +29,7 @@ There is more information on how to use dbt docs in the last section of this doc
 - [fact_transactions](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_transactions)
 
 **Convenience Tables:**
-- [ez_eth_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_eth_transfers)
+- [ez_bnb_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_bnb_transfers)
 
 ## **Helpful User-Defined Functions (UDFs)**
 
