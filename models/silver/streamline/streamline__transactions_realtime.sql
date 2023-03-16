@@ -12,13 +12,9 @@ WITH last_3_days AS (
             0 AS block_number
     {% else %}
         SELECT
-            block_number
+            MAX(block_number) - 20000 AS block_number --aprox 3 days
         FROM
-            {{ ref("_max_block_by_date") }}
-            qualify ROW_NUMBER() over (
-                ORDER BY
-                    block_number DESC
-            ) = 3
+            {{ ref("streamline__blocks") }}
     {% endif %}
 ),
 tbl AS (
