@@ -12,7 +12,7 @@ WITH last_3_days AS (
             0 AS block_number
     {% else %}
         SELECT
-            MAX(block_number) - 20000 AS block_number --aprox 3 days
+            MAX(block_number) - 100000 AS block_number --aprox 3 days
         FROM
             {{ ref("streamline__blocks") }}
     {% endif %}
@@ -20,11 +20,7 @@ WITH last_3_days AS (
 tbl AS (
     SELECT
         block_number,
-        REPLACE(
-            concat_ws('', '0x', to_char(block_number, 'XXXXXXXX')),
-            ' ',
-            ''
-        ) AS block_number_hex
+        block_number_hex
     FROM
         {{ ref("streamline__blocks") }}
     WHERE
