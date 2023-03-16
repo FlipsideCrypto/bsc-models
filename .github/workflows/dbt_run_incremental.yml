@@ -4,8 +4,8 @@ run-name: dbt_run_scheduled
 on:
   workflow_dispatch:
   schedule:
-    # Runs "every 8 hours" (see https://crontab.guru)
-    - cron: '0 */8 * * *'
+    # Runs "every 2 hours" (see https://crontab.guru)
+    - cron: '0 */2 * * *'
     
 env:
   DBT_PROFILES_DIR: ./
@@ -26,7 +26,7 @@ jobs:
   run_dbt_jobs:
     runs-on: ubuntu-latest
     environment: 
-      name: workflow_prod_2xl
+      name: workflow_prod
 
     steps:
       - uses: actions/checkout@v3
@@ -41,4 +41,4 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run --exclude models/silver/API_udf models/bronze/api_udf/bronze_api__contract_abis.sql
+          dbt run --exclude models/silver/API_udf

@@ -4,14 +4,8 @@
     "columns": true },
     unique_key = '_log_id',
     cluster_by = ['block_timestamp::DATE'],
-    meta={
-        'database_tags':{
-            'table': {
-                'PROTOCOL': 'SUSHI',
-                'PURPOSE': 'DEFI, DEX, SWAPS'
-            }
-        }
-    }
+    meta ={ 'database_tags':{ 'table':{ 'PROTOCOL': 'SUSHI',
+    'PURPOSE': 'DEFI, DEX, SWAPS' }} }
 ) }}
 
 WITH swap_events AS (
@@ -27,16 +21,24 @@ WITH swap_events AS (
         event_name,
         regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         TRY_TO_NUMBER(
-            public.udf_hex_to_int(segmented_data[0]::string)::integer
+            PUBLIC.udf_hex_to_int(
+                segmented_data [0] :: STRING
+            ) :: INTEGER
         ) AS amount0In,
         TRY_TO_NUMBER(
-            public.udf_hex_to_int(segmented_data[1]::string)::integer
+            PUBLIC.udf_hex_to_int(
+                segmented_data [1] :: STRING
+            ) :: INTEGER
         ) AS amount1In,
         TRY_TO_NUMBER(
-            public.udf_hex_to_int(segmented_data[2]::string)::integer
+            PUBLIC.udf_hex_to_int(
+                segmented_data [2] :: STRING
+            ) :: INTEGER
         ) AS amount0Out,
         TRY_TO_NUMBER(
-            public.udf_hex_to_int(segmented_data[3]::string)::integer 
+            PUBLIC.udf_hex_to_int(
+                segmented_data [3] :: STRING
+            ) :: INTEGER
         ) AS amount1Out,
         CONCAT('0x', SUBSTR(topics [1] :: STRING, 27, 40)) AS sender,
         CONCAT('0x', SUBSTR(topics [2] :: STRING, 27, 40)) AS tx_to,
@@ -46,7 +48,7 @@ WITH swap_events AS (
     FROM
         {{ ref('silver__logs') }}
     WHERE
-        topics[0]::string = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822'
+        topics [0] :: STRING = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822'
         AND tx_status = 'SUCCESS'
         AND contract_address IN (
             SELECT
@@ -158,32 +160,36 @@ FINAL AS (
         bb
         ON swap_events.contract_address = bb.pool_address
 ),
-
- bsc_prices AS (
-    select 
+bsc_prices AS (
+    SELECT
         symbol,
-        date_trunc('hour',recorded_at) as hour, 
-        avg(price) as price 
-    from 
-        {{ source('prices','prices_v2') }} a 
-    join {{ ref('sushi__dim_dex_pools') }} b
-    on a.symbol = b.token0_symbol
+        HOUR,
+        AVG(price) AS price
+    FROM
+        {{ source(
+            'ethereum',
+            'fact_hourly_token_prices'
+        ) }} A
+        JOIN {{ ref('sushi__dim_dex_pools') }}
+        b
+        ON A.symbol = b.token0_symbol
     WHERE
         1 = 1
 
 {% if is_incremental() %}
-AND hour :: DATE IN (
+AND HOUR :: DATE IN (
     SELECT
         DISTINCT block_timestamp :: DATE
     FROM
         swap_events
 )
 {% else %}
-    AND hour :: DATE >= '2021-09-01'
+    AND HOUR :: DATE >= '2021-09-01'
 {% endif %}
-    group by 1,2
+GROUP BY
+    1,
+    2
 )
-
 SELECT
     block_number,
     block_timestamp,
@@ -196,9 +202,9 @@ SELECT
     pool_name,
     event_name,
     amount_in,
-    amount_in * pIn.price as amount_in_usd,
+    amount_in * pIn.price AS amount_in_usd,
     amount_out,
-    amount_out * pOut.price as amount_out_usd,
+    amount_out * pOut.price AS amount_out_usd,
     sender,
     tx_to,
     event_index,
@@ -211,13 +217,21 @@ SELECT
 FROM
     FINAL wp
     LEFT JOIN bsc_prices pIn
-    ON lower(wp.symbol_in) = lower(pIn.symbol)
+    ON LOWER(
+        wp.symbol_in
+    ) = LOWER(
+        pIn.symbol
+    )
     AND DATE_TRUNC(
         'hour',
         wp.block_timestamp
     ) = pIn.hour
     LEFT JOIN bsc_prices pOut
-    ON lower(wp.symbol_out) = lower(pOut.symbol)
+    ON LOWER(
+        wp.symbol_out
+    ) = LOWER(
+        pOut.symbol
+    )
     AND DATE_TRUNC(
         'hour',
         wp.block_timestamp
