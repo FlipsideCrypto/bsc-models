@@ -50,3 +50,5 @@ sources:
     tables:
       - name: blocks
       - name: transactions
+      - name: receipts
+      - name: traces

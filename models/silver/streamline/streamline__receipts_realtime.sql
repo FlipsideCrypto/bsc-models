@@ -1,7 +1,7 @@
 {{ config (
     materialized = "view",
     post_hook = if_data_call_function(
-        func = "{{this.schema}}.udf_json_rpc(object_construct('sql_source', '{{this.identifier}}', 'external_table', 'transactions', 'exploded_key','data_-_result_-_transactions', 'method', 'eth_getBlockByNumber', 'producer_limit_size', 40000000, 'producer_batch_size',10000, 'worker_batch_size',1000))",
+        func = "{{this.schema}}.udf_json_rpc(object_construct('sql_source', '{{this.identifier}}', 'external_table', 'receipts', 'exploded_key','data', 'method', 'eth_getBlockReceipts', 'producer_batch_size',100, 'producer_limit_size', 100000, 'worker_batch_size',5, 'producer_batch_chunks_size', 20))",
         target = "{{this.schema}}.{{this.identifier}}"
     )
 ) }}
@@ -50,7 +50,7 @@ tbl AS (
             ''
         ) AS block_number_hex
     FROM
-        {{ ref("streamline__complete_transactions") }}
+        {{ ref("streamline__complete_receipts") }}
     WHERE
         block_number >= (
             SELECT
@@ -61,11 +61,7 @@ tbl AS (
 )
 SELECT
     block_number,
-    'eth_getBlockByNumber' AS method,
-    CONCAT(
-        block_number_hex,
-        '_-_',
-        'true'
-    ) AS params
+    'eth_getBlockReceipts' AS method,
+    block_number_hex AS params
 FROM
     tbl

@@ -6,14 +6,7 @@
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(id)"
 ) }}
 
-WITH max_date AS (
-
-    SELECT
-        COALESCE(MAX(_INSERTED_TIMESTAMP), '1970-01-01' :: DATE) max_INSERTED_TIMESTAMP
-    FROM
-        {{ this }}
-),
-meta AS (
+WITH meta AS (
     SELECT
         registered_on,
         last_modified,
@@ -23,7 +16,7 @@ meta AS (
     FROM
         TABLE(
             information_schema.external_table_files(
-                table_name => '{{ source( "bronze_streamline", "transactions") }}'
+                table_name => '{{ source( "bronze_streamline", "receipts") }}'
             )
         ) A
 {% if is_incremental() %}
@@ -50,7 +43,7 @@ SELECT
 FROM
     {{ source(
         "bronze_streamline",
-        "transactions"
+        "receipts"
     ) }}
     t
     JOIN meta b
