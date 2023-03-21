@@ -23,7 +23,7 @@ WITH base_table AS (
                 10,
                 18
             )
-        ) :: INTEGER AS bnb_value,
+        ) :: FLOAT AS bnb_value,
         tx :blockHash :: STRING AS block_hash,
         (
             udf_hex_to_int(
