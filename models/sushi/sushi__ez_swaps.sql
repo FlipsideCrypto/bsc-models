@@ -4,8 +4,9 @@
     "columns": true },
     unique_key = '_log_id',
     cluster_by = ['block_timestamp::DATE'],
+    enabled = false,
     meta ={ 'database_tags':{ 'table':{ 'PROTOCOL': 'SUSHI',
-    'PURPOSE': 'DEFI, DEX, SWAPS' }} }
+    'PURPOSE': 'DEFI, DEX, SWAPS' } } }
 ) }}
 
 WITH swap_events AS (

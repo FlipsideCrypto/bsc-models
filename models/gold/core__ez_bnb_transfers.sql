@@ -25,7 +25,7 @@ WITH bnb_base AS (
 token_prices AS (
     SELECT
         HOUR,
-        AVG(price) AS bnb_price
+        price AS bnb_price
     FROM
         {{ source(
             'ethereum',
@@ -33,8 +33,6 @@ token_prices AS (
         ) }}
     WHERE
         token_address = LOWER('0x418D75f65a02b3D53B2418FB8E1fe493759c7605')
-    GROUP BY
-        HOUR
 )
 SELECT
     A.tx_hash AS tx_hash,

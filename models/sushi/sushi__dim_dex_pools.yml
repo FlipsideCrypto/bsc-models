@@ -1,7 +1,7 @@
 version: 2
 models:
   - name: sushi__dim_dex_pools
-    description: Deprecating soon
+    # description: Deprecating soon
        
 
     # columns:

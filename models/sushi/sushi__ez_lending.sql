@@ -7,7 +7,7 @@
   cluster_by = ['block_timestamp::DATE'],
   enabled = false,
   meta ={ 'database_tags':{ 'table':{ 'PROTOCOL': 'SUSHI',
-  'PURPOSE': 'DEFI, DEX' }} }
+  'PURPOSE': 'DEFI, DEX' } } }
 ) }}
 
 WITH borrow_txns AS (
