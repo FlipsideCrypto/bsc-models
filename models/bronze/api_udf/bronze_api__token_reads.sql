@@ -85,7 +85,7 @@ row_nos AS (
                 function_sig
         ) AS row_no,
         FLOOR(
-            row_no / 100
+            row_no / 300
         ) + 1 AS batch_no,
         node_url,
         headers
@@ -107,7 +107,7 @@ groups AS (
         node_url,
         headers
 ),
-batched AS ({% for item in range(10) %}
+batched AS ({% for item in range(11) %}
 SELECT
     ethereum.streamline.udf_json_rpc_read_calls(node_url, headers, read_input) AS read_output
 FROM
