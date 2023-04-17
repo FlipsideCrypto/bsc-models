@@ -27,7 +27,6 @@ WITH base AS (
         AND p.end_block
     WHERE
         1 = 1
-        AND l.block_number > 27000000 -- TODO: remove this line for full backfill
 
 {% if is_incremental() %}
 AND l._inserted_timestamp >= (
