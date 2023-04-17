@@ -4,8 +4,20 @@
     full_refresh = false
 ) }}
 
-WITH base AS (
+WITH node_keys AS (
 
+    SELECT
+        node_url,
+        headers
+    FROM
+        {{ source(
+            'streamline_crosschain',
+            'node_mapping'
+        ) }}
+    WHERE
+        chain = 'bsc'
+),
+base AS (
     SELECT
         contract_address,
         latest_block
@@ -22,7 +34,7 @@ WHERE
     )
 {% endif %}
 LIMIT
-    500
+    1000
 ), function_sigs AS (
     SELECT
         '0x313ce567' AS function_sig,
@@ -61,37 +73,60 @@ ready_reads AS (
     FROM
         all_reads
 ),
-batch_reads AS (
+row_nos AS (
     SELECT
-        CONCAT('[', LISTAGG(read_input, ','), ']') AS batch_read
+        contract_address,
+        latest_block,
+        function_sig,
+        read_input,
+        ROW_NUMBER() over (
+            ORDER BY
+                contract_address,
+                function_sig
+        ) AS row_no,
+        FLOOR(
+            row_no / 100
+        ) + 1 AS batch_no,
+        node_url,
+        headers
     FROM
         ready_reads
-),
-results AS (
-    SELECT
-        ethereum.streamline.udf_json_rpc_read_calls(
-            node_url,
-            headers,
-            PARSE_JSON(batch_read)
-        ) AS read_output
-    FROM
-        batch_reads
-        JOIN {{ source(
-            'streamline_crosschain',
-            'node_mapping'
-        ) }}
+        JOIN node_keys
         ON 1 = 1
-        AND chain = 'bsc'
-    WHERE
-        EXISTS (
-            SELECT
-                1
-            FROM
-                ready_reads
-            LIMIT
-                1
-        )
-), FINAL AS (
+),
+groups AS (
+    SELECT
+        batch_no,
+        node_url,
+        headers,
+        PARSE_JSON(CONCAT('[', LISTAGG(read_input, ','), ']')) AS read_input
+    FROM
+        row_nos
+    GROUP BY
+        batch_no,
+        node_url,
+        headers
+),
+batched AS ({% for item in range(10) %}
+SELECT
+    ethereum.streamline.udf_json_rpc_read_calls(node_url, headers, read_input) AS read_output
+FROM
+    groups
+WHERE
+    batch_no = {{ item }} + 1
+    AND EXISTS (
+SELECT
+    1
+FROM
+    row_nos
+WHERE
+    batch_no = {{ item }} + 1
+LIMIT
+    1) {% if not loop.last %}
+    UNION ALL
+    {% endif %}
+{% endfor %}),
+FINAL AS (
     SELECT
         VALUE :id :: STRING AS read_id,
         VALUE :result :: STRING AS read_result,
@@ -104,7 +139,7 @@ results AS (
         read_id_object [2] :: STRING AS function_sig,
         read_id_object [3] :: STRING AS function_input
     FROM
-        results,
+        batched,
         LATERAL FLATTEN(
             input => read_output [0] :data
         )
