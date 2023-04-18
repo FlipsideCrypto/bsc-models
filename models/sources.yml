@@ -53,3 +53,4 @@ sources:
       - name: transactions
       - name: receipts
       - name: traces
+      - name: decoded_logs
