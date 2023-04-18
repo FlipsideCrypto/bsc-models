@@ -41,4 +41,4 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run --exclude models/silver/API_udf models/bronze/api_udf/bronze_api__token_reads.sql+
+          dbt run --exclude models/silver/API_udf models/silver/streamline
