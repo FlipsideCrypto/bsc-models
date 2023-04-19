@@ -28,19 +28,47 @@ verified_abis AS (
         2 AS priority
     FROM
         {{ ref('silver__verified_abis') }}
+    WHERE
+        abi_source = 'bscscan'
 
 {% if is_incremental() %}
-WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(
-                _inserted_timestamp
-            )
-        FROM
-            {{ this }}
-        WHERE
-            abi_source <> 'bytecode_matched'
-    )
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(
+            _inserted_timestamp
+        )
+    FROM
+        {{ this }}
+    WHERE
+        abi_source = 'bscscan'
+)
+{% endif %}
+),
+user_abis AS (
+    SELECT
+        contract_address,
+        abi,
+        discord_username,
+        _inserted_timestamp,
+        'user' AS abi_source,
+        abi_hash,
+        2 AS priority
+    FROM
+        {{ ref('silver__user_verified_abis') }}
+    WHERE
+        abi_source = 'user'
+
+{% if is_incremental() %}
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(
+            _inserted_timestamp
+        )
+    FROM
+        {{ this }}
+    WHERE
+        abi_source = 'user'
+)
 {% endif %}
 ),
 bytecode_abis AS (
