@@ -62,7 +62,7 @@
 
                 {% set wait_query %}
             SELECT
-                system $ wait(
+                system$wait(
                     {{ var(
                         "WAIT",
                         600
