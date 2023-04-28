@@ -30,7 +30,7 @@ WITH pool_creation AS (
     FROM
         {{ ref ('silver__logs') }}
     WHERE
-        contract_address = '0x10908c875d865c66f271f5d3949848971c9595c9' --dynamic fee factory
+        contract_address = '0x878dfe971d44e9122048308301f540910bbd934c' --dynamic fee factory
         AND topics [0] :: STRING = '0xfc574402c445e75f2b79b67884ff9c662244dce454c5ae68935fcd0bebb7c8ff' --created pool
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

@@ -57,9 +57,9 @@ WITH router_swaps_base AS (
         l
     WHERE
         contract_address IN (
-            '0x5aa6a4e96a9129562e2fc06660d07feddaaf7854',
-            --v1
-            '0xc22fbb3133df781e6c25ea6acebe2d2bb8cea2f9' --v2
+            '0xc90bfe9951a4efbf20aca5ecd9966b2bf8a01294',
+            '0x4f4fd4290c9bb49764701803af6445c5b03e8f06',
+            '0xcef5be73ae943b77f9bc08859367d923c030a269' --v2
         )
         AND topics [0] :: STRING = '0x27c98e911efdd224f4002f6cd831c3ad0d2759ee176f9ee8466d95826af22a1c' --WooRouterSwap
 
@@ -119,9 +119,10 @@ swaps_base AS (
         l
     WHERE
         contract_address IN (
-            '0xf8ce0d043891b62c55380fb1efbfb4f186153d96',
-            '0x1df3009c57a8b143c6246149f00b090bce3b8f88',
-            '0x3b3e4b4741e91af52d0e9ad8660573e951c88524'
+            '0xbf365ce9cfcb2d5855521985e351ba3bcf77fd3f',
+            '0x2217c57c91e3c6c55a90b4ca280f532d65590559', --v1
+            '0x59de3b49314bf5067719364a2cb43e8525ab93fa',
+            '0xec054126922a9a1918435c9072c32f1b60cb2b90' --v2
         )
         AND topics [0] :: STRING IN (
             '0x74ef34e2ea7c5d9f7b7ed44e97ad44b4303416c3a660c3fb5b3bdb95a1d6abd3',
@@ -153,11 +154,11 @@ SELECT
     event_index,
     contract_address,
     CASE
-        WHEN from_token = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' THEN '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7'
+        WHEN from_token = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' THEN '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
         ELSE from_token
     END AS token_in,
     CASE
-        WHEN to_token = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' THEN '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7'
+        WHEN to_token = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' THEN '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
         ELSE to_token
     END AS token_out,
     to_address AS tx_to,
@@ -183,11 +184,11 @@ SELECT
     event_index,
     contract_address,
     CASE
-        WHEN from_token = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' THEN '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7'
+        WHEN from_token = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' THEN '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
         ELSE from_token
     END AS token_in,
     CASE
-        WHEN to_token = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' THEN '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7'
+        WHEN to_token = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' THEN '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
         ELSE to_token
     END AS token_out,
     to_address AS tx_to,

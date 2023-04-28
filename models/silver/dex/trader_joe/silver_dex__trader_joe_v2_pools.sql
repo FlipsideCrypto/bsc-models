@@ -22,7 +22,7 @@ WITH pool_creation AS (
             segmented_data [1] :: STRING
         ) :: INT AS pool_id,
         CASE
-            WHEN contract_address = '0x6e77932a92582f504ff6c4bdbcef7da6c198aeef' THEN 'v2'
+            WHEN contract_address = '0x43646a8e839b2f2766392c1bf8f60f6e587b6960' THEN 'v2'
             WHEN contract_address = '0x8e42f2f4101563bf679975178e880fd87d3efd4e' THEN 'v2.1'
         END AS version,
         _log_id,
@@ -30,7 +30,7 @@ WITH pool_creation AS (
     FROM 
         {{ ref('silver__logs') }}
     WHERE
-        contract_address IN ('0x8e42f2f4101563bf679975178e880fd87d3efd4e','0x6e77932a92582f504ff6c4bdbcef7da6c198aeef')
+        contract_address IN ('0x8e42f2f4101563bf679975178e880fd87d3efd4e','0x43646a8e839b2f2766392c1bf8f60f6e587b6960')
         AND topics [0] :: STRING = '0x2c8d104b27c6b7f4492017a6f5cf3803043688934ebcaa6a03540beeaf976aff' --LB PairCreated
 
 {% if is_incremental() %}

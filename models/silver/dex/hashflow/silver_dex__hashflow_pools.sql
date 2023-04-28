@@ -16,8 +16,8 @@ WITH contract_deployments AS (
         {{ ref('silver__traces') }}
     WHERE
         from_address IN (
-            '0x05fb0089bec6d00b2f01f4096eb0e0488c79cd91',
-            '0x7677bf119654d1fbcb46cb9014949bf16180b6ae'
+            '0x63ae536fec0b57bdeb1fd6a893191b4239f61bff',
+            '0xa98242820ebf3a405d265ccd22a4ea8f64afb281'
         )
         AND TYPE ILIKE 'create%'
         AND tx_status ILIKE 'success'
