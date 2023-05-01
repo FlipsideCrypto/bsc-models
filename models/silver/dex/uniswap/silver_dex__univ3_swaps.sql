@@ -44,7 +44,7 @@ AND _inserted_timestamp >= (
     SELECT
         MAX(
             _inserted_timestamp
-        ) :: DATE - 2
+        ) :: DATE
     FROM
         {{ this }}
 )
@@ -84,9 +84,9 @@ FINAL AS (
         amount0_unadj,
         amount1_unadj
     FROM
-        base_swaps
-        INNER JOIN pool_data
-        ON pool_data.pool_address = base_swaps.contract_address
+        base_swaps b
+        INNER JOIN pool_data p
+        ON p.pool_address = b.contract_address
 )
 SELECT
     *

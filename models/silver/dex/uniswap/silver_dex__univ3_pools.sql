@@ -1,15 +1,15 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'pool_address',
-    cluster_by = ['_inserted_timestamp::DATE']
+    cluster_by = ['block_timestamp::DATE']
 ) }}
 
 WITH created_pools AS (
 
     SELECT
-        block_number AS created_block,
-        block_timestamp AS created_time,
-        tx_hash AS created_tx_hash,
+        block_number,
+        block_timestamp,
+        tx_hash,
         regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         LOWER(CONCAT('0x', SUBSTR(topics [1] :: STRING, 27, 40))) AS token0_address,
         LOWER(CONCAT('0x', SUBSTR(topics [2] :: STRING, 27, 40))) AS token1_address,
@@ -69,9 +69,9 @@ AND _inserted_timestamp >= (
 
 FINAL AS (
     SELECT
-        created_block,
-        created_time,
-        created_tx_hash,
+        block_number,
+        block_timestamp,
+        tx_hash,
         token0_address,
         token1_address,
         fee :: INTEGER AS fee,
