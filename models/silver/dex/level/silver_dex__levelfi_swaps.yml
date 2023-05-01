@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: silver_dex__woofi_swaps
+  - name: silver_dex__levelfi_swaps
    
     tests:
       - dbt_utils.unique_combination_of_columns:
