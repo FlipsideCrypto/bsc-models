@@ -1,11 +1,11 @@
-name: dbt_run_scheduled
-run-name: dbt_run_scheduled
+name: dbt_run_temp_decoding_backfill
+run-name: dbt_run_temp_decoding_backfill
 
 on:
   workflow_dispatch:
   schedule:
     # Runs "every 2 hours" (see https://crontab.guru)
-    - cron: '0 */2 * * *'
+    - cron: '20 */2 * * *'
     
 env:
   DBT_PROFILES_DIR: ./
@@ -26,7 +26,7 @@ jobs:
   run_dbt_jobs:
     runs-on: ubuntu-latest
     environment: 
-      name: workflow_prod
+      name: workflow_prod_2xl
 
     steps:
       - uses: actions/checkout@v3
@@ -41,4 +41,4 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run --exclude models/silver/API_udf models/silver/streamline models/silver/silver__decoded_logs.sql
+          dbt run -m models/silver/silver__decoded_logs.sql
