@@ -19,15 +19,12 @@ SELECT
     ) AS amount_usd
 FROM
     {{ ref('silver__traces') }} A
-    LEFT JOIN {{ source(
-        'ethereum',
-        'fact_hourly_token_prices'
-    ) }}
+    LEFT JOIN {{ ref('silver__prices') }}
     ON DATE_TRUNC(
         'hour',
         A.block_timestamp
     ) = HOUR
-    AND token_address = LOWER('0x418D75f65a02b3D53B2418FB8E1fe493759c7605')
+    AND token_address = LOWER('0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c')
     JOIN {{ ref('silver__transactions') }}
     tx
     ON A.block_timestamp :: DATE = tx.block_timestamp :: DATE
