@@ -22,7 +22,7 @@ WITH meta AS (
                 table_name => '{{ source( "bronze_streamline", "decoded_logs") }}',
                 start_time => (
                     SELECT
-                        MAX(_INSERTED_TIMESTAMP)
+                       DATEADD('hour', -6, MAX(_INSERTED_TIMESTAMP))
                     FROM
                         {{ this }}
                 )
