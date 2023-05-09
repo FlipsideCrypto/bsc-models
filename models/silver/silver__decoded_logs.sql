@@ -9,7 +9,7 @@
 WITH meta AS (
 
     SELECT
-        registered_on AS job_created_time,
+        job_created_time,
         last_modified,
         TO_DATE(
             concat_ws('-', SPLIT_PART(file_name, '/', 3), SPLIT_PART(file_name, '/', 4), SPLIT_PART(file_name, '/', 5))
@@ -18,29 +18,16 @@ WITH meta AS (
         file_name
     FROM
         TABLE(
-            information_schema.external_table_files(
-                table_name => '{{ source( "bronze_streamline", "decoded_logs") }}'
+            information_schema.external_table_file_registration_history(
+                table_name => '{{ source( "bronze_streamline", "decoded_logs") }}',
+                start_time => (
+                    SELECT
+                       DATEADD('hour', -6, MAX(_INSERTED_TIMESTAMP))
+                    FROM
+                        {{ this }}
+                )
             )
-        ) A
-    WHERE
-        1 = 1
-
-{% if is_incremental() %}
-AND _partition_by_block_number BETWEEN (
-    SELECT
-        MAX(block_number) - 50000
-    FROM
-        {{ this }}
-)
-AND (
-    SELECT
-        MAX(block_number) + 500000
-    FROM
-        {{ this }}
-)
-{% else %}
-    AND _partition_by_block_number <= 8000000
-{% endif %}
+        )
 ),
 decoded_logs AS (
     SELECT
