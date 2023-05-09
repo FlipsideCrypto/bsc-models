@@ -3,8 +3,9 @@ run-name: dbt_run_streamline_decoder_history3
 
 on:
   workflow_dispatch:
-    branches:
-      - "main"
+  schedule:
+    # Runs "at 6:00 UTC PM" (see https://crontab.guru)
+    - cron: '0 18 * * *'
     
 env:
   DBT_PROFILES_DIR: ./
