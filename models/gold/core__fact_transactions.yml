@@ -35,7 +35,7 @@ models:
       - name: STATUS
         description: '{{ doc("bsc_tx_status") }}' 
       - name: TX_JSON
-        description: '{{ doc("bsc_tx_json") }}'
+        description: '{{ doc("deprecation") }}'
       - name: INPUT_DATA
         description: '{{ doc("bsc_tx_input_data") }}'
       - name: ORIGIN_FUNCTION_SIGNATURE 
