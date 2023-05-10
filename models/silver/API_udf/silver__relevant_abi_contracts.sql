@@ -17,7 +17,7 @@ proxies AS (
         {{ ref('silver__proxies') }}
         JOIN base USING (contract_address)
 ),
-manul_addresses AS (
+manual_addresses AS (
     SELECT
         contract_address
     FROM
@@ -36,4 +36,4 @@ UNION
 SELECT
     contract_address
 FROM
-    manul_addresses
+    manual_addresses
