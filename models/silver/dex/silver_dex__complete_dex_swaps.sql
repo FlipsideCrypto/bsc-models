@@ -1862,8 +1862,7 @@ SELECT
   amount_in_unadj,
   amount_in,
   CASE
-    WHEN amount_in_usd IS NULL
-    OR amount_out_usd IS NULL 
+    WHEN amount_out_usd IS NULL 
     OR ABS((amount_in_usd - amount_out_usd) / NULLIF(amount_out_usd, 0)) > 0.75
     OR ABS((amount_in_usd - amount_out_usd) / NULLIF(amount_in_usd, 0)) > 0.75 THEN NULL
     ELSE amount_in_usd
@@ -1872,7 +1871,6 @@ SELECT
   amount_out,
   CASE
     WHEN amount_in_usd IS NULL
-    OR amount_out_usd IS NULL 
     OR ABS((amount_out_usd - amount_in_usd) / NULLIF(amount_in_usd, 0)) > 0.75
     OR ABS((amount_out_usd - amount_in_usd) / NULLIF(amount_out_usd, 0)) > 0.75 THEN NULL
     ELSE amount_out_usd
