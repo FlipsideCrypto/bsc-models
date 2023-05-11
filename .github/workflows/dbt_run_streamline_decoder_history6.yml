@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   schedule:
     # Runs "at 12:00 UTC PM" (see https://crontab.guru)
-    - cron: '0 24 * * *'
+    - cron: '0 0 * * *'
     
 env:
   DBT_PROFILES_DIR: ./
