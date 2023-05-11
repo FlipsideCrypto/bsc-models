@@ -26,7 +26,7 @@ swaps_base AS (
         l.contract_address,
         l.topics,
         l.data,
-        regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS l_segmented_data,
+        regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         CONCAT('0x', SUBSTR(l.topics [1] :: STRING, 27, 40)) AS sender_address,
         CONCAT('0x', SUBSTR(l.topics [2] :: STRING, 27, 40)) AS recipient_address,
         TRY_TO_NUMBER(
@@ -36,28 +36,28 @@ swaps_base AS (
         ) AS id,
         CASE
             WHEN ethereum.public.udf_hex_to_int(
-                l_segmented_data [0] :: STRING
+                segmented_data [0] :: STRING
             ) = 0 THEN FALSE
             ELSE TRUE
         END AS swapForY,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [1] :: STRING
+                segmented_data [1] :: STRING
             )
         ) AS amountIn,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [2] :: STRING
+                segmented_data [2] :: STRING
             )
         ) AS amountOut,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [3] :: STRING
+                segmented_data [3] :: STRING
             )
         ) AS volatilityAccumulated,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [4] :: STRING
+                segmented_data [4] :: STRING
             )
         ) AS fees,
         CASE

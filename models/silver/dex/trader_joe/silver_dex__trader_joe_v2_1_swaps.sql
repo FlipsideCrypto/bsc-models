@@ -26,22 +26,22 @@ swaps_base AS (
         l.contract_address,
         l.topics,
         l.data,
-        regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS l_segmented_data,
+        regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         CONCAT('0x', SUBSTR(l.topics [1] :: STRING, 27, 40)) AS sender_address,
         CONCAT('0x', SUBSTR(l.topics [2] :: STRING, 27, 40)) AS to_address,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [0] :: STRING
+                segmented_data [0] :: STRING
             )
         ) AS id,
-        l_segmented_data [1] :: STRING AS amountsIn,
+        segmented_data [1] :: STRING AS amountsIn,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(SUBSTR(amountsIn, 0, 32))
         ) AS amount0In,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(SUBSTR(amountsIn, 33, 32))
         ) AS amount1In,
-        l_segmented_data [2] :: STRING AS amountsOut,
+        segmented_data [2] :: STRING AS amountsOut,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(SUBSTR(amountsOut, 0, 32))
         ) AS amount0Out,
@@ -50,17 +50,17 @@ swaps_base AS (
         ) AS amount1Out,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [3] :: STRING
+                segmented_data [3] :: STRING
             )
         ) AS volatilityAccumulated,
-        l_segmented_data [4] :: STRING AS totalFees,
+        segmented_data [4] :: STRING AS totalFees,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(SUBSTR(totalFees, 0, 32))
         ) AS fee0,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(SUBSTR(totalFees, 33, 32))
         ) AS fee1,
-        l_segmented_data [5] :: STRING AS protocolFees,
+        segmented_data [5] :: STRING AS protocolFees,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(SUBSTR(protocolFees, 0, 32))
         ) AS protocolFee0,

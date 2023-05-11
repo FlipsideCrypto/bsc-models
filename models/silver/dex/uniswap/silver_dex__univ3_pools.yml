@@ -6,10 +6,10 @@ models:
           combination_of_columns:
             - POOL_ADDRESS
     columns:
-      - name: CREATED_BLOCK
+      - name: BLOCK_NUMBER
         tests:
           - not_null
-      - name: CREATED_TIME
+      - name: BLOCK_TIMESTAMP
         tests:
           - not_null
           - dbt_expectations.expect_row_values_to_have_recent_data:
@@ -32,7 +32,7 @@ models:
       - name: TICK_SPACING
         tests:
           - not_null
-      - name: CREATED_TX_HASH
+      - name: TX_HASH
         tests:
           - not_null
 

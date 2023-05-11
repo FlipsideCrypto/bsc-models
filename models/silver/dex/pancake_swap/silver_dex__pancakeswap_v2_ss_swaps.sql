@@ -27,22 +27,22 @@ swaps_base AS (
         CONCAT('0x', SUBSTR(topics [1] :: STRING, 27, 40)) AS buyer_address,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [0] :: STRING
+                segmented_data [0] :: STRING
             )
         ) AS sold_id,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [1] :: STRING
+                segmented_data [1] :: STRING
             )
         ) AS tokens_sold,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [2] :: STRING
+                segmented_data [2] :: STRING
             )
         ) AS bought_id,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [3] :: STRING
+                segmented_data [3] :: STRING
             )
         ) AS tokens_bought,
         tokens_sold AS amountIn,
@@ -83,7 +83,8 @@ SELECT
     tx_hash,
     event_index,
     contract_address,
-    buyer_address,
+    buyer_address AS sender,
+    buyer_address AS tx_to,
     sold_id,
     tokens_sold,
     bought_id,

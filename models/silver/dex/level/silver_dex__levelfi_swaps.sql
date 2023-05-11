@@ -15,7 +15,7 @@ WITH swaps_base AS (
         origin_to_address,
         l.event_index,
         l.contract_address,
-        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS l_segmented_data,
+        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS segmented_data,
         ARRAY_SIZE(segmented_data) AS data_count,
         CASE
             WHEN data_count = 6 THEN CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 25, 40))
@@ -91,7 +91,7 @@ SELECT
     origin_to_address,
     event_index,
     contract_address,
-    sender_address AS sender,
+    COALESCE(sender_address,origin_from_address) AS sender,
     origin_from_address AS tx_to,
     tokenIn AS token_in,
     tokenOut AS token_out,

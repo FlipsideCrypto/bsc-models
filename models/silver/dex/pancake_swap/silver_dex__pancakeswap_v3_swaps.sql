@@ -25,47 +25,47 @@ base_swaps AS (
         l.tx_hash,
         l.event_index,
         l.contract_address,
-        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS l_segmented_data,
+        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS segmented_data,
         CONCAT('0x', SUBSTR(l.topics [1] :: STRING, 27, 40)) AS sender_address,
         CONCAT('0x', SUBSTR(l.topics [2] :: STRING, 27, 40)) AS recipient_address,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
                 's2c',
-                l_segmented_data [0] :: STRING
+                segmented_data [0] :: STRING
             )
         ) AS amount0,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
                 's2c',
-                l_segmented_data [1] :: STRING
+                segmented_data [1] :: STRING
             )
         ) AS amount1,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [2] :: STRING
+                segmented_data [2] :: STRING
             )
         ) AS sqrtPriceX96,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [3] :: STRING
+                segmented_data [3] :: STRING
             )
         ) AS liquidity,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
                 's2c',
-                l_segmented_data [4] :: STRING
+                segmented_data [4] :: STRING
             )
         ) AS tick,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
                 's2c',
-                l_segmented_data [5] :: STRING
+                segmented_data [5] :: STRING
             )
         ) AS protocolFeesToken0,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
                 's2c',
-                l_segmented_data [6] :: STRING
+                segmented_data [6] :: STRING
             )
         ) AS protocolFeesToken1,
         ABS(GREATEST(amount0, amount1)) AS amountOut,
@@ -81,7 +81,7 @@ base_swaps AS (
             ELSE token1_address
         END AS token_out,
         fee,
-        tick_spacing
+        tick_spacing,
         l._log_id,
         l._inserted_timestamp
     FROM
@@ -121,7 +121,7 @@ SELECT
     sqrtPriceX96,
     liquidity,
     tick,
-    tick_spacing
+    tick_spacing,
     fee,
     protocolFeesToken0,
     protocolFeesToken1,

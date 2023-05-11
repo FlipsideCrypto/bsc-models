@@ -23,35 +23,35 @@ swaps_base AS (
         origin_to_address,
         l.event_index,
         l.contract_address,
-        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS l_segmented_data,
+        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS segmented_data,
         CONCAT('0x', SUBSTR(l.topics [1] :: STRING, 27, 40)) AS sender_address,
         CONCAT('0x', SUBSTR(l.topics [2] :: STRING, 27, 40)) AS reipient_address,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
                 's2c',
-                l_segmented_data [0] :: STRING
+                segmented_data [0] :: STRING
             )
         ) AS deltaQty0,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
                 's2c',
-                l_segmented_data [1] :: STRING
+                segmented_data [1] :: STRING
             )
         ) AS deltaQty1,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [2] :: STRING
+                segmented_data [2] :: STRING
             )
         ) AS sqrtP,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [3] :: STRING
+                segmented_data [3] :: STRING
             )
         ) AS liquidity,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
                 's2c',
-                l_segmented_data [4] :: STRING
+                segmented_data [4] :: STRING
             )
         ) AS currentTick,
         ABS(GREATEST(deltaQty0, deltaQty1)) AS amountOut,

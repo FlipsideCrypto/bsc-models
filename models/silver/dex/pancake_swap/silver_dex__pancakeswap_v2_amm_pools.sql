@@ -23,7 +23,11 @@ WITH pool_creation AS (
     FROM
         {{ ref ('silver__logs') }}
     WHERE
-        contract_address = '0xca143ce32fe78f1f7019d7d551a6402fc5350c73' --factory
+        contract_address IN (
+            '0xca143ce32fe78f1f7019d7d551a6402fc5350c73',
+            '0x7b13d1d2a1fa28b16862ebac6e3c52fa9c8d753e',
+            '0x1f830fb91094a0e87c0a80150aa0af3805456090'
+        ) --factory
         AND topics [0] :: STRING = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9' --PairCreated
 
 {% if is_incremental() %}

@@ -12,7 +12,6 @@ WITH pools AS (
         event_index,
         contract_address,
         regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
-        regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         CONCAT('0x', SUBSTR(topics [1] :: STRING, 27, 40)) AS pool_address,
         CASE
             WHEN contract_address = '0x36bbb126e75351c0dfb651e39b38fe0bc436ffd2' THEN CONCAT('0x', SUBSTR(topics [2] :: STRING, 27, 40))
@@ -36,8 +35,8 @@ WITH pools AS (
         {{ ref ('silver__logs') }}
     WHERE
         contract_address IN (
-            '0x36bbb126e75351c0dfb651e39b38fe0bc436ffd2',
-            '0x25a55f9f2279a54951133d503490342b50e5cd15'
+            '0x25a55f9f2279a54951133d503490342b50e5cd15',
+            '0x36bbb126e75351c0dfb651e39b38fe0bc436ffd2'
         ) --factory
         AND topics [0] :: STRING IN (
             '0xa9551fb056fc743efe2a0a34e39f9769ad10166520df7843c09a66f82e148b97',
@@ -73,4 +72,4 @@ SELECT
     _log_id,
     _inserted_timestamp
 FROM
-    pool_creation
+    pools

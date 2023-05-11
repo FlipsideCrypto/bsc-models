@@ -34,11 +34,11 @@ swaps_base AS (
         origin_to_address,
         l.event_index,
         l.contract_address,
-        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS l_segmented_data,
+        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS segmented_data,
         CONCAT(
             '0x',
             SUBSTR(
-                l_segmented_data [0] :: STRING,
+                segmented_data [0] :: STRING,
                 25,
                 40
             )
@@ -46,25 +46,25 @@ swaps_base AS (
         CONCAT(
             '0x',
             SUBSTR(
-                l_segmented_data [1] :: STRING,
+                segmented_data [1] :: STRING,
                 25,
                 40
             )
         ) AS toToken,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [2] :: STRING
+                segmented_data [2] :: STRING
             )
         ) AS fromAmount,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [3] :: STRING
+                segmented_data [3] :: STRING
             )
         ) AS toAmount,
         CONCAT(
             '0x',
             SUBSTR(
-                l_segmented_data [4] :: STRING,
+                segmented_data [4] :: STRING,
                 25,
                 40
             )
@@ -72,7 +72,7 @@ swaps_base AS (
         CONCAT(
             '0x',
             SUBSTR(
-                l_segmented_data [5] :: STRING,
+                segmented_data [5] :: STRING,
                 25,
                 40
             )

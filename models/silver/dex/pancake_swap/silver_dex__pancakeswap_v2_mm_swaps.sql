@@ -15,17 +15,17 @@ WITH swaps_base AS (
         origin_to_address,
         l.event_index,
         l.contract_address,
-        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS l_segmented_data,
+        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS segmented_data,
         CONCAT('0x', SUBSTR(l.topics [1] :: STRING, 27, 40)) AS user_address,
         CONCAT('0x', SUBSTR(l.topics [2] :: STRING, 27, 40)) AS mm_address,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [0] :: STRING
+                segmented_data [0] :: STRING
             )
         ) AS nonce,
-        CONCAT('0x', SUBSTR(l_segmented_data [1] :: STRING, 25, 40)) AS mmTreasury,
-        CONCAT('0x', SUBSTR(l_segmented_data [2] :: STRING, 25, 40)) AS baseToken1,
-        CONCAT('0x', SUBSTR(l_segmented_data [3] :: STRING, 25, 40)) AS quoteToken1,
+        CONCAT('0x', SUBSTR(segmented_data [1] :: STRING, 25, 40)) AS mmTreasury,
+        CONCAT('0x', SUBSTR(segmented_data [2] :: STRING, 25, 40)) AS baseToken1,
+        CONCAT('0x', SUBSTR(segmented_data [3] :: STRING, 25, 40)) AS quoteToken1,
         CASE
             WHEN baseToken1 = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' THEN '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
             ELSE baseToken1
@@ -36,12 +36,12 @@ WITH swaps_base AS (
         END AS quoteToken,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [4] :: STRING
+                segmented_data [4] :: STRING
             )
         ) AS baseTokenAmount,
         TRY_TO_NUMBER(
             ethereum.public.udf_hex_to_int(
-                l_segmented_data [5] :: STRING
+                segmented_data [5] :: STRING
             )
         ) AS quoteTokenAmount,
         baseToken AS token_in,
