@@ -1,12 +1,13 @@
 {{ config (
     materialized = "view",
     post_hook = if_data_call_function(
-        func = "{{this.schema}}.udf_json_rpc(object_construct('sql_source', '{{this.identifier}}', 'external_table', 'traces', 'exploded_key','[\"result\"]', 'method', 'trace_block', 'producer_batch_size',200, 'producer_limit_size', 1000000, 'worker_batch_size',20))",
+        func = "{{this.schema}}.udf_json_rpc(object_construct('sql_source', '{{this.identifier}}', 'external_table', 'traces', 'exploded_key','[\"result\"]', 'method', 'debug_traceBlockByNumber', 'producer_batch_size',200, 'producer_limit_size', 1000000, 'worker_batch_size',20))",
         target = "{{this.schema}}.{{this.identifier}}"
     )
 ) }}
 
 WITH last_3_days AS (
+
     {% if var('STREAMLINE_RUN_HISTORY')%}
         SELECT 
             0 AS block_number
@@ -16,44 +17,47 @@ WITH last_3_days AS (
         FROM
             {{ ref("streamline__blocks") }}
     {% endif %}
-),
-tbl AS (
-    SELECT
-        block_number,
-        block_number_hex
-    FROM
-        {{ ref("streamline__blocks") }}
-    WHERE
-        (
-            block_number >= (
-                SELECT
-                    block_number
-                FROM
-                    last_3_days
-            )
-        )
-        AND block_number IS NOT NULL
-    EXCEPT
-    SELECT
-        block_number,
-        REPLACE(
-            concat_ws('', '0x', to_char(block_number, 'XXXXXXXX')),
-            ' ',
-            ''
-        ) AS block_number_hex
-    FROM
-        {{ ref("streamline__complete_traces") }}
-    WHERE
+
+)
+SELECT
+    block_number,
+    'debug_traceBlockByNumber' AS method,
+    CONCAT(
+        block_number_hex,
+        '_-_',
+        '{"tracer": "callTracer"}'
+    ) AS params
+FROM
+    {{ ref("streamline__blocks") }}
+WHERE
+    (
         block_number >= (
             SELECT
                 block_number
             FROM
                 last_3_days
         )
-)
+    )
+    AND block_number IS NOT NULL
+EXCEPT
 SELECT
     block_number,
-    'trace_block' AS method,
-    block_number_hex AS params
+    'debug_traceBlockByNumber' AS method,
+    CONCAT(
+        REPLACE(
+            concat_ws('', '0x', to_char(block_number, 'XXXXXXXX')),
+            ' ',
+            ''
+        ),
+        '_-_',
+        '{"tracer": "callTracer"}'
+    ) AS params
 FROM
-    tbl
+    {{ ref("streamline__complete_traces") }}
+WHERE
+    block_number >= (
+        SELECT
+            block_number
+        FROM
+            last_3_days
+    )
