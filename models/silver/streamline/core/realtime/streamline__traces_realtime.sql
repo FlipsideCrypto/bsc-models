@@ -61,4 +61,3 @@ WHERE
         FROM
             last_3_days
     )
-LIMIT 1000
