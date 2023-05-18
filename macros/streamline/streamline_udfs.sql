@@ -16,6 +16,15 @@
     {%- endif %};
 {% endmacro %}
 
+{% macro create_udf_rest_api() %}
+    CREATE EXTERNAL FUNCTION IF NOT EXISTS streamline.udf_rest_api(
+        json OBJECT
+    ) returns ARRAY api_integration = aws_bsc_api AS {% if target.name == "prod" %}
+        'https://u0bch3zf8l.execute-api.us-east-1.amazonaws.com/prod/bulk_get_rest_api'
+    {% else %}
+        'https://q22a7542fk.execute-api.us-east-1.amazonaws.com/dev/bulk_get_rest_api'
+    {%- endif %};
+{% endmacro %}
 
 {% macro create_udf_api() %}
     CREATE EXTERNAL FUNCTION IF NOT EXISTS streamline.udf_api(
