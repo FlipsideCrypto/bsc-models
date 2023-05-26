@@ -5,7 +5,8 @@
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     incremental_predicates = ["dynamic_range", "block_number"],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
-    tags = ['core']
+    tags = ['core'],
+    full_refresh = false
 ) }}
 
 WITH base AS (
@@ -17,99 +18,94 @@ WITH base AS (
     FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_FR_transactions') }}
+{{ ref('bronze__streamline_transactions') }}
 WHERE
-    _partition_by_block_id BETWEEN (
+    _inserted_timestamp >= (
         SELECT
-            ROUND(MAX(block_number), -4)
+            MAX(_inserted_timestamp) _inserted_timestamp
         FROM
-            {{ this }})
-            AND (
-                SELECT
-                    ROUND(MAX(block_number), -4) + 500000
-                FROM
-                    {{ this }})
-                    AND IS_OBJECT(DATA)
-                {% else %}
-                    {{ ref('bronze__streamline_FR_transactions') }}
-                WHERE
-                    _partition_by_block_id <= 2500000
-                    AND IS_OBJECT(DATA)
-                {% endif %}
-            ),
-            new_records AS (
-                SELECT
-                    A.block_number AS block_number,
-                    A.data :blockHash :: STRING AS block_hash,
-                    PUBLIC.udf_hex_to_int(
-                        A.data :blockNumber :: STRING
-                    ) :: INT AS blockNumber,
-                    A.data :from :: STRING AS from_address,
-                    PUBLIC.udf_hex_to_int(
-                        A.data :gas :: STRING
-                    ) :: INT AS gas,
-                    PUBLIC.udf_hex_to_int(
-                        A.data :gasPrice :: STRING
-                    ) :: INT / pow(
-                        10,
-                        9
-                    ) AS gas_price,
-                    A.data :hash :: STRING AS tx_hash,
-                    A.data :input :: STRING AS input_data,
-                    SUBSTR(
-                        input_data,
-                        1,
-                        10
-                    ) AS origin_function_signature,
-                    PUBLIC.udf_hex_to_int(
-                        A.data :nonce :: STRING
-                    ) :: INT AS nonce,
-                    A.data :r :: STRING AS r,
-                    A.data :s :: STRING AS s,
-                    A.data :to :: STRING AS to_address1,
-                    CASE
-                        WHEN to_address1 = '' THEN NULL
-                        ELSE to_address1
-                    END AS to_address,
-                    PUBLIC.udf_hex_to_int(
-                        A.data :transactionIndex :: STRING
-                    ) :: INT AS POSITION,
-                    A.data :type :: STRING AS TYPE,
-                    A.data :v :: STRING AS v,
-                    PUBLIC.udf_hex_to_int(
-                        A.data :value :: STRING
-                    ) / pow(
-                        10,
-                        18
-                    ) :: FLOAT AS VALUE,
-                    block_timestamp,
-                    CASE
-                        WHEN block_timestamp IS NULL
-                        OR tx_status IS NULL THEN TRUE
-                        ELSE FALSE
-                    END AS is_pending,
-                    r.gas_used,
-                    tx_success,
-                    tx_status,
-                    cumulative_gas_used,
-                    effective_gas_price,
-                    (
-                        gas_price * r.gas_used
-                    ) / pow(
-                        10,
-                        9
-                    ) AS tx_fee,
-                    r.type AS tx_type,
-                    A._INSERTED_TIMESTAMP
-                FROM
-                    base A
-                    LEFT OUTER JOIN {{ ref('silver__receipts') }}
-                    r
-                    ON A.block_number = r.block_number
-                    AND A.data :hash :: STRING = r.tx_hash
-                    LEFT OUTER JOIN {{ ref('silver__blocks2') }}
-                    b
-                    ON A.block_number = b.block_number
+            {{ this }}
+    )
+    AND IS_OBJECT(DATA)
+{% else %}
+    {{ ref('bronze__streamline_FR_transactions') }}
+WHERE
+    IS_OBJECT(DATA)
+{% endif %}
+),
+new_records AS (
+    SELECT
+        A.block_number AS block_number,
+        A.data :blockHash :: STRING AS block_hash,
+        PUBLIC.udf_hex_to_int(
+            A.data :blockNumber :: STRING
+        ) :: INT AS blockNumber,
+        A.data :from :: STRING AS from_address,
+        PUBLIC.udf_hex_to_int(
+            A.data :gas :: STRING
+        ) :: INT AS gas,
+        PUBLIC.udf_hex_to_int(
+            A.data :gasPrice :: STRING
+        ) :: INT / pow(
+            10,
+            9
+        ) AS gas_price,
+        A.data :hash :: STRING AS tx_hash,
+        A.data :input :: STRING AS input_data,
+        SUBSTR(
+            input_data,
+            1,
+            10
+        ) AS origin_function_signature,
+        PUBLIC.udf_hex_to_int(
+            A.data :nonce :: STRING
+        ) :: INT AS nonce,
+        A.data :r :: STRING AS r,
+        A.data :s :: STRING AS s,
+        A.data :to :: STRING AS to_address1,
+        CASE
+            WHEN to_address1 = '' THEN NULL
+            ELSE to_address1
+        END AS to_address,
+        PUBLIC.udf_hex_to_int(
+            A.data :transactionIndex :: STRING
+        ) :: INT AS POSITION,
+        A.data :type :: STRING AS TYPE,
+        A.data :v :: STRING AS v,
+        PUBLIC.udf_hex_to_int(
+            A.data :value :: STRING
+        ) / pow(
+            10,
+            18
+        ) :: FLOAT AS VALUE,
+        block_timestamp,
+        CASE
+            WHEN block_timestamp IS NULL
+            OR tx_status IS NULL THEN TRUE
+            ELSE FALSE
+        END AS is_pending,
+        r.gas_used,
+        tx_success,
+        tx_status,
+        cumulative_gas_used,
+        effective_gas_price,
+        (
+            gas_price * r.gas_used
+        ) / pow(
+            10,
+            9
+        ) AS tx_fee,
+        r.type AS tx_type,
+        A._INSERTED_TIMESTAMP
+    FROM
+        base A
+        LEFT OUTER JOIN {{ ref('silver__receipts') }}
+        r
+        ON A.block_number = r.block_number
+        AND A.data :hash :: STRING = r.tx_hash
+        LEFT OUTER JOIN {{ ref('silver__blocks2') }}
+        b
+        ON A.block_number = b.block_number
 
 {% if is_incremental() %}
 WHERE
