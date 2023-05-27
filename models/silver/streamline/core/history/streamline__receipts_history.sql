@@ -25,7 +25,7 @@ tbl AS (
         {{ ref("streamline__blocks") }}
     WHERE
         (
-            block_number >= (
+            block_number <= (
                 SELECT
                     block_number
                 FROM
@@ -44,7 +44,7 @@ tbl AS (
     FROM
         {{ ref("streamline__complete_receipts") }}
     WHERE
-        block_number >= (
+        block_number <= (
             SELECT
                 block_number
             FROM
@@ -57,3 +57,5 @@ SELECT
     block_number_hex AS params
 FROM
     tbl
+ORDER BY
+    block_number DESC

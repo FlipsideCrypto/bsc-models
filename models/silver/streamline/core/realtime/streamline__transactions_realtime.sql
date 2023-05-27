@@ -7,15 +7,15 @@
 ) }}
 
 WITH last_3_days AS (
-    {% if var('STREAMLINE_RUN_HISTORY')%}
-        SELECT 
-            0 AS block_number
-    {% else %}
-        SELECT
-            MAX(block_number) - 100000 AS block_number --aprox 3 days
-        FROM
-            {{ ref("streamline__blocks") }}
-    {% endif %}
+
+    SELECT
+        block_number
+    FROM
+        {{ ref("_max_block_by_date") }}
+        qualify ROW_NUMBER() over (
+            ORDER BY
+                block_number DESC
+        ) = 3
 ),
 tbl AS (
     SELECT

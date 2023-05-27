@@ -1,7 +1,7 @@
 {{ config (
     materialized = "view",
     post_hook = if_data_call_function(
-        func = "{{this.schema}}.udf_json_rpc(object_construct('sql_source', '{{this.identifier}}', 'external_table', 'receipts', 'exploded_key','[\"result\"]', 'method', 'eth_getBlockReceipts', 'producer_batch_size',1000, 'producer_limit_size', 2000000, 'worker_batch_size',100))",
+        func = "{{this.schema}}.udf_json_rpc(object_construct('sql_source', '{{this.identifier}}', 'external_table', 'transactions', 'exploded_key','[\"result\", \"transactions\"]', 'method', 'eth_getBlockByNumber', 'producer_batch_size',5000, 'producer_limit_size', 5000000, 'worker_batch_size',500))",
         target = "{{this.schema}}.{{this.identifier}}"
     )
 ) }}
@@ -25,7 +25,7 @@ tbl AS (
         {{ ref("streamline__blocks") }}
     WHERE
         (
-            block_number >= (
+            block_number <= (
                 SELECT
                     block_number
                 FROM
@@ -42,9 +42,9 @@ tbl AS (
             ''
         ) AS block_number_hex
     FROM
-        {{ ref("streamline__complete_receipts") }}
+        {{ ref("streamline__complete_transactions") }}
     WHERE
-        block_number >= (
+        block_number <= (
             SELECT
                 block_number
             FROM
@@ -53,7 +53,13 @@ tbl AS (
 )
 SELECT
     block_number,
-    'eth_getBlockReceipts' AS method,
-    block_number_hex AS params
+    'eth_getBlockByNumber' AS method,
+    CONCAT(
+        block_number_hex,
+        '_-_',
+        'true'
+    ) AS params
 FROM
     tbl
+ORDER BY
+    block_number DESC
