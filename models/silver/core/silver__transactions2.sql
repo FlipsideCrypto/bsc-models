@@ -109,13 +109,11 @@ WHERE
                     AND A.data :hash :: STRING = r.tx_hash
                     LEFT OUTER JOIN {{ ref('silver__blocks2') }}
                     b
-                    ON A.block_number = b.block_number
-
-{% if is_incremental() %}
-WHERE
-    r._INSERTED_TIMESTAMP >= '{{ lookback() }}'
-{% endif %}
-)
+                    ON A.block_number = b.block_number -- {% if is_incremental() %}
+                    -- WHERE
+                    --     r._INSERTED_TIMESTAMP >= '{{ lookback() }}'
+                    -- {% endif %}
+            )
 
 {% if is_incremental() %},
 missing_data AS (
