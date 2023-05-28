@@ -4,9 +4,10 @@
     incremental_predicates = ["dynamic_range", "block_number"],
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
-    tags = ['core']
+    tags = ['core'],
+    full_refresh = false
 ) }}
--- add back     full_refresh = false,
+
 WITH base AS (
 
     SELECT
@@ -23,12 +24,13 @@ WITH base AS (
         ARRAY_SIZE(logs) > 0
 
 {% if is_incremental() %}
-AND block_number >= (
+AND _INSERTED_TIMESTAMP >= (
     SELECT
-        ROUND(MAX(block_number), -4)
+        MAX(_INSERTED_TIMESTAMP) _INSERTED_TIMESTAMP
     FROM
-        {{ this }})
-    {% endif %}
+        {{ this }}
+)
+{% endif %}
 ),
 flat_logs AS (
     SELECT
@@ -84,11 +86,12 @@ new_records AS (
         txs USING (
             block_number,
             tx_hash
-        ) -- add back after backfill
-        -- {% if is_incremental() %}
-        -- WHERE
-        --     txs._INSERTED_TIMESTAMP >= '{{ lookback() }}'
-        -- {% endif %}
+        )
+
+{% if is_incremental() %}
+WHERE
+    txs._INSERTED_TIMESTAMP >= '{{ lookback() }}'
+{% endif %}
 )
 
 {% if is_incremental() %},

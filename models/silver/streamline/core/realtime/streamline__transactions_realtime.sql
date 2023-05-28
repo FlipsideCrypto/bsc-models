@@ -24,15 +24,16 @@ tbl AS (
     FROM
         {{ ref("streamline__blocks") }}
     WHERE
-        (
-            block_number >= (
-                SELECT
-                    block_number
-                FROM
-                    last_3_days
-            )
-        )
-        AND block_number IS NOT NULL
+        -- (
+        --     block_number >= (
+        --         SELECT
+        --             block_number
+        --         FROM
+        --             last_3_days
+        --     )
+        -- )
+        -- AND
+        block_number IS NOT NULL
     EXCEPT
     SELECT
         block_number,
@@ -43,13 +44,13 @@ tbl AS (
         ) AS block_number_hex
     FROM
         {{ ref("streamline__complete_transactions") }}
-    WHERE
-        block_number >= (
-            SELECT
-                block_number
-            FROM
-                last_3_days
-        )
+        -- WHERE
+        --     block_number >= (
+        --         SELECT
+        --             block_number
+        --         FROM
+        --             last_3_days
+        --     )
 )
 SELECT
     block_number,
