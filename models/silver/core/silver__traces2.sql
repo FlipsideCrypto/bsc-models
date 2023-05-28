@@ -258,7 +258,7 @@ flattened_traces AS (
 
 {% if is_incremental() %}
 WHERE
-    txs._INSERTED_TIMESTAMP >= '{{ lookback() }}'
+    t._INSERTED_TIMESTAMP >= '{{ lookback() }}'
 {% endif %}
 )
 
