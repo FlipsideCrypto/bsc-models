@@ -28,15 +28,16 @@ SELECT
 FROM
     {{ ref("streamline__blocks") }}
 WHERE
-    (
-        block_number >= (
-            SELECT
-                block_number
-            FROM
-                last_3_days
-        )
-    )
-    AND block_number IS NOT NULL
+    -- (
+    --     block_number >= (
+    --         SELECT
+    --             block_number
+    --         FROM
+    --             last_3_days
+    --     )
+    -- )
+    -- AND
+    block_number IS NOT NULL
 EXCEPT
 SELECT
     block_number,
@@ -52,10 +53,10 @@ SELECT
     ) AS params
 FROM
     {{ ref("streamline__complete_traces") }}
-WHERE
-    block_number >= (
-        SELECT
-            block_number
-        FROM
-            last_3_days
-    )
+    -- WHERE
+    --     block_number >= (
+    --         SELECT
+    --             block_number
+    --         FROM
+    --             last_3_days
+    --     )
