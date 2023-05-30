@@ -4,8 +4,8 @@ run-name: dbt_run_temp_backfill
 on:
   workflow_dispatch:
   schedule:
-    # Runs "every 2 hours at minute 20" (see https://crontab.guru)
-    - cron: '20 */2 * * *'
+    # Runs every "At minute 10.” (see https://crontab.guru)
+    - cron: '10 * * * *'
     
 env:
   DBT_PROFILES_DIR: ./
