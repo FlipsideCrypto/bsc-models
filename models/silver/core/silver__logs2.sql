@@ -83,15 +83,10 @@ new_records AS (
     FROM
         flat_logs l
         LEFT OUTER JOIN {{ ref('silver__transactions2') }}
-        txs USING (
-            block_number,
-            tx_hash
-        )
-
-{% if is_incremental() %}
-WHERE
-    txs._INSERTED_TIMESTAMP >= '{{ lookback() }}'
-{% endif %}
+        txs
+        ON l.block_number = txs.block_number
+        AND l.tx_hash = txs.tx_hash
+        AND txs._INSERTED_TIMESTAMP >= '{{ lookback() }}'
 )
 
 {% if is_incremental() %},
