@@ -1,11 +1,11 @@
-name: dbt_run_streamline_realtime
-run-name: dbt_run_streamline_realtime
+name: dbt_test_intraday
+run-name: dbt_test_intraday
 
 on:
   workflow_dispatch:
   schedule:
-    # Runs “At every 30th minute.” (see https://crontab.guru)
-    - cron: '*/30 * * * *'
+    # Runs “At minute 15 past every 4th hour.” (see https://crontab.guru)
+    - cron: '15 */4 * * *'
     
 env:
   DBT_PROFILES_DIR: ./
@@ -41,4 +41,7 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True}' -m 1+models/silver/streamline/core/realtime 
+          dbt test -m tag:recent_test
+  
+
+
