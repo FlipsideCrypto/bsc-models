@@ -11,7 +11,7 @@ WITH pools AS (
         token0,
         token1
     FROM
-        {{ ref('silver_dex__biswap_dex_pools') }}
+        {{ ref('silver_dex__biswap_pools') }}
 ),
 swaps_base AS (
     SELECT
@@ -51,9 +51,9 @@ swaps_base AS (
         _log_id,
         _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('silver__logs') }} l
         INNER JOIN pools p
-        ON p.pool_address = contract_address
+        ON p.pool_address = l.contract_address
     WHERE
         topics [0] :: STRING = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822'
         AND tx_status = 'SUCCESS'
