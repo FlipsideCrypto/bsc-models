@@ -11,7 +11,7 @@ WITH pools AS (
         token0,
         token1
     FROM
-        {{ ref('silver_dex__biswap_pools') }}
+        {{ ref('silver_dex__biswap_dex_pools') }}
 ),
 swaps_base AS (
     SELECT
@@ -25,24 +25,24 @@ swaps_base AS (
         contract_address,
         regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         TRY_TO_NUMBER(
-            PUBLIC.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [0] :: STRING
-            ) :: INTEGER
+            )
         ) AS amount0In,
         TRY_TO_NUMBER(
-            PUBLIC.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [1] :: STRING
-            ) :: INTEGER
+            )
         ) AS amount1In,
         TRY_TO_NUMBER(
-            PUBLIC.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [2] :: STRING
-            ) :: INTEGER
+            )
         ) AS amount0Out,
         TRY_TO_NUMBER(
-            PUBLIC.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [3] :: STRING
-            ) :: INTEGER
+            )
         ) AS amount1Out,
         CONCAT('0x', SUBSTR(topics [1] :: STRING, 27, 40)) AS sender,
         CONCAT('0x', SUBSTR(topics [2] :: STRING, 27, 40)) AS tx_to,
@@ -57,6 +57,7 @@ swaps_base AS (
     WHERE
         topics [0] :: STRING = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822'
         AND tx_status = 'SUCCESS'
+        AND block_number >= 7665803
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

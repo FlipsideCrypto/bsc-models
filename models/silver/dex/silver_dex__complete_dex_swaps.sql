@@ -793,7 +793,7 @@ biswap_swaps AS (
     _log_id,
     _inserted_timestamp
   FROM
-    {{ ref('silver_dex__biswap_swaps') }}
+    {{ ref('silver_dex__biswap_dex_swaps') }}
     s
     LEFT JOIN contracts c1
     ON s.token_in = c1.address

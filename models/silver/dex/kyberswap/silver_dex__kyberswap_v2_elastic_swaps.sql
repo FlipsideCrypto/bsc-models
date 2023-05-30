@@ -27,29 +27,29 @@ swaps_base AS (
         CONCAT('0x', SUBSTR(l.topics [1] :: STRING, 27, 40)) AS sender_address,
         CONCAT('0x', SUBSTR(l.topics [2] :: STRING, 27, 40)) AS reipient_address,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 's2c',
                 segmented_data [0] :: STRING
             )
         ) AS deltaQty0,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 's2c',
                 segmented_data [1] :: STRING
             )
         ) AS deltaQty1,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [2] :: STRING
             )
         ) AS sqrtP,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [3] :: STRING
             )
         ) AS liquidity,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 's2c',
                 segmented_data [4] :: STRING
             )
@@ -69,7 +69,7 @@ swaps_base AS (
         l._log_id,
         l._inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('silver__logs2') }}
         l
         INNER JOIN pools p
         ON p.pool_address = l.contract_address

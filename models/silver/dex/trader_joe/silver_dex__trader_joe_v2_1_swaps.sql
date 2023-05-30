@@ -30,49 +30,49 @@ swaps_base AS (
         CONCAT('0x', SUBSTR(l.topics [1] :: STRING, 27, 40)) AS sender_address,
         CONCAT('0x', SUBSTR(l.topics [2] :: STRING, 27, 40)) AS to_address,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [0] :: STRING
             )
         ) AS id,
         segmented_data [1] :: STRING AS amountsIn,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(SUBSTR(amountsIn, 0, 32))
+            utils.udf_hex_to_int(SUBSTR(amountsIn, 0, 32))
         ) AS amount0In,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(SUBSTR(amountsIn, 33, 32))
+            utils.udf_hex_to_int(SUBSTR(amountsIn, 33, 32))
         ) AS amount1In,
         segmented_data [2] :: STRING AS amountsOut,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(SUBSTR(amountsOut, 0, 32))
+            utils.udf_hex_to_int(SUBSTR(amountsOut, 0, 32))
         ) AS amount0Out,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(SUBSTR(amountsOut, 33, 32))
+            utils.udf_hex_to_int(SUBSTR(amountsOut, 33, 32))
         ) AS amount1Out,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [3] :: STRING
             )
         ) AS volatilityAccumulated,
         segmented_data [4] :: STRING AS totalFees,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(SUBSTR(totalFees, 0, 32))
+            utils.udf_hex_to_int(SUBSTR(totalFees, 0, 32))
         ) AS fee0,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(SUBSTR(totalFees, 33, 32))
+            utils.udf_hex_to_int(SUBSTR(totalFees, 33, 32))
         ) AS fee1,
         segmented_data [5] :: STRING AS protocolFees,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(SUBSTR(protocolFees, 0, 32))
+            utils.udf_hex_to_int(SUBSTR(protocolFees, 0, 32))
         ) AS protocolFee0,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(SUBSTR(protocolFees, 33, 32))
+            utils.udf_hex_to_int(SUBSTR(protocolFees, 33, 32))
         ) AS protocolFee1,
         tokenX,
         tokenY,
         l._log_id,
         l._inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('silver__logs2') }}
         l
         INNER JOIN pools p
         ON lb_pair = l.contract_address

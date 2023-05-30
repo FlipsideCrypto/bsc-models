@@ -30,36 +30,36 @@ WITH swaps_base AS (
         END AS tokenOut,
         CASE
             WHEN data_count = 6 THEN TRY_TO_NUMBER(
-                ethereum.public.udf_hex_to_int(
+                utils.udf_hex_to_int(
                     segmented_data [3] :: STRING
                 )
             )
             WHEN data_count = 5 THEN TRY_TO_NUMBER(
-                ethereum.public.udf_hex_to_int(
+                utils.udf_hex_to_int(
                     segmented_data [2] :: STRING
                 )
             )
         END AS amountIn,
         CASE
             WHEN data_count = 6 THEN TRY_TO_NUMBER(
-                ethereum.public.udf_hex_to_int(
+                utils.udf_hex_to_int(
                     segmented_data [4] :: STRING
                 )
             )
             WHEN data_count = 5 THEN TRY_TO_NUMBER(
-                ethereum.public.udf_hex_to_int(
+                utils.udf_hex_to_int(
                     segmented_data [3] :: STRING
                 )
             )
         END AS amountOut,
         CASE
             WHEN data_count = 6 THEN TRY_TO_NUMBER(
-                ethereum.public.udf_hex_to_int(
+                utils.udf_hex_to_int(
                     segmented_data [5] :: STRING
                 )
             )
             WHEN data_count = 5 THEN TRY_TO_NUMBER(
-                ethereum.public.udf_hex_to_int(
+                utils.udf_hex_to_int(
                     segmented_data [4] :: STRING
                 )
             )
@@ -67,7 +67,7 @@ WITH swaps_base AS (
         l._log_id,
         l._inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('silver__logs2') }}
         l
     WHERE
         contract_address = '0xa5abfb56a78d2bd4689b25b8a77fd49bb0675874' --router

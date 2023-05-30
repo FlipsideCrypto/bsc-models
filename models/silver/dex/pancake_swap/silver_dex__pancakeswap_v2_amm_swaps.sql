@@ -25,24 +25,24 @@ swaps_base AS (
         contract_address,
         regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         TRY_TO_NUMBER(
-            PUBLIC.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [0] :: STRING
-            ) :: INTEGER
+            )
         ) AS amount0In,
         TRY_TO_NUMBER(
-            PUBLIC.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [1] :: STRING
-            ) :: INTEGER
+            )
         ) AS amount1In,
         TRY_TO_NUMBER(
-            PUBLIC.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [2] :: STRING
-            ) :: INTEGER
+            )
         ) AS amount0Out,
         TRY_TO_NUMBER(
-            PUBLIC.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [3] :: STRING
-            ) :: INTEGER
+            )
         ) AS amount1Out,
         CONCAT('0x', SUBSTR(topics [1] :: STRING, 27, 40)) AS sender,
         CONCAT('0x', SUBSTR(topics [2] :: STRING, 27, 40)) AS tx_to,
@@ -51,7 +51,7 @@ swaps_base AS (
         _log_id,
         _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('silver__logs2') }}
         INNER JOIN pools p
         ON p.pool_address = contract_address
     WHERE

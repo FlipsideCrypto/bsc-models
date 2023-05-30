@@ -14,9 +14,9 @@ WITH pool_creation AS (
         regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         CONCAT('0x', SUBSTR(topics [1] :: STRING, 27, 40)) AS token0,
         CONCAT('0x', SUBSTR(topics [2] :: STRING, 27, 40)) AS token1,
-        TRY_TO_NUMBER(ethereum.public.udf_hex_to_int(topics [3] :: STRING)) AS swapFeeUnits,
+        TRY_TO_NUMBER(utils.udf_hex_to_int(topics [3] :: STRING)) AS swapFeeUnits,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [0] :: STRING
             )
         ) AS tickDistance,
@@ -24,7 +24,7 @@ WITH pool_creation AS (
         _log_id,
         _inserted_timestamp
     FROM
-        {{ ref ('silver__logs') }}
+        {{ ref ('silver__logs2') }}
     WHERE
         contract_address = '0x5f1dddbf348ac2fbe22a163e30f99f9ece3dd50a' --Elastic Pool Deployer
         AND topics [0] :: STRING = '0x783cca1c0412dd0d695e784568c96da2e9c22ff989357a2e8b1d9b2b4e6b7118' --Create pool

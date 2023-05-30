@@ -52,12 +52,12 @@ swaps_base AS (
             )
         ) AS toToken,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [2] :: STRING
             )
         ) AS fromAmount,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [3] :: STRING
             )
         ) AS toAmount,
@@ -80,7 +80,7 @@ swaps_base AS (
         l._log_id,
         l._inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('silver__logs2') }}
         l
         INNER JOIN pools p
         ON l.contract_address = p.pool_address

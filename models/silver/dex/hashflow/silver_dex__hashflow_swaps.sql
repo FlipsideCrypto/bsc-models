@@ -26,19 +26,19 @@ router_swaps_base AS (
         CONCAT('0x', SUBSTR(segmented_data [3] :: STRING, 25, 40)) AS tokenIn,
         CONCAT('0x', SUBSTR(segmented_data [4] :: STRING, 25, 40)) AS tokenOut,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [5] :: STRING
             )
         ) AS amountIn,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [6] :: STRING
             )
         ) AS amountOut,
         l._log_id,
         l._inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('silver__logs2') }}
         l
         INNER JOIN pools p
         ON l.contract_address = p.pool_address
@@ -69,19 +69,19 @@ swaps_base AS (
         CONCAT('0x', SUBSTR(segmented_data [2] :: STRING, 25, 40)) AS tokenIn,
         CONCAT('0x', SUBSTR(segmented_data [3] :: STRING, 25, 40)) AS tokenOut,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [4] :: STRING
             )
         ) AS amountIn,
         TRY_TO_NUMBER(
-            ethereum.public.udf_hex_to_int(
+            utils.udf_hex_to_int(
                 segmented_data [5] :: STRING
             )
         ) AS amountOut,
         l._log_id,
         l._inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('silver__logs2') }}
         l
         INNER JOIN pools p
         ON l.contract_address = p.pool_address

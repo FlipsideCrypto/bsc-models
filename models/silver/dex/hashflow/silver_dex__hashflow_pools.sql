@@ -13,7 +13,7 @@ WITH contract_deployments AS (
         to_address AS contract_address,
         _inserted_timestamp
     FROM
-        {{ ref('silver__traces') }}
+        {{ ref('silver__traces2') }}
     WHERE
         from_address IN (
             '0x63ae536fec0b57bdeb1fd6a893191b4239f61bff',
