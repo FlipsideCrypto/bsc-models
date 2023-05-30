@@ -759,7 +759,7 @@ WHERE
   )
 {% endif %}
 ),
-biswap_swaps AS (
+{# biswap_swaps AS (
   SELECT
     block_number,
     block_timestamp,
@@ -809,7 +809,7 @@ WHERE
       {{ this }}
   )
 {% endif %}
-),
+), #}
 levelfi_swaps AS (
   SELECT
     block_number,
@@ -1526,7 +1526,7 @@ all_dex_standard AS (
   FROM
     trader_joe_v2_1_swaps
   UNION ALL
-  SELECT
+  {# SELECT
     block_number,
     block_timestamp,
     tx_hash,
@@ -1554,7 +1554,7 @@ all_dex_standard AS (
     _inserted_timestamp
   FROM
     biswap_swaps
-  UNION ALL
+  UNION ALL #}
   SELECT
     block_number,
     block_timestamp,
