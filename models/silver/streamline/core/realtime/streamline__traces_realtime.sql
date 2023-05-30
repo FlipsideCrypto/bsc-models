@@ -6,57 +6,75 @@
     )
 ) }}
 
-WITH last_3_days AS (
+WITH tbl AS (
 
     SELECT
-        block_number
-    FROM
-        {{ ref("_max_block_by_date") }}
-        qualify ROW_NUMBER() over (
-            ORDER BY
-                block_number DESC
-        ) = 3
-)
-SELECT
-    block_number,
-    'debug_traceBlockByNumber' AS method,
-    CONCAT(
+        block_number,
         block_number_hex,
-        '_-_',
-        '{"tracer": "callTracer"}'
-    ) AS params
-FROM
-    {{ ref("streamline__blocks") }}
-WHERE
-    -- (
-    --     block_number >= (
-    --         SELECT
-    --             block_number
-    --         FROM
-    --             last_3_days
-    --     )
-    -- )
-    -- AND
-    block_number IS NOT NULL
-EXCEPT
-SELECT
-    block_number,
-    'debug_traceBlockByNumber' AS method,
-    CONCAT(
+        'debug_traceBlockByNumber' AS method,
+        CONCAT(
+            block_number_hex,
+            '_-_',
+            '{"tracer": "callTracer"}'
+        ) AS params
+    FROM
+        {{ ref("streamline__blocks") }}
+    WHERE
+        block_number IS NOT NULL
+    EXCEPT
+    SELECT
+        block_number,
         REPLACE(
             concat_ws('', '0x', to_char(block_number, 'XXXXXXXX')),
             ' ',
             ''
-        ),
-        '_-_',
-        '{"tracer": "callTracer"}'
-    ) AS params
+        ) AS block_number_hex,
+        'debug_traceBlockByNumber' AS method,
+        CONCAT(
+            REPLACE(
+                concat_ws('', '0x', to_char(block_number, 'XXXXXXXX')),
+                ' ',
+                ''
+            ),
+            '_-_',
+            '{"tracer": "callTracer"}'
+        ) AS params
+    FROM
+        {{ ref("streamline__complete_traces") }}
+    WHERE
+        block_number IS NOT NULL
+),
+retry_blocks AS (
+    SELECT
+        block_number,
+        REPLACE(
+            concat_ws('', '0x', to_char(block_number, 'XXXXXXXX')),
+            ' ',
+            ''
+        ) AS block_number_hex,
+        'debug_traceBlockByNumber' AS method,
+        CONCAT(
+            REPLACE(
+                concat_ws('', '0x', to_char(block_number, 'XXXXXXXX')),
+                ' ',
+                ''
+            ),
+            '_-_',
+            '{"tracer": "callTracer"}'
+        ) AS params
+    FROM
+        {{ ref("silver__retry_blocks") }}
+)
+SELECT
+    block_number,
+    method,
+    params
 FROM
-    {{ ref("streamline__complete_traces") }}
-    -- WHERE
-    --     block_number >= (
-    --         SELECT
-    --             block_number
-    --         FROM
-    --             last_3_days
-    --     )
+    tbl
+UNION
+SELECT
+    block_number,
+    method,
+    params
+FROM
+    retry_blocks

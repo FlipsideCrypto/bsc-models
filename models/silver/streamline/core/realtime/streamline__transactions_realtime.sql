@@ -6,33 +6,14 @@
     )
 ) }}
 
-WITH last_3_days AS (
+WITH tbl AS (
 
-    SELECT
-        block_number
-    FROM
-        {{ ref("_max_block_by_date") }}
-        qualify ROW_NUMBER() over (
-            ORDER BY
-                block_number DESC
-        ) = 3
-),
-tbl AS (
     SELECT
         block_number,
         block_number_hex
     FROM
         {{ ref("streamline__blocks") }}
     WHERE
-        -- (
-        --     block_number >= (
-        --         SELECT
-        --             block_number
-        --         FROM
-        --             last_3_days
-        --     )
-        -- )
-        -- AND
         block_number IS NOT NULL
     EXCEPT
     SELECT
@@ -44,13 +25,17 @@ tbl AS (
         ) AS block_number_hex
     FROM
         {{ ref("streamline__complete_transactions") }}
-        -- WHERE
-        --     block_number >= (
-        --         SELECT
-        --             block_number
-        --         FROM
-        --             last_3_days
-        --     )
+),
+retry_blocks AS (
+    SELECT
+        block_number,
+        REPLACE(
+            concat_ws('', '0x', to_char(block_number, 'XXXXXXXX')),
+            ' ',
+            ''
+        ) AS block_number_hex
+    FROM
+        {{ ref("silver__retry_blocks") }}
 )
 SELECT
     block_number,
@@ -62,3 +47,14 @@ SELECT
     ) AS params
 FROM
     tbl
+UNION
+SELECT
+    block_number,
+    'eth_getBlockByNumber' AS method,
+    CONCAT(
+        block_number_hex,
+        '_-_',
+        'true'
+    ) AS params
+FROM
+    retry_blocks
