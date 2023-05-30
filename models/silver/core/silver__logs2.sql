@@ -86,7 +86,10 @@ new_records AS (
         txs
         ON l.block_number = txs.block_number
         AND l.tx_hash = txs.tx_hash
-        AND txs._INSERTED_TIMESTAMP >= '{{ lookback() }}'
+
+{% if is_incremental() %}
+AND txs._INSERTED_TIMESTAMP >= '{{ lookback() }}'
+{% endif %}
 )
 
 {% if is_incremental() %},
