@@ -35,7 +35,12 @@ retry_blocks AS (
             ''
         ) AS block_number_hex
     FROM
-        {{ ref("silver__retry_blocks") }}
+        (
+            SELECT
+                block_number
+            FROM
+                {{ ref("_missing_txs") }}
+        )
 )
 SELECT
     block_number,

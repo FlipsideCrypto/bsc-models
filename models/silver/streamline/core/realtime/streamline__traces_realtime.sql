@@ -47,11 +47,6 @@ WITH tbl AS (
 retry_blocks AS (
     SELECT
         block_number,
-        REPLACE(
-            concat_ws('', '0x', to_char(block_number, 'XXXXXXXX')),
-            ' ',
-            ''
-        ) AS block_number_hex,
         'debug_traceBlockByNumber' AS method,
         CONCAT(
             REPLACE(
@@ -63,7 +58,12 @@ retry_blocks AS (
             '{"tracer": "callTracer"}'
         ) AS params
     FROM
-        {{ ref("silver__retry_blocks") }}
+        (
+            SELECT
+                block_number
+            FROM
+                {{ ref("_missing_traces") }}
+        )
 )
 SELECT
     block_number,

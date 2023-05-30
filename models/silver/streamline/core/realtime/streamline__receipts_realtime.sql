@@ -37,26 +37,28 @@ retry_blocks AS (
             ''
         ) AS block_number_hex
     FROM
-        {{ ref("silver__retry_blocks") }}
+        (
+            SELECT
+                block_number
+            FROM
+                {{ ref("_missing_receipts") }}
+            UNION
+            SELECT
+                block_number
+            FROM
+                {{ ref("_missing_txs") }}
+        )
 )
 SELECT
     block_number,
     'eth_getBlockReceipts' AS method,
-    CONCAT(
-        block_number_hex,
-        '_-_',
-        'false'
-    ) AS params
+    block_number_hex AS params
 FROM
     tbl
 UNION
 SELECT
     block_number,
     'eth_getBlockReceipts' AS method,
-    CONCAT(
-        block_number_hex,
-        '_-_',
-        'false'
-    ) AS params
+    block_number_hex AS params
 FROM
     retry_blocks

@@ -24,18 +24,7 @@ WITH tbl AS (
             ''
         ) AS block_number_hex
     FROM
-        {{ ref("streamline__complete_transactions") }}
-),
-retry_blocks AS (
-    SELECT
-        block_number,
-        REPLACE(
-            concat_ws('', '0x', to_char(block_number, 'XXXXXXXX')),
-            ' ',
-            ''
-        ) AS block_number_hex
-    FROM
-        {{ ref("silver__retry_blocks") }}
+        {{ ref("streamline__complete_blocks") }}
 )
 SELECT
     block_number,
@@ -43,18 +32,7 @@ SELECT
     CONCAT(
         block_number_hex,
         '_-_',
-        'true'
+        'false'
     ) AS params
 FROM
     tbl
-UNION
-SELECT
-    block_number,
-    'eth_getBlockByNumber' AS method,
-    CONCAT(
-        block_number_hex,
-        '_-_',
-        'true'
-    ) AS params
-FROM
-    retry_blocks
