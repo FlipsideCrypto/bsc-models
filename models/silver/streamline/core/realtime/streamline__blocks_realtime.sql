@@ -6,33 +6,14 @@
     )
 ) }}
 
-WITH last_3_days AS (
+WITH tbl AS (
 
-    SELECT
-        block_number
-    FROM
-        {{ ref("_max_block_by_date") }}
-        qualify ROW_NUMBER() over (
-            ORDER BY
-                block_number DESC
-        ) = 3
-),
-tbl AS (
     SELECT
         block_number,
         block_number_hex
     FROM
         {{ ref("streamline__blocks") }}
     WHERE
-        -- (
-        --     block_number >= (
-        --         SELECT
-        --             block_number
-        --         FROM
-        --             last_3_days
-        --     )
-        -- )
-        -- AND
         block_number IS NOT NULL
     EXCEPT
     SELECT
@@ -44,13 +25,6 @@ tbl AS (
         ) AS block_number_hex
     FROM
         {{ ref("streamline__complete_blocks") }}
-        -- WHERE
-        --     block_number >= (
-        --         SELECT
-        --             block_number
-        --         FROM
-        --             last_3_days
-        --     )
 )
 SELECT
     block_number,
