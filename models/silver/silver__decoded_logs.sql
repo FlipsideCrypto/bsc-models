@@ -1,35 +1,14 @@
+-- depends_on: {{ ref('bronze__decoded_logs') }}
 {{ config (
     materialized = "incremental",
-    unique_key = "_log_id",
+    unique_key = ['block_number', 'event_index'],
     cluster_by = "block_timestamp::date",
     full_refresh = false,
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION"
 ) }}
 
-WITH meta AS (
+WITH base_data AS (
 
-    SELECT
-        job_created_time,
-        last_modified,
-        TO_DATE(
-            concat_ws('-', SPLIT_PART(file_name, '/', 3), SPLIT_PART(file_name, '/', 4), SPLIT_PART(file_name, '/', 5))
-        ) AS _partition_by_created_date,
-        CAST(SPLIT_PART(SPLIT_PART(file_name, '/', 6), '_', 1) AS INTEGER) AS _partition_by_block_number,
-        file_name
-    FROM
-        TABLE(
-            information_schema.external_table_file_registration_history(
-                table_name => '{{ source( "bronze_streamline", "decoded_logs") }}',
-                start_time => (
-                    SELECT
-                       DATEADD('hour', -6, MAX(_INSERTED_TIMESTAMP))
-                    FROM
-                        {{ this }}
-                )
-            )
-        )
-),
-decoded_logs AS (
     SELECT
         block_number :: INTEGER AS block_number,
         SPLIT(
@@ -46,21 +25,27 @@ decoded_logs AS (
         ) :: STRING AS contract_address,
         DATA AS decoded_data,
         id :: STRING AS _log_id,
-        TO_TIMESTAMP_NTZ(SYSDATE()) AS _inserted_timestamp
+        TO_TIMESTAMP_NTZ(_inserted_timestamp) AS _inserted_timestamp
     FROM
-        {{ source(
-            "bronze_streamline",
-            "decoded_logs"
-        ) }} AS s
-        JOIN meta b
-        ON b.file_name = metadata$filename
-        AND b._partition_by_created_date = s._partition_by_created_date
-        AND b._partition_by_block_number = s._partition_by_block_number
-    WHERE
-        b._partition_by_created_date = s._partition_by_created_date
-        AND b._partition_by_block_number = s._partition_by_block_number qualify(ROW_NUMBER() over (PARTITION BY _log_id
-    ORDER BY
-        _inserted_timestamp DESC)) = 1
+
+{% if is_incremental() %}
+{{ ref('bronze__decoded_logs') }}
+WHERE
+    TO_TIMESTAMP_NTZ(_inserted_timestamp) >= (
+        SELECT
+            MAX(_inserted_timestamp)
+        FROM
+            {{ this }}
+    )
+{% else %}
+    {{ ref('bronze__fr_decoded_logs') }}
+WHERE
+    _partition_by_block_number <= 2500000
+{% endif %}
+
+qualify(ROW_NUMBER() over (PARTITION BY block_number, event_index
+ORDER BY
+    _inserted_timestamp DESC)) = 1
 ),
 transformed_logs AS (
     SELECT
@@ -74,7 +59,7 @@ transformed_logs AS (
         _log_id,
         ethereum.silver.udf_transform_logs(decoded_data) AS transformed
     FROM
-        decoded_logs
+        base_data
 ),
 FINAL AS (
     SELECT
