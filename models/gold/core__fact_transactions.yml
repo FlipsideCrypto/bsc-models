@@ -34,8 +34,6 @@ models:
         description: '{{ doc("bsc_cumulative_gas_used") }}' 
       - name: STATUS
         description: '{{ doc("bsc_tx_status") }}' 
-      - name: TX_JSON
-        description: '{{ doc("deprecation") }}'
       - name: INPUT_DATA
         description: '{{ doc("bsc_tx_input_data") }}'
       - name: ORIGIN_FUNCTION_SIGNATURE 

@@ -1,7 +1,7 @@
 version: 2
 models:
   - name: core__fact_event_logs
-    description: '{{ doc("deprecation") }}'
+    description: '{{ doc("bsc_logs_table_doc") }}'
 
     columns:
       - name: BLOCK_NUMBER
@@ -14,12 +14,6 @@ models:
         description: '{{ doc("bsc_event_index") }}'
       - name: CONTRACT_ADDRESS
         description: '{{ doc("bsc_logs_contract_address") }}'
-      - name: CONTRACT_NAME
-        description: '{{ doc("deprecation") }}'
-      - name: EVENT_NAME
-        description: '{{ doc("deprecation") }}'
-      - name: EVENT_INPUTS
-        description: '{{ doc("deprecation") }}'
       - name: TOPICS
         description: '{{ doc("bsc_topics") }}'
       - name: DATA
