@@ -5,7 +5,7 @@
 SELECT
     DISTINCT tx.block_number AS block_number
 FROM
-    {{ ref("silver__transactions2") }}
+    {{ ref("silver__transactions") }}
     tx
     LEFT JOIN {{ ref("silver__receipts") }}
     r
