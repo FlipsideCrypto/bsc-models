@@ -1,11 +1,11 @@
-name: dbt_run_temp_backfill
-run-name: dbt_run_temp_backfill
+name: dbt_test_daily
+run-name: dbt_test_daily
 
 on:
   workflow_dispatch:
   schedule:
-    # Runs every "At minute 10.” (see https://crontab.guru)
-    - cron: '10 * * * *'
+    # Runs "at 9:00 UTC" (see https://crontab.guru)
+    - cron: '0 9 * * *'
     
 env:
   DBT_PROFILES_DIR: ./
@@ -26,7 +26,7 @@ jobs:
   run_dbt_jobs:
     runs-on: ubuntu-latest
     environment: 
-      name: workflow_prod_backfill
+      name: workflow_prod
 
     steps:
       - uses: actions/checkout@v3
@@ -41,4 +41,7 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run -m models/silver/core
+          dbt test --exclude tag:full_test tag:recent_test
+  
+
+
