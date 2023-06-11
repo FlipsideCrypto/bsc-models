@@ -32,4 +32,4 @@ FROM
 WHERE
     A.bnb_value > 0
     AND A.tx_status = 'SUCCESS'
-    AND A.gas_used IS NOT NULL
+    AND A.trace_status = 'SUCCESS'
