@@ -14,13 +14,19 @@ SELECT
     origin_function_signature,
     from_address,
     to_address,
-    bnb_value,
+    VALUE AS bnb_value,
     tx_fee,
     gas_price,
     gas_limit,
     gas_used,
-    cumulative_Gas_Used,
+    cumulative_gas_used,
     input_data,
-    status
+    status,
+    tx_status AS status,
+    effective_gas_price,
+    r,
+    s,
+    v,
+    tx_type
 FROM
     {{ ref('silver__transactions') }}

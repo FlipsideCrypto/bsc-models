@@ -38,3 +38,13 @@ models:
         description: '{{ doc("bsc_tx_input_data") }}'
       - name: ORIGIN_FUNCTION_SIGNATURE 
         description: '{{ doc("bsc_tx_origin_sig") }}'
+      - name: EFFECTIVE_GAS_PRICE
+        description: The effective gas price of the transaction, in wei.
+      - name: TX_TYPE
+        description: The type of the transaction, 2 for EIP-1559 transactions and 0 for legacy transactions.
+      - name: r
+        description: The r value of the transaction signature.
+      - name: s
+        description: The s value of the transaction signature.
+      - name: v
+        description: The v value of the transaction signature.
