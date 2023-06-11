@@ -21,7 +21,7 @@ WITH pool_creation AS (
         _log_id,
         _inserted_timestamp
     FROM
-        {{ ref ('silver__logs2') }}
+        {{ ref ('silver__logs') }}
     WHERE
         contract_address = LOWER('0xc35DADB65012eC5796536bD9864eD8773aBc74C4')
         AND topics [0] :: STRING = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9' --PairCreated

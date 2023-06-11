@@ -51,7 +51,7 @@ swaps_base AS (
         l._log_id,
         l._inserted_timestamp
     FROM
-        {{ ref('silver__logs2') }}
+        {{ ref('silver__logs') }}
         l
         INNER JOIN pools p
         ON p.pool_address = l.contract_address
