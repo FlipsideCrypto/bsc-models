@@ -17,7 +17,7 @@ WITH logs AS (
         contract_address :: STRING AS contract_address,
         CONCAT('0x', SUBSTR(topics [1], 27, 40)) :: STRING AS from_address,
         CONCAT('0x', SUBSTR(topics [2], 27, 40)) :: STRING AS to_address,
-        ethereum.public.udf_hex_to_int(SUBSTR(DATA, 3, 64)) :: FLOAT AS raw_amount,
+        utils.udf_hex_to_int(SUBSTR(DATA, 3, 64)) :: FLOAT AS raw_amount,
         event_index,
         _inserted_timestamp
     FROM
