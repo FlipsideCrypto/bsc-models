@@ -28,22 +28,31 @@ base_swaps AS (
         regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS segmented_data,
         CONCAT('0x', SUBSTR(l.topics [1] :: STRING, 27, 40)) AS sender_address,
         CONCAT('0x', SUBSTR(l.topics [2] :: STRING, 27, 40)) AS recipient_address,
-        TRY_TO_NUMBER(
-            utils.udf_hex_to_int(
-                's2c',
-                segmented_data [0] :: STRING
-            )
+        COALESCE(
+            TRY_TO_NUMBER(
+                utils.udf_hex_to_int(
+                    's2c',
+                    segmented_data [0] :: STRING
+                )
+            ),
+            0
         ) AS amount0,
-        TRY_TO_NUMBER(
-            utils.udf_hex_to_int(
-                's2c',
-                segmented_data [1] :: STRING
-            )
+        COALESCE(
+            TRY_TO_NUMBER(
+                utils.udf_hex_to_int(
+                    's2c',
+                    segmented_data [1] :: STRING
+                )
+            ),
+            0
         ) AS amount1,
-        TRY_TO_NUMBER(
-            utils.udf_hex_to_int(
-                segmented_data [2] :: STRING
-            )
+        COALESCE(
+            TRY_TO_NUMBER(
+                utils.udf_hex_to_int(
+                    segmented_data [2] :: STRING
+                )
+            ),
+            0
         ) AS sqrtPriceX96,
         TRY_TO_NUMBER(
             utils.udf_hex_to_int(
