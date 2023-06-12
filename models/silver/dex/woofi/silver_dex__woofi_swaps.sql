@@ -53,7 +53,7 @@ WITH router_swaps_base AS (
         l._log_id,
         l._inserted_timestamp
     FROM
-        {{ ref('silver__logs2') }}
+        {{ ref('silver__logs') }}
         l
     WHERE
         contract_address IN (
@@ -115,7 +115,7 @@ swaps_base AS (
         l._log_id,
         l._inserted_timestamp
     FROM
-        {{ ref('silver__logs2') }}
+        {{ ref('silver__logs') }}
         l
     WHERE
         contract_address IN (

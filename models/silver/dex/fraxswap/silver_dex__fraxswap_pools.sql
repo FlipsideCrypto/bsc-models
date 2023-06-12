@@ -21,7 +21,7 @@ WITH pool_creation AS (
         _log_id,
         _inserted_timestamp
     FROM
-        {{ ref ('silver__logs2') }}
+        {{ ref ('silver__logs') }}
     WHERE
         contract_address IN (
             '0x5ca135cb8527d76e932f34b5145575f9d8cbe08e', --v1 factory

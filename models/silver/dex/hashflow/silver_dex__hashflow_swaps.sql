@@ -38,7 +38,7 @@ router_swaps_base AS (
         l._log_id,
         l._inserted_timestamp
     FROM
-        {{ ref('silver__logs2') }}
+        {{ ref('silver__logs') }}
         l
         INNER JOIN pools p
         ON l.contract_address = p.pool_address
@@ -81,7 +81,7 @@ swaps_base AS (
         l._log_id,
         l._inserted_timestamp
     FROM
-        {{ ref('silver__logs2') }}
+        {{ ref('silver__logs') }}
         l
         INNER JOIN pools p
         ON l.contract_address = p.pool_address

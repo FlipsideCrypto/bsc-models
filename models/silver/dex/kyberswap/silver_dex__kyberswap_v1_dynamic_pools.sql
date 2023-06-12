@@ -28,7 +28,7 @@ WITH pool_creation AS (
         _log_id,
         _inserted_timestamp
     FROM
-        {{ ref ('silver__logs2') }}
+        {{ ref ('silver__logs') }}
     WHERE
         contract_address = '0x878dfe971d44e9122048308301f540910bbd934c' --dynamic fee factory
         AND topics [0] :: STRING = '0xfc574402c445e75f2b79b67884ff9c662244dce454c5ae68935fcd0bebb7c8ff' --created pool
