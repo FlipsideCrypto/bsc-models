@@ -24,7 +24,7 @@ WITH tbl AS (
             ''
         ) AS block_number_hex
     FROM
-        {{ ref("streamline__complete_blocks") }}
+        {{ ref("streamline__complete_receipts") }}
     WHERE
         block_number IS NOT NULL
 ),

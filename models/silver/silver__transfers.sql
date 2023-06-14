@@ -31,7 +31,7 @@ AND _inserted_timestamp >= (
     SELECT
         MAX(
             _inserted_timestamp
-        )
+        )::date
     FROM
         {{ this }}
 )
