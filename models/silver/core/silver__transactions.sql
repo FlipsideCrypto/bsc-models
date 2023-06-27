@@ -37,14 +37,14 @@ base_tx AS (
     SELECT
         A.block_number AS block_number,
         A.data :blockHash :: STRING AS block_hash,
-        PUBLIC.udf_hex_to_int(
+        utils.udf_hex_to_int(
             A.data :blockNumber :: STRING
         ) :: INT AS blockNumber,
         A.data :from :: STRING AS from_address,
-        PUBLIC.udf_hex_to_int(
+        utils.udf_hex_to_int(
             A.data :gas :: STRING
         ) :: INT AS gas,
-        PUBLIC.udf_hex_to_int(
+        utils.udf_hex_to_int(
             A.data :gasPrice :: STRING
         ) :: INT / pow(
             10,
@@ -57,7 +57,7 @@ base_tx AS (
             1,
             10
         ) AS origin_function_signature,
-        PUBLIC.udf_hex_to_int(
+        utils.udf_hex_to_int(
             A.data :nonce :: STRING
         ) :: INT AS nonce,
         A.data :r :: STRING AS r,
@@ -67,12 +67,12 @@ base_tx AS (
             WHEN to_address1 = '' THEN NULL
             ELSE to_address1
         END AS to_address,
-        PUBLIC.udf_hex_to_int(
+        utils.udf_hex_to_int(
             A.data :transactionIndex :: STRING
         ) :: INT AS POSITION,
         A.data :type :: STRING AS TYPE,
         A.data :v :: STRING AS v,
-        PUBLIC.udf_hex_to_int(
+        utils.udf_hex_to_int(
             A.data :value :: STRING
         ) / pow(
             10,
