@@ -56,3 +56,4 @@ sources:
       - name: receipts
       - name: traces
       - name: decoded_logs
+      - name: confirm_blocks
