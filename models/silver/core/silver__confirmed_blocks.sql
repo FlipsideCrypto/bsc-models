@@ -15,6 +15,7 @@ WITH base AS (
         _inserted_timestamp
     FROM
 
+{# Remove comments after fill 
 {% if is_incremental() %}
 {{ ref('bronze__streamline_confirm_blocks') }}
 WHERE
@@ -31,6 +32,25 @@ WHERE
     )
 {% else %}
     {{ ref('bronze__streamline_FR_confirm_blocks') }}
+{% endif %}
+#}
+
+{% if is_incremental() %}
+{{ ref('bronze__streamline_confirm_blocks') }}
+WHERE
+    _partition_by_block_id BETWEEN (
+        SELECT
+            ROUND(MAX(block_number), -4)
+        FROM
+            {{ this }})
+            AND (
+                SELECT
+                    ROUND(MAX(block_number), -4) + 500000
+                FROM
+                    {{ this }})
+{% else %}
+{{ ref('bronze__streamline_FR_confirm_blocks') }}
+where _partition_by_block_id <= 2500000
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY block_number
