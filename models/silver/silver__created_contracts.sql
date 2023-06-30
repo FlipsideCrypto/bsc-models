@@ -2,7 +2,7 @@
     materialized = "incremental",
     incremental_strategy = 'delete+insert',
     unique_key = "block_number",
-    cluster_by = "block_timestamp::date"
+    cluster_by = "block_timestamp::DATE"
 ) }}
 
 SELECT
