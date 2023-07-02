@@ -159,4 +159,6 @@ FROM
     LEFT JOIN {{ ref('silver__created_contracts') }}
     ON p.contract_address = created_contract_address
 WHERE
-    p.contract_address IS NOT NULL
+    p.contract_address IS NOT NULL qualify(ROW_NUMBER() over(PARTITION BY p.contract_address
+ORDER BY
+    p._inserted_timestamp DESC)) = 1
