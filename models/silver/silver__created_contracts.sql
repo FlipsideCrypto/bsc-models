@@ -1,7 +1,6 @@
 {{ config (
     materialized = "incremental",
-    incremental_strategy = 'delete+insert',
-    unique_key = "block_number",
+    unique_key = "created_contract_address",
     cluster_by = "block_timestamp::DATE"
 ) }}
 
@@ -20,13 +19,13 @@ WHERE
     AND to_address IS NOT NULL
     AND input IS NOT NULL
     AND input != '0x'
+    AND trace_status = 'SUCCESS'
+    AND tx_status = 'SUCCESS'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
     SELECT
-        MAX(
-            _inserted_timestamp
-        )
+        MAX(_inserted_timestamp) - INTERVAL '24 hours'
     FROM
         {{ this }}
 )
@@ -34,4 +33,4 @@ AND _inserted_timestamp >= (
 
 qualify(ROW_NUMBER() over(PARTITION BY created_contract_address
 ORDER BY
-    _inserted_timestamp DESC)) = 1
+    block_number DESC, _inserted_timestamp DESC)) = 1
