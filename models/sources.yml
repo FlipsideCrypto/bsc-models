@@ -1,12 +1,6 @@
 version: 2
 
 sources:
-  - name: prod
-    database: chainwalkers
-    schema: prod
-    tables:
-      - name: bsc_blocks
-      - name: bsc_txs
   - name: crosschain
     database: crosschain
     schema: core
@@ -18,17 +12,6 @@ sources:
     schema: core
     tables:
       - name: fact_hourly_token_prices
-  - name: bsc_pools
-    database: BSC
-    schema: bronze
-    tables:
-      - name: SUSHI_DIM_DEX_POOLS
-      - name: SUSHI_DIM_KASHI_PAIRS 
-  - name: prices
-    database: FLIPSIDE_PROD_DB
-    schema: SILVER
-    tables:
-      - name: prices_v2
   - name: streamline_crosschain
     database: streamline
     schema: crosschain
