@@ -3,6 +3,7 @@
     materialized = "incremental",
     unique_key = ['block_number', 'event_index'],
     cluster_by = "block_timestamp::date",
+    incremental_predicates = ["dynamic_range", "block_number"],
     full_refresh = false,
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION"
 ) }}
