@@ -41,4 +41,4 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run -m models/silver/streamline/decoder/streamline__complete_decode_logs.sql
+          dbt run -m models/silver/silver__decoded_logs_legacy.sql
