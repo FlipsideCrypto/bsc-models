@@ -63,6 +63,11 @@ retry_blocks AS (
                 block_number
             FROM
                 {{ ref("_missing_traces") }}
+            UNION
+            SELECT
+                block_number
+            FROM
+                {{ ref("_unconfirmed_blocks") }}
         )
 )
 SELECT
