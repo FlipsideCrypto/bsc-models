@@ -4,8 +4,8 @@ run-name: dbt_run_streamline_realtime
 on:
   workflow_dispatch:
   schedule:
-    # Runs “At every 30th minute.” (see https://crontab.guru)
-    - cron: '*/30 * * * *'
+    # Runs “At minutes 10 and 40.” (see https://crontab.guru)
+    - cron: '10,40 * * * *'
     
 env:
   DBT_PROFILES_DIR: ./
