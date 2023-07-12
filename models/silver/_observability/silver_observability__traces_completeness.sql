@@ -90,16 +90,6 @@ broken_blocks AS (
         JOIN block_range USING (block_number)
     WHERE
         tr.tx_hash IS NULL
-        AND tx.from_address <> '0x0000000000000000000000000000000000000000'
-        AND IFNULL(
-            tx.to_address,
-            '0x0000000000000000000000000000000000000000'
-        ) <> '0x0000000000000000000000000000000000000000'
-        AND IFNULL(
-            tr.to_address,
-            '0x0000000000000000000000000000000000000000'
-        ) <> '0x0000000000000000000000000000000000000000'
-        AND tr.identifier = 'CALL_ORIGIN'
 ),
 impacted_blocks AS (
     SELECT
