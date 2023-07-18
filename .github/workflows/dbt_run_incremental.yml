@@ -4,8 +4,8 @@ run-name: dbt_run_scheduled
 on:
   workflow_dispatch:
   schedule:
-    # Runs every "At minute 15.” (see https://crontab.guru)
-    - cron: '15 * * * *'
+    # Runs every "At minute 25.” (see https://crontab.guru)
+    - cron: '25 * * * *'
     
 env:
   DBT_PROFILES_DIR: ./
@@ -41,5 +41,5 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run --exclude models/silver/abis models/silver/api_udf models/silver/streamline models/silver/silver__decoded_logs.sql models/silver/core/tests models/silver/silver__decoded_logs_legacy.sql
+          dbt run --exclude models/silver/abis models/silver/api_udf models/silver/streamline models/silver/silver__decoded_logs.sql models/silver/core/tests models/silver/_observability
           dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True}' -m models/silver/streamline/decoder/streamline__decode_logs_realtime.sql models/silver/streamline/decoder/streamline__complete_decode_logs.sql
