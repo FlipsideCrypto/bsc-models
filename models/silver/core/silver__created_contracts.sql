@@ -1,7 +1,8 @@
 {{ config (
     materialized = "incremental",
     unique_key = "created_contract_address",
-    cluster_by = "block_timestamp::DATE"
+    cluster_by = "block_timestamp::DATE",
+    tags = ['non_realtime']
 ) }}
 
 SELECT

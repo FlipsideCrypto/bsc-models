@@ -3,7 +3,8 @@
     post_hook = if_data_call_function(
         func = "{{this.schema}}.udf_bulk_decode_logs(object_construct('sql_source', '{{this.identifier}}', 'producer_batch_size', 7500000,'producer_limit_size', 7500000))",
         target = "{{this.schema}}.{{this.identifier}}"
-    )
+    ),
+    tags = ['streamline_decoded_logs_realtime']
 ) }}
 
 WITH look_back AS (
