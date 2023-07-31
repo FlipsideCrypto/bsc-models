@@ -1,11 +1,11 @@
-name: dbt_run_streamline_decoder_history4
-run-name: dbt_run_streamline_decoder_history4
+name: dbt_run_api_feeder_table
+run-name: dbt_run_api_feeder_table
 
 on:
   workflow_dispatch:
   schedule:
-    # Runs "at 8:00 UTC PM" (see https://crontab.guru)
-    - cron: '0 20 * * *'
+    # Runs "at 8:00 UTC" (see https://crontab.guru)
+    - cron: '0 8 * * *'
     
 env:
   DBT_PROFILES_DIR: ./
@@ -26,14 +26,15 @@ jobs:
   run_dbt_jobs:
     runs-on: ubuntu-latest
     environment: 
-      name: workflow_prod_backfill
+      name: workflow_prod
 
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v4
         with:
-          python-version: "3.7.x"
+          python-version: "3.10"
+          cache: "pip"
 
       - name: install dependencies
         run: |
@@ -41,4 +42,7 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run --threads 8 --vars '{"STREAMLINE_INVOKE_STREAMS":True,"WAIT":120}' -m models/silver/streamline/decoder/history/range_4
+          dbt run -m models/silver/api_udf
+# moved to non_realtime job to match ethereum's structure 
+# relevant_abi_contracts now running in abi_refresh job
+# relevant contracts now in non_realtime incremental job (will need to be here when we add contract_reads anyway)

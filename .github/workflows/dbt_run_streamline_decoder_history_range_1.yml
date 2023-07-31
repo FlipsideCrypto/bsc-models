@@ -1,5 +1,5 @@
-name: dbt_run_streamline_decoder_history1
-run-name: dbt_run_streamline_decoder_history1
+name: dbt_run_streamline_decoder_history_range_1
+run-name: dbt_run_streamline_decoder_history_range_1
 
 on:
   workflow_dispatch:
@@ -31,9 +31,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v4
         with:
-          python-version: "3.7.x"
+          python-version: "3.10"
+          cache: "pip"
 
       - name: install dependencies
         run: |
@@ -41,4 +42,4 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run --threads 8 --vars '{"STREAMLINE_INVOKE_STREAMS":True,"WAIT":120}' -m models/silver/streamline/decoder/history/range_1
+          dbt run --threads 8 --vars '{"STREAMLINE_INVOKE_STREAMS":True,"WAIT":120}' -m 1+tag:streamline_decoded_logs_history_range_1

@@ -1,12 +1,11 @@
-name: dbt_run_streamline_decoder_history5
-run-name: dbt_run_streamline_decoder_history5
+name: dbt_run_streamline_history
+run-name: dbt_run_streamline_history
 
 on:
   workflow_dispatch:
-  schedule:
-    # Runs "at 10:00 UTC PM" (see https://crontab.guru)
-    - cron: '0 22 * * *'
-    
+    branches:
+      - "main"
+
 env:
   DBT_PROFILES_DIR: ./
 
@@ -25,20 +24,22 @@ concurrency:
 jobs:
   run_dbt_jobs:
     runs-on: ubuntu-latest
-    environment: 
-      name: workflow_prod_backfill
+    environment:
+      name: workflow_prod
 
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v4
         with:
-          python-version: "3.7.x"
+          python-version: "3.10"
+          cache: "pip"
 
       - name: install dependencies
         run: |
-          pip3 install dbt-snowflake==${{ vars.DBT_VERSION }} cli_passthrough requests click
+          pip3 install dbt-snowflake~=${{ vars.DBT_VERSION }} cli_passthrough requests click
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run --threads 8 --vars '{"STREAMLINE_INVOKE_STREAMS":True,"WAIT":120}' -m models/silver/streamline/decoder/history/range_5
+          dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True}' -m 1+models/silver/streamline/core/history
+# moved to streamline history adhoc job
