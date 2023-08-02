@@ -22,8 +22,14 @@ models:
         description: '{{ doc("bsc_to_address") }}' 
       - name: BNB_VALUE
         description: '{{ doc("bsc_value") }}' 
+      - name: BNB_VALUE_PRECISE_RAW
+        description: '{{ doc("precise_amount_unadjusted") }}'
+      - name: BNB_VALUE_PRECISE
+        description: '{{ doc("precise_amount_adjusted") }}'
       - name: TX_FEE
         description: '{{ doc("bsc_tx_fee") }}' 
+      - name: TX_FEE_PRECISE
+        description: '{{ doc("tx_fee_precise") }}' 
       - name: GAS_PRICE
         description: '{{ doc("bsc_tx_gas_price") }}' 
       - name: GAS_LIMIT

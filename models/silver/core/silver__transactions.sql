@@ -5,8 +5,7 @@
     unique_key = "block_number",
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
-    tags = ['core'],
-    full_refresh = false
+    tags = ['core']
 ) }}
 
 WITH base AS (
@@ -74,11 +73,14 @@ base_tx AS (
         A.data :v :: STRING AS v,
         utils.udf_hex_to_int(
             A.data :value :: STRING
-        ) / pow(
-            10,
+        ) AS bnb_value_precise_raw,
+        utils.udf_decimal_adjust(
+            bnb_value_precise_raw,
             18
-        ) :: FLOAT AS VALUE,
-        A._INSERTED_TIMESTAMP
+        ) AS bnb_value_precise,
+        bnb_value_precise :: FLOAT AS VALUE,
+        A._INSERTED_TIMESTAMP,
+        A.data
     FROM
         base A
 ),
@@ -99,6 +101,8 @@ new_records AS (
         t.position,
         t.type,
         t.v,
+        t.bnb_value_precise_raw,
+        t.bnb_value_precise,
         t.value,
         block_timestamp,
         CASE
@@ -110,15 +114,14 @@ new_records AS (
         tx_success,
         tx_status,
         cumulative_gas_used,
-        effective_gas_price,
-        (
-            gas_price * r.gas_used
-        ) / pow(
-            10,
+        utils.udf_decimal_adjust(
+            t.gas_price * r.gas_used,
             9
-        ) AS tx_fee,
+        ) AS tx_fee_precise,
+        tx_fee_precise :: FLOAT AS tx_fee,
         r.type AS tx_type,
-        t._inserted_timestamp
+        t._inserted_timestamp,
+        t.data
     FROM
         base_tx t
         LEFT OUTER JOIN {{ ref('silver__blocks') }}
@@ -157,6 +160,8 @@ missing_data AS (
         t.position,
         t.type,
         t.v,
+        t.bnb_value_precise_raw,
+        t.bnb_value_precise,
         t.value,
         b.block_timestamp,
         FALSE AS is_pending,
@@ -165,18 +170,18 @@ missing_data AS (
         r.tx_status,
         r.cumulative_gas_used,
         r.effective_gas_price,
-        (
-            t.gas_price * r.gas_used
-        ) / pow(
-            10,
+        utils.udf_decimal_adjust(
+            t.gas_price * r.gas_used,
             9
-        ) AS tx_fee,
+        ) AS tx_fee_precise,
+        tx_fee_precise :: FLOAT AS tx_fee,
         r.type AS tx_type,
         GREATEST(
             t._inserted_timestamp,
             b._inserted_timestamp,
             r._inserted_timestamp
-        ) AS _inserted_timestamp
+        ) AS _inserted_timestamp,
+        t.data
     FROM
         {{ this }}
         t
@@ -209,6 +214,8 @@ FINAL AS (
         TYPE,
         v,
         VALUE,
+        bnb_value_precise_raw,
+        bnb_value_precise,
         block_timestamp,
         is_pending,
         gas_used,
@@ -217,8 +224,10 @@ FINAL AS (
         cumulative_gas_used,
         effective_gas_price,
         tx_fee,
+        tx_fee_precise,
         tx_type,
-        _inserted_timestamp
+        _inserted_timestamp,
+        DATA
     FROM
         new_records
 
@@ -241,6 +250,8 @@ SELECT
     TYPE,
     v,
     VALUE,
+    bnb_value_precise_raw,
+    bnb_value_precise,
     block_timestamp,
     is_pending,
     gas_used,
@@ -249,8 +260,10 @@ SELECT
     cumulative_gas_used,
     effective_gas_price,
     tx_fee,
+    tx_fee_precise,
     tx_type,
-    _inserted_timestamp
+    _inserted_timestamp,
+    DATA
 FROM
     missing_data
 {% endif %}
@@ -258,6 +271,8 @@ FROM
 SELECT
     *
 FROM
-    FINAL qualify(ROW_NUMBER() over (PARTITION BY block_number, POSITION
+    FINAL
+WHERE
+    block_hash IS NOT NULL qualify(ROW_NUMBER() over (PARTITION BY block_number, POSITION
 ORDER BY
     _inserted_timestamp DESC, is_pending ASC)) = 1

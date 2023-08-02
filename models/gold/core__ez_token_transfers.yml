@@ -40,3 +40,7 @@ models:
         description: '{{ doc("bsc_origin_from") }}'
       - name: ORIGIN_TO_ADDRESS
         description: '{{ doc("bsc_origin_to") }}'
+      - name: RAW_AMOUNT_PRECISE
+        description: '{{ doc("precise_amount_unadjusted") }}'
+      - name: AMOUNT_PRECISE
+        description: '{{ doc("precise_amount_adjusted") }}'
