@@ -14,7 +14,7 @@ SELECT
     A.to_address AS bnb_to_address,
     A.bnb_value AS amount,
     utils.udf_hex_to_int(
-        DATA :value :: STRING
+        A.data :value :: STRING
     ) AS amount_precise_raw,
     utils.udf_decimal_adjust(
         amount_precise_raw,
