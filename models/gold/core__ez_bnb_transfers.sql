@@ -13,13 +13,6 @@ SELECT
     A.from_address AS bnb_from_address,
     A.to_address AS bnb_to_address,
     A.bnb_value AS amount,
-    utils.udf_hex_to_int(
-        A.data :value :: STRING
-    ) AS amount_precise_raw,
-    utils.udf_decimal_adjust(
-        amount_precise_raw,
-        18
-    ) AS amount_precise,
     ROUND(
         A.bnb_value * price,
         2
