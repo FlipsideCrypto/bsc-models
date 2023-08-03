@@ -114,6 +114,7 @@ new_records AS (
         tx_success,
         tx_status,
         cumulative_gas_used,
+        effective_gas_price,
         utils.udf_decimal_adjust(
             t.gas_price * r.gas_used,
             9
