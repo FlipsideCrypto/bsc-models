@@ -6,7 +6,8 @@
     incremental_predicates = ["dynamic_range", "block_number"],
     merge_update_columns = ["_log_id"],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(_log_id)",
-    full_refresh = false
+    full_refresh = false,
+    tags = ['streamline_decoded_logs_complete']
 ) }}
 
 SELECT
