@@ -53,6 +53,7 @@ SELECT
     block_number,
     block_timestamp,
     tx_hash,
+    contract_address,
     event_index,
     tokenX,
     tokenY,
