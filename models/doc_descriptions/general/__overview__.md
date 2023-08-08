@@ -37,6 +37,9 @@ There is more information on how to use dbt docs in the last section of this doc
 - [ez_dex_swaps](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_dex_swaps)
 - [ez_token_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_token_transfers)
 
+### DeFi Tables (avalanche.defi)
+- [dim_dex_liquidity_pools](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__dim_dex_liquidity_pools)
+
 ## **Helpful User-Defined Functions (UDFs)**
 
 UDFs are custom functions built by the Flipside team that can be used in your queries to make your life easier. 
