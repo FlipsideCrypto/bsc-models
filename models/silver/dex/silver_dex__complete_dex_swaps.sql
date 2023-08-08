@@ -1873,7 +1873,10 @@ SELECT
   origin_from_address,
   origin_to_address,
   f.contract_address,
-  pool_name,
+  CASE
+    WHEN f.pool_name IS NULL THEN p.pool_name
+    ELSE f.pool_name
+  END AS pool_name,
   event_name,
   amount_in_unadj,
   amount_in,
