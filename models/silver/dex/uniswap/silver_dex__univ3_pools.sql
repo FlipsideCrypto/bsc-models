@@ -11,6 +11,7 @@ WITH created_pools AS (
         block_number,
         block_timestamp,
         tx_hash,
+        contract_address,
         regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         LOWER(CONCAT('0x', SUBSTR(topics [1] :: STRING, 27, 40))) AS token0_address,
         LOWER(CONCAT('0x', SUBSTR(topics [2] :: STRING, 27, 40))) AS token1_address,
@@ -23,6 +24,7 @@ WITH created_pools AS (
             segmented_data [0] :: STRING
         )) AS tick_spacing,
         CONCAT('0x', SUBSTR(segmented_data [1] :: STRING, 25, 40)) AS pool_address,
+        _log_id,
         _inserted_timestamp
     FROM
         {{ ref('silver__logs') }}
@@ -73,6 +75,7 @@ FINAL AS (
         block_number,
         block_timestamp,
         tx_hash,
+        p.contract_address,
         token0_address,
         token1_address,
         fee :: INTEGER AS fee,
@@ -85,11 +88,12 @@ FINAL AS (
             init_tick,
             0
         ) AS init_tick,
-        _inserted_timestamp
+        p._log_id,
+        p._inserted_timestamp
     FROM
-        created_pools
-        LEFT JOIN initial_info
-        ON pool_address = contract_address
+        created_pools p
+        LEFT JOIN initial_info i
+        ON p.pool_address = i.contract_address
 )
 
 SELECT

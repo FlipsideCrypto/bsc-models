@@ -49,15 +49,7 @@ univ3_swaps AS (
     origin_from_address,
     origin_to_address,
     pool_address AS contract_address,
-    CONCAT(
-      c1.symbol,
-      '-',
-      c2.symbol,
-      ' ',
-      fee,
-      ' ',
-      tick_spacing
-    ) AS pool_name,
+    NULL AS pool_name,
     'Swap' AS event_name,
     amount0_unadj / pow(10, COALESCE(c1.decimals, 18)) AS amount0_adjusted,
     amount1_unadj / pow(10, COALESCE(c2.decimals, 18)) AS amount1_adjusted,
@@ -179,7 +171,17 @@ woofi_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    CONCAT(
+      LEAST(
+          COALESCE(c1.symbol, CONCAT(SUBSTRING(c1.address, 1, 5), '...', SUBSTRING(c1.address, 39, 42))),
+          COALESCE(c2.symbol, CONCAT(SUBSTRING(c2.address, 1, 5), '...', SUBSTRING(c2.address, 39, 42)))
+      ),
+      '-',
+      GREATEST(
+          COALESCE(c1.symbol, CONCAT(SUBSTRING(c1.address, 1, 5), '...', SUBSTRING(c1.address, 39, 42))),
+          COALESCE(c2.symbol, CONCAT(SUBSTRING(c2.address, 1, 5), '...', SUBSTRING(c2.address, 39, 42)))
+      )
+    ) AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -230,7 +232,7 @@ kyberswap_v1_dynamic AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -281,7 +283,7 @@ kyberswap_v1_static AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -332,7 +334,7 @@ kyberswap_v2_elastic AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -383,7 +385,7 @@ fraxswap_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -434,7 +436,7 @@ sushi_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -485,7 +487,7 @@ dodo_v1_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -536,7 +538,7 @@ dodo_v2_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -587,7 +589,17 @@ hashflow_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    CONCAT(
+      LEAST(
+          COALESCE(c1.symbol, CONCAT(SUBSTRING(c1.address, 1, 5), '...', SUBSTRING(c1.address, 39, 42))),
+          COALESCE(c2.symbol, CONCAT(SUBSTRING(c2.address, 1, 5), '...', SUBSTRING(c2.address, 39, 42)))
+      ),
+      '-',
+      GREATEST(
+          COALESCE(c1.symbol, CONCAT(SUBSTRING(c1.address, 1, 5), '...', SUBSTRING(c1.address, 39, 42))),
+          COALESCE(c2.symbol, CONCAT(SUBSTRING(c2.address, 1, 5), '...', SUBSTRING(c2.address, 39, 42)))
+      )
+    ) AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -638,7 +650,7 @@ trader_joe_v1_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -689,7 +701,7 @@ trader_joe_v2_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -740,7 +752,7 @@ trader_joe_v2_1_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -791,7 +803,7 @@ biswap_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -842,7 +854,17 @@ levelfi_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    CONCAT(
+      LEAST(
+          COALESCE(c1.symbol, CONCAT(SUBSTRING(c1.address, 1, 5), '...', SUBSTRING(c1.address, 39, 42))),
+          COALESCE(c2.symbol, CONCAT(SUBSTRING(c2.address, 1, 5), '...', SUBSTRING(c2.address, 39, 42)))
+      ),
+      '-',
+      GREATEST(
+          COALESCE(c1.symbol, CONCAT(SUBSTRING(c1.address, 1, 5), '...', SUBSTRING(c1.address, 39, 42))),
+          COALESCE(c2.symbol, CONCAT(SUBSTRING(c2.address, 1, 5), '...', SUBSTRING(c2.address, 39, 42)))
+      )
+    ) AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -893,7 +915,7 @@ pancakeswap_v1_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -944,7 +966,7 @@ pancakeswap_v2_amm_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -995,7 +1017,7 @@ pancakeswap_v2_mm_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -1046,7 +1068,7 @@ pancakeswap_v2_ss_swaps AS (
     platform,
     token_in,
     token_out,
-    CONCAT(LEAST(symbol_in, symbol_out), '-', GREATEST(symbol_in, symbol_out)) AS pool_name,
+    NULL AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
@@ -1076,15 +1098,7 @@ pancakeswap_v3_swaps AS (
     origin_from_address,
     origin_to_address,
     pool_address AS contract_address,
-    CONCAT(
-      c1.symbol,
-      '-',
-      c2.symbol,
-      ' ',
-      fee,
-      ' ',
-      tick_spacing
-    ) AS pool_name,
+    NULL AS pool_name,
     'Swap' AS event_name,
     amount0 AS amount0_unadj,
     amount1 AS amount1_unadj,
@@ -1852,14 +1866,17 @@ FINAL AS (
     all_dex_custom C
 )
 SELECT
-  block_number,
-  block_timestamp,
-  tx_hash,
+  f.block_number,
+  f.block_timestamp,
+  f.tx_hash,
   origin_function_signature,
   origin_from_address,
   origin_to_address,
-  contract_address,
-  pool_name,
+  f.contract_address,
+  CASE
+    WHEN f.pool_name IS NULL THEN p.pool_name
+    ELSE f.pool_name
+  END AS pool_name,
   event_name,
   amount_in_unadj,
   amount_in,
@@ -1880,12 +1897,14 @@ SELECT
   sender,
   tx_to,
   event_index,
-  platform,
+  f.platform,
   token_in,
   token_out,
   symbol_in,
   symbol_out,
-  _log_id,
-  _inserted_timestamp
+  f._log_id,
+  f._inserted_timestamp
 FROM
-  FINAL
+  FINAL f
+LEFT JOIN {{ ref('silver_dex__complete_dex_liquidity_pools') }} p
+  ON f.contract_address = p.pool_address
