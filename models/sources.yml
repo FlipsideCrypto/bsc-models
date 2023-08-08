@@ -41,3 +41,13 @@ sources:
       - name: traces
       - name: decoded_logs
       - name: confirm_blocks
+  - name: bsc_silver
+    database: bsc
+    schema: silver
+    tables:
+      - name: verified_abis
+  - name: bsc_bronze_api
+    database: bsc
+    schema: bronze_api
+    tables:
+      - name: contract_abis
