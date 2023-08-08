@@ -2,18 +2,19 @@
   materialized = 'incremental',
   incremental_strategy = 'delete+insert',
   unique_key = "block_number",
-  cluster_by = ['block_timestamp::DATE']
+  cluster_by = ['block_timestamp::DATE'],
+  tags = ['non_realtime']
 ) }}
 
 WITH contracts AS (
 
   SELECT
-    address,
-    symbol,
-    NAME,
-    decimals
+    contract_address as address,
+    token_symbol as symbol,
+    token_name as NAME,
+    token_decimals as decimals
   FROM
-    {{ ref('core__dim_contracts') }}
+    {{ ref('silver__contracts') }}
 ),
 prices AS (
   SELECT

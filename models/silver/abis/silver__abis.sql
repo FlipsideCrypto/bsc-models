@@ -1,7 +1,8 @@
 {{ config (
     materialized = "incremental",
     unique_key = "contract_address",
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(contract_address)"
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(contract_address)",
+    tags = ['abis']
 ) }}
 
 WITH override_abis AS (
@@ -47,29 +48,26 @@ AND _inserted_timestamp >= (
 user_abis AS (
     SELECT
         contract_address,
-        abi,
-        discord_username,
+        DATA,
         _inserted_timestamp,
-        'user' AS abi_source,
+        abi_source,
+        discord_username,
         abi_hash,
         2 AS priority
     FROM
-        {{ ref('silver__user_verified_abis') }}
+        {{ ref('silver__verified_abis') }}
     WHERE
         abi_source = 'user'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
     SELECT
-        MAX(
-            _inserted_timestamp
-        )
+        COALESCE(MAX(_inserted_timestamp), '1970-01-01' :: TIMESTAMP)
     FROM
         {{ this }}
     WHERE
-        abi_source = 'user'
-)
-{% endif %}
+        abi_source = 'user')
+    {% endif %}
 ),
 bytecode_abis AS (
     SELECT
@@ -120,6 +118,17 @@ all_abis AS (
         priority
     FROM
         verified_abis
+    UNION
+    SELECT
+        contract_address,
+        DATA,
+        _inserted_timestamp,
+        abi_source,
+        discord_username,
+        abi_hash,
+        priority
+    FROM
+        user_abis
     UNION
     SELECT
         contract_address,

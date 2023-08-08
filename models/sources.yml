@@ -24,6 +24,7 @@ sources:
       - name: apis_keys
       - name: token_prices_priority_hourly
       - name: asset_metadata_priority
+      - name: number_sequence
   - name: crosschain_public
     database: crosschain
     schema: bronze_public
@@ -40,3 +41,13 @@ sources:
       - name: traces
       - name: decoded_logs
       - name: confirm_blocks
+  - name: bsc_silver
+    database: bsc
+    schema: silver
+    tables:
+      - name: verified_abis
+  - name: bsc_bronze_api
+    database: bsc
+    schema: bronze_api
+    tables:
+      - name: contract_abis
