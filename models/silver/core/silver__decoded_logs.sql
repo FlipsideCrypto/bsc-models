@@ -218,3 +218,7 @@ SELECT
 FROM
     missing_data
 {% endif %}
+
+qualify(ROW_NUMBER() over (PARTITION BY block_number, event_index
+ORDER BY
+    _inserted_timestamp DESC, is_pending ASC)) = 1
