@@ -1,7 +1,6 @@
 {{ config (
     materialized = "incremental",
     unique_key = "id",
-    merge_update_columns = ["id"],
     tags = ['abis']
 ) }}
 
@@ -41,6 +40,8 @@ AND _inserted_timestamp > (
         {{ this }}
 )
 {% endif %}
+ORDER BY
+    _inserted_timestamp ASC
 LIMIT
     10
 ), contracts AS (
