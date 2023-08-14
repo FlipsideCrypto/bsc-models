@@ -1,7 +1,6 @@
 {{ config (
     materialized = "incremental",
     unique_key = "id",
-    merge_update_columns = ["id"],
     tags = ['abis']
 ) }}
 
