@@ -36,11 +36,13 @@ There is more information on how to use dbt docs in the last section of this doc
 - [ez_decoded_event_logs](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_decoded_event_logs)
 - [ez_dex_swaps](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_dex_swaps)
 - [ez_token_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_token_transfers)
-- [ez_nft_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_nft_transfers)
-- [ez_nft_sales](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_nft_sales)
 
 ### DeFi Tables (avalanche.defi)
 - [dim_dex_liquidity_pools](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__dim_dex_liquidity_pools)
+
+**NFT Tables:**
+- [ez_nft_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.nft__ez_nft_transfers)
+- [_nft_sales](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.nft__ez_nft_sales)
 
 ## **Helpful User-Defined Functions (UDFs)**
 
