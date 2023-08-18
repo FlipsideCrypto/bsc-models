@@ -1017,7 +1017,17 @@ pancakeswap_v2_mm_swaps AS (
     platform,
     token_in,
     token_out,
-    NULL AS pool_name,
+    CONCAT(
+      LEAST(
+          COALESCE(symbol_in, CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))),
+          COALESCE(symbol_out, CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42)))
+      ),
+      '-',
+      GREATEST(
+          COALESCE(symbol_in, CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))),
+          COALESCE(symbol_out, CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42)))
+      )
+    ) AS pool_name,
     _log_id,
     _inserted_timestamp
   FROM
