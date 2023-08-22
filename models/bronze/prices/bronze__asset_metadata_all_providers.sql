@@ -4,14 +4,16 @@
 
 SELECT
     token_address,
-    symbol,
-    provider,
     id,
+    symbol,
+    blockchain,
+    provider,
+    _unique_key,
     _inserted_timestamp
 FROM
     {{ source(
-        'crosschain_silver',
-        'asset_metadata_priority'
+        'silver_crosschain',
+        'asset_metadata_all_providers'
     ) }}
 WHERE
-    blockchain = 'bsc'
+    blockchain = 'base'

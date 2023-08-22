@@ -3,15 +3,15 @@
 ) }}
 
 SELECT
-    HOUR,
     token_address,
-    price,
-    is_imputed,
+    symbol,
+    provider,
+    id,
     _inserted_timestamp
 FROM
     {{ source(
-        'crosschain_silver',
-        'token_prices_priority_hourly'
+        'silver_crosschain',
+        'asset_metadata_priority'
     ) }}
 WHERE
-    blockchain = 'bsc'
+    blockchain = 'base'
