@@ -17,4 +17,4 @@ FROM
         'token_prices_all_providers_hourly'
     ) }}
 WHERE
-    blockchain = 'base'
+    blockchain = 'bsc'

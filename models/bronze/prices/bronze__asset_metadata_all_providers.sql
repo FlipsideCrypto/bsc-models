@@ -16,4 +16,4 @@ FROM
         'asset_metadata_all_providers'
     ) }}
 WHERE
-    blockchain = 'base'
+    blockchain = 'bsc'

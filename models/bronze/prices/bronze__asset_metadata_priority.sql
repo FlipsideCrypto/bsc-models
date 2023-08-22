@@ -14,4 +14,4 @@ FROM
         'asset_metadata_priority'
     ) }}
 WHERE
-    blockchain = 'base'
+    blockchain = 'bsc'
