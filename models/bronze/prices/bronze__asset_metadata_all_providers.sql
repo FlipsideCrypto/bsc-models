@@ -12,7 +12,7 @@ SELECT
     _inserted_timestamp
 FROM
     {{ source(
-        'silver_crosschain',
+        'crosschain_silver',
         'asset_metadata_all_providers'
     ) }}
 WHERE

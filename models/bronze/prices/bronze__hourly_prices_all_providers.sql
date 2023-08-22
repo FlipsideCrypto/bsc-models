@@ -13,7 +13,7 @@ SELECT
     _unique_key
 FROM
     {{ source(
-        'silver_crosschain',
+        'crosschain_silver',
         'token_prices_all_providers_hourly'
     ) }}
 WHERE

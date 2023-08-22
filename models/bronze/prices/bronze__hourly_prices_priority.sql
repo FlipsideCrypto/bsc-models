@@ -10,7 +10,7 @@ SELECT
     _inserted_timestamp
 FROM
     {{ source(
-        'silver_crosschain',
+        'crosschain_silver',
         'token_prices_priority_hourly'
     ) }}
 WHERE
