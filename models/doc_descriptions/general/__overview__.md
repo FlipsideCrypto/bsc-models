@@ -31,6 +31,12 @@ There is more information on how to use dbt docs in the last section of this doc
 - [fact_traces](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_traces)
 - [fact_transactions](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_transactions)
 
+### Price Tables (bsc.price)
+- [fact_hourly_token_prices](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.price__fact_hourly_token_prices)
+- [ez_hourly_token_prices](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.price__ez_hourly_token_prices)
+- [dim_asset_metadata](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.price__dim_asset_metadata)
+- [ez_asset_metadata](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.price__ez_asset_metadata)
+- 
 **Convenience Tables:**
 - [ez_bnb_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_bnb_transfers)
 - [ez_decoded_event_logs](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_decoded_event_logs)
@@ -40,7 +46,7 @@ There is more information on how to use dbt docs in the last section of this doc
 ### DeFi Tables (bsc.defi)
 - [dim_dex_liquidity_pools](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__dim_dex_liquidity_pools)
 
-### NFT Tables: ###
+### NFT Tables (bsc.nft)
 - [ez_nft_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.nft__ez_nft_transfers)
 - [ez_nft_sales](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.nft__ez_nft_sales)
 
