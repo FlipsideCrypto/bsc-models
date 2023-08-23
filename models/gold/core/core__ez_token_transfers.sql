@@ -15,6 +15,7 @@ SELECT
     from_address,
     to_address,
     raw_amount,
+    raw_amount_precise,
     C.token_decimals AS decimals,
     C.token_symbol AS symbol,
     price AS token_price,
