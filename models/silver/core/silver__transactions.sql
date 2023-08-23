@@ -5,8 +5,7 @@
     unique_key = "block_number",
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
-    tags = ['core','non_realtime'],
-    full_refresh = false
+    tags = ['core','non_realtime']
 ) }}
 
 WITH base AS (
@@ -78,7 +77,8 @@ base_tx AS (
             10,
             18
         ) :: FLOAT AS VALUE,
-        A._INSERTED_TIMESTAMP
+        A._INSERTED_TIMESTAMP,
+        A.data
     FROM
         base A
 ),
@@ -111,14 +111,14 @@ new_records AS (
         tx_status,
         cumulative_gas_used,
         effective_gas_price,
-        (
-            gas_price * r.gas_used
-        ) / pow(
-            10,
+        utils.udf_decimal_adjust (
+            gas_price * r.gas_used,
             9
-        ) AS tx_fee,
+        ) AS tx_fee_precise,
+        tx_fee_precise :: FLOAT AS tx_fee,
         r.type AS tx_type,
-        t._inserted_timestamp
+        t._inserted_timestamp,
+        t.data
     FROM
         base_tx t
         LEFT OUTER JOIN {{ ref('silver__blocks') }}
@@ -165,18 +165,18 @@ missing_data AS (
         r.tx_status,
         r.cumulative_gas_used,
         r.effective_gas_price,
-        (
-            t.gas_price * r.gas_used
-        ) / pow(
-            10,
+        utils.udf_decimal_adjust (
+            t.gas_price * r.gas_used,
             9
-        ) AS tx_fee,
+        ) AS tx_fee_precise,
+        tx_fee_precise :: FLOAT AS tx_fee,
         r.type AS tx_type,
         GREATEST(
             t._inserted_timestamp,
             b._inserted_timestamp,
             r._inserted_timestamp
-        ) AS _inserted_timestamp
+        ) AS _inserted_timestamp,
+        t.data
     FROM
         {{ this }}
         t
@@ -217,8 +217,10 @@ FINAL AS (
         cumulative_gas_used,
         effective_gas_price,
         tx_fee,
+        tx_fee_precise,
         tx_type,
-        _inserted_timestamp
+        _inserted_timestamp,
+        DATA
     FROM
         new_records
 
@@ -249,8 +251,10 @@ SELECT
     cumulative_gas_used,
     effective_gas_price,
     tx_fee,
+    tx_fee_precise,
     tx_type,
-    _inserted_timestamp
+    _inserted_timestamp,
+    DATA
 FROM
     missing_data
 {% endif %}
