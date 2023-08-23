@@ -34,7 +34,9 @@ WITH bnb_base AS (
                 '0*$',
                 ''
             )
-        ) AS bnb_value_precise
+        ) AS bnb_value_precise,
+        tx_position,
+        trace_index
     FROM
         {{ ref('silver__traces') }}
     WHERE
@@ -95,7 +97,9 @@ SELECT
         2
     ) AS amount_usd,
     _call_id,
-    _inserted_timestamp
+    _inserted_timestamp,
+    tx_position,
+    trace_index
 FROM
     bnb_base A
     LEFT JOIN {{ ref('silver__prices') }}
