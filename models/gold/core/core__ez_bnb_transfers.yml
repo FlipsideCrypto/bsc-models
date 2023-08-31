@@ -10,9 +10,9 @@ models:
         description: '{{ doc("bsc_block_timestamp") }}'
       - name: TX_HASH
         description: '{{ doc("bsc_transfer_tx_hash") }}'
-      - name: ETH_FROM_ADDRESS
+      - name: BNB_FROM_ADDRESS
         description: '{{ doc("bsc_transfer_from_address") }}'
-      - name: ETH_TO_ADDRESS
+      - name: BNB_TO_ADDRESS
         description: '{{ doc("bsc_transfer_to_address") }}'
       - name: AMOUNT
         description: '{{ doc("bsc_eth_amount") }}'
@@ -30,3 +30,7 @@ models:
         description: '{{ doc("bsc_origin_to") }}'
       - name: IDENTIFIER
         description: '{{ doc("bsc_traces_identifier") }}'
+      - name: AMOUNT_PRECISE_RAW
+        description: '{{ doc("precise_amount_unadjusted") }}'
+      - name: AMOUNT_PRECISE
+        description: '{{ doc("precise_amount_adjusted") }}'

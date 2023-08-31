@@ -16,6 +16,10 @@ models:
         description: '{{ doc("bsc_traces_to") }}'
       - name: BNB_VALUE
         description: '{{ doc("bsc_traces_value") }}'
+      - name: BNB_VALUE_PRECISE_RAW
+        description: '{{ doc("precise_amount_unadjusted") }}'
+      - name: BNB_VALUE_PRECISE
+        description: '{{ doc("precise_amount_adjusted") }}'
       - name: GAS
         description: '{{ doc("bsc_traces_gas") }}'
       - name: GAS_USED
