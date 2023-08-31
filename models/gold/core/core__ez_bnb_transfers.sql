@@ -102,7 +102,7 @@ SELECT
     trace_index
 FROM
     bnb_base A
-    LEFT JOIN {{ ref('silver__prices') }}
+    LEFT JOIN {{ ref('silver__hourly_prices_all_providers') }}
     ON DATE_TRUNC(
         'hour',
         A.block_timestamp
