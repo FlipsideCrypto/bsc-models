@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'token_address',
+    unique_key = ['token_address','symbol','id','provider'],
     tags = ['non_realtime']
 ) }}
 
@@ -13,7 +13,8 @@ SELECT
     ) AS symbol,
     token_name AS NAME,
     token_decimals AS decimals,
-    provider
+    provider,
+    p._inserted_timestamp
 FROM
     {{ ref('bronze__asset_metadata_all_providers') }}
     p
