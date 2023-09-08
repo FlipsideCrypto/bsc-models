@@ -1,5 +1,6 @@
 {{ config(
     materialized = 'incremental',
+    incremental_strategy = 'delete+insert',
     unique_key = "pool_address",
     tags = ['non_realtime']
 ) }}
@@ -35,12 +36,6 @@ WITH pool_creation AS (
 AND _inserted_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) :: DATE
-    FROM
-        {{ this }}
-)
-AND pool_address NOT IN (
-    SELECT
-        DISTINCT pool_address
     FROM
         {{ this }}
 )
