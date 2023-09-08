@@ -1,13 +1,11 @@
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'delete+insert',
     unique_key = '_log_id',
     cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
-    merge_update_columns = ["_log_id"],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(contract_address, tx_hash)",
     tags = ['non_realtime']
 ) }}
-
+--incremental_strategy = 'delete+insert',
 WITH base AS (
 
     SELECT
@@ -349,38 +347,6 @@ fill_transfers AS (
     WHERE
         t.project_name IS NULL
         AND C.token_name IS NOT NULL
-        AND t.block_timestamp IS NOT NULL
-),
-timestamp_fill_transfers AS (
-    SELECT
-        t.block_number,
-        s.block_timestamp,
-        t.tx_hash,
-        t.event_index,
-        t.contract_address,
-        t.project_name,
-        t.from_address,
-        t.to_address,
-        t.tokenId,
-        t.erc1155_value,
-        t.event_type,
-        t.token_transfer_type,
-        t._log_id,
-        GREATEST(
-            t._inserted_timestamp,
-            s._inserted_timestamp
-        ) AS _inserted_timestamp
-    FROM
-        {{ this }}
-        t
-        INNER JOIN {{ ref('silver__logs') }}
-        s USING (
-            tx_hash,
-            event_index
-        )
-    WHERE
-        t.block_timestamp IS NULL
-        AND s.block_timestamp IS NOT NULL
 )
 {% endif %},
 final_base AS (
@@ -421,24 +387,6 @@ SELECT
     _inserted_timestamp
 FROM
     fill_transfers
-UNION ALL
-SELECT
-    block_number,
-    block_timestamp,
-    tx_hash,
-    event_index,
-    contract_address,
-    project_name,
-    from_address,
-    to_address,
-    tokenId,
-    erc1155_value,
-    event_type,
-    token_transfer_type,
-    _log_id,
-    _inserted_timestamp
-FROM
-    timestamp_fill_transfers
 {% endif %}
 )
 SELECT
