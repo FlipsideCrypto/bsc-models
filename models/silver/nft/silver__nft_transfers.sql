@@ -5,7 +5,7 @@
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(contract_address, tx_hash)",
     tags = ['non_realtime']
 ) }}
---incremental_strategy = 'delete+insert',
+
 WITH base AS (
 
     SELECT
@@ -369,7 +369,7 @@ final_base AS (
         transfer_base
 
 {% if is_incremental() %}
-UNION ALL
+UNION
 SELECT
     block_number,
     block_timestamp,
