@@ -44,6 +44,8 @@ sources:
       - name: traces
       - name: decoded_logs
       - name: confirm_blocks
+      - name: token_balances
+      - name: bnb_balances
   - name: bsc_silver
     database: bsc
     schema: silver
