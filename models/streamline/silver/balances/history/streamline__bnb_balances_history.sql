@@ -22,7 +22,7 @@ traces AS (
     FROM
         {{ ref('silver__traces') }}
     WHERE
-        matic_value > 0
+        bnb_value > 0
         AND trace_status = 'SUCCESS'
         AND tx_status = 'SUCCESS'
         AND block_number < (

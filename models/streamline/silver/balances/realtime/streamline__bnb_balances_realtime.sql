@@ -1,5 +1,9 @@
 {{ config (
     materialized = "view",
+    post_hook = if_data_call_function(
+        func = "{{this.schema}}.udf_json_rpc(object_construct('sql_source', '{{this.identifier}}', 'external_table', 'bnb_balances', 'method', 'eth_getBalance', 'producer_batch_size',5000, 'producer_limit_size', 5000000, 'worker_batch_size',500))",
+        target = "{{this.schema}}.{{this.identifier}}"
+    ),
     tags = ['streamline_balances_realtime']
 ) }}
 
@@ -22,7 +26,7 @@ traces AS (
     FROM
         {{ ref('silver__traces') }}
     WHERE
-        matic_value > 0
+        bnb_value > 0
         AND trace_status = 'SUCCESS'
         AND tx_status = 'SUCCESS'
         AND block_number >= (
@@ -110,3 +114,5 @@ FROM
     FINAL
 ORDER BY
     block_number ASC
+LIMIT
+    10 -- TODO: remove this limit
