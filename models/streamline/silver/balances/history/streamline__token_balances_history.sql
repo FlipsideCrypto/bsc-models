@@ -28,11 +28,11 @@ logs AS (
             l.topics [0] :: STRING = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
             OR (
                 l.topics [0] :: STRING = '0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65'
-                AND l.contract_address = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+                AND l.contract_address = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
             )
             OR (
                 l.topics [0] :: STRING = '0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c'
-                AND l.contract_address = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+                AND l.contract_address = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
             )
         )
         AND block_number < (
