@@ -16,6 +16,18 @@
     {%- endif %};
 {% endmacro %}
 
+{% macro create_udf_generic_json_rpc() %}
+    {% if target.name == "prod" %}
+    CREATE EXTERNAL FUNCTION IF NOT EXISTS streamline.udf_generic_json_rpc(
+        json OBJECT
+    ) returns ARRAY api_integration = aws_bsc_api AS 'https://u0bch3zf8l.execute-api.us-east-1.amazonaws.com/prod/udf_bulk_json_rpc'
+    {% else %}
+    CREATE EXTERNAL FUNCTION IF NOT EXISTS streamline.udf_generic_json_rpc(
+        json OBJECT
+    ) returns ARRAY api_integration = aws_bsc_dev_api AS 'https://q22a7542fk.execute-api.us-east-1.amazonaws.com/dev/udf_bulk_json_rpc'
+    {%- endif %};
+{% endmacro %}
+
 {% macro create_udf_rest_api() %}
     CREATE EXTERNAL FUNCTION IF NOT EXISTS streamline.udf_rest_api(
         json OBJECT
