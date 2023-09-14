@@ -35,22 +35,12 @@ token_names AS (
         block_number,
         function_signature,
         read_output,
-        regexp_substr_all(SUBSTR(read_output, 3, len(read_output)), '.{64}') AS segmented_output,
-        LTRIM(
-            REGEXP_REPLACE(
-                TRY_HEX_DECODE_STRING(
-                    segmented_output [2] :: STRING
-                ),
-                '[\x00-\x1F\x7F-\x9F\xAD]',
-                '',
-                1
-            )
-        ) AS token_name
+        utils.udf_hex_to_string(SUBSTR(read_output,(64*2+3),LEN(read_output))) AS token_name
     FROM
         base_metadata
     WHERE
         function_signature = '0x06fdde03'
-        AND segmented_output [1] :: STRING IS NOT NULL
+        AND token_name IS NOT NULL
 ),
 token_symbols AS (
     SELECT
@@ -58,22 +48,12 @@ token_symbols AS (
         block_number,
         function_signature,
         read_output,
-        regexp_substr_all(SUBSTR(read_output, 3, len(read_output)), '.{64}') AS segmented_output,
-        LTRIM(
-            REGEXP_REPLACE(
-                TRY_HEX_DECODE_STRING(
-                    segmented_output [2] :: STRING
-                ),
-                '[\x00-\x1F\x7F-\x9F\xAD]',
-                '',
-                1
-            )
-        ) AS token_symbol
+        utils.udf_hex_to_string(SUBSTR(read_output,(64*2+3),LEN(read_output))) AS token_symbol
     FROM
         base_metadata
     WHERE
         function_signature = '0x95d89b41'
-        AND segmented_output [1] :: STRING IS NOT NULL
+        AND token_symbol IS NOT NULL
 ),
 token_decimals AS (
     SELECT
