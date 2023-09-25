@@ -2,13 +2,12 @@
 {{ config(
     materialized = 'incremental',
     on_schema_change = 'append_new_columns',
-    unique_key = ['block_number', 'position'],
+    unique_key = "block_number",
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
     tags = ['core','non_realtime']
 ) }}
 {# incremental_strategy = 'delete+insert',
-unique_key = "block_number",
 #}
 WITH base AS (
 
