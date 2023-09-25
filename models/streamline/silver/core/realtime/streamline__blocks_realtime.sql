@@ -26,6 +26,12 @@ WITH tbl AS (
         ) AS block_number_hex
     FROM
         {{ ref("streamline__complete_blocks") }}
+    WHERE
+        _inserted_timestamp >= DATEADD(
+            'day',
+            -4,
+            SYSDATE()
+        )
 )
 SELECT
     block_number,
@@ -37,3 +43,7 @@ SELECT
     ) AS params
 FROM
     tbl
+ORDER BY
+    block_number ASC
+LIMIT
+    1200

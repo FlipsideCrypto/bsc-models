@@ -26,6 +26,12 @@ WITH tbl AS (
         ) AS block_number_hex
     FROM
         {{ ref("streamline__complete_transactions") }}
+    WHERE
+        _inserted_timestamp >= DATEADD(
+            'day',
+            -4,
+            SYSDATE()
+        )
 ),
 retry_blocks AS (
     SELECT
@@ -69,3 +75,7 @@ SELECT
     ) AS params
 FROM
     retry_blocks
+ORDER BY
+    block_number ASC
+LIMIT
+    1200

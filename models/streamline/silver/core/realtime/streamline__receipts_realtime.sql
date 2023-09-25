@@ -28,6 +28,11 @@ WITH tbl AS (
         {{ ref("streamline__complete_receipts") }}
     WHERE
         block_number IS NOT NULL
+        AND _inserted_timestamp >= DATEADD(
+            'day',
+            -4,
+            SYSDATE()
+        )
 ),
 retry_blocks AS (
     SELECT
@@ -68,3 +73,7 @@ SELECT
     block_number_hex AS params
 FROM
     retry_blocks
+ORDER BY
+    block_number ASC
+LIMIT
+    1200
