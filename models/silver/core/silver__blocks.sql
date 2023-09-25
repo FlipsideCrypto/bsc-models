@@ -8,6 +8,9 @@
 
 SELECT
     block_number,
+    TRY_TO_NUMBER(utils.udf_hex_to_int(
+        DATA :result :baseFeePerGas :: STRING
+    )) AS base_fee_per_gas,
     utils.udf_hex_to_int(
         DATA :result :difficulty :: STRING
     ) :: INT AS difficulty,
@@ -45,6 +48,7 @@ SELECT
     ) AS tx_count,
     DATA :result :transactionsRoot :: STRING AS transactions_root,
     DATA :result :uncles AS uncles,
+    DATA,
     _inserted_timestamp
 FROM
 

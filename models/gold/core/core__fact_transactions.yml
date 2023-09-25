@@ -46,6 +46,10 @@ models:
         description: '{{ doc("bsc_tx_origin_sig") }}'
       - name: EFFECTIVE_GAS_PRICE
         description: The effective gas price of the transaction, in wei.
+      - name: MAX_FEE_PER_GAS
+        description: The maximum fee per gas of the transaction, in Gwei.
+      - name: MAX_PRIORITY_FEE_PER_GAS
+        description: The maximum priority fee per gas of the transaction, in Gwei.
       - name: TX_TYPE
         description: The type of the transaction, 2 for EIP-1559 transactions and 0 for legacy transactions.
       - name: r

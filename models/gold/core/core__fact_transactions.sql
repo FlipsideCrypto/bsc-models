@@ -26,6 +26,8 @@ SELECT
     input_data,
     status,
     effective_gas_price,
+    max_fee_per_gas,
+    max_priority_fee_per_gas,
     r,
     s,
     v,
@@ -52,6 +54,18 @@ FROM
             input_data,
             tx_status AS status,
             effective_gas_price,
+            utils.udf_hex_to_int(
+                DATA :maxFeePerGas :: STRING
+            ) :: INT / pow(
+                10,
+                9
+            ) AS max_fee_per_gas,
+            utils.udf_hex_to_int(
+                DATA :maxPriorityFeePerGas :: STRING
+            ) :: INT / pow(
+                10,
+                9
+            ) AS max_priority_fee_per_gas,
             r,
             s,
             v,
