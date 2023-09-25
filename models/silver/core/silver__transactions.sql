@@ -1,13 +1,15 @@
 -- depends_on: {{ ref('bronze__streamline_transactions') }}
 {{ config(
     materialized = 'incremental',
-    incremental_strategy = 'delete+insert',
-    unique_key = "block_number",
+    on_schema_change = 'append_new_columns',
+    unique_key = ['block_number', 'position'],
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
     tags = ['core','non_realtime']
 ) }}
-
+{# incremental_strategy = 'delete+insert',
+unique_key = "block_number",
+#}
 WITH base AS (
 
     SELECT
@@ -17,15 +19,17 @@ WITH base AS (
     FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_transactions') }}
+{{ ref('bronze__streamline_FR_transactions') }}
 WHERE
-    _inserted_timestamp >= (
-        SELECT
-            MAX(_inserted_timestamp) _inserted_timestamp
-        FROM
-            {{ this }}
-    )
-    AND IS_OBJECT(DATA)
+    _partition_by_block_id >= 31302000
+    AND block_number >= 31302048 
+    {# _inserted_timestamp >= (
+SELECT
+    MAX(_inserted_timestamp) _inserted_timestamp
+FROM
+    {{ this }}
+) #}
+AND IS_OBJECT(DATA)
 {% else %}
     {{ ref('bronze__streamline_FR_transactions') }}
 WHERE
@@ -49,6 +53,18 @@ base_tx AS (
             10,
             9
         ) AS gas_price,
+        utils.udf_hex_to_int(
+            A.data :maxFeePerGas :: STRING
+        ) :: INT / pow(
+            10,
+            9
+        ) AS max_fee_per_gas,
+        utils.udf_hex_to_int(
+            A.data :maxPriorityFeePerGas :: STRING
+        ) :: INT / pow(
+            10,
+            9
+        ) AS max_priority_fee_per_gas,
         A.data :hash :: STRING AS tx_hash,
         A.data :input :: STRING AS input_data,
         SUBSTR(
@@ -92,6 +108,8 @@ new_records AS (
         t.tx_hash,
         t.input_data,
         t.origin_function_signature,
+        t.max_fee_per_gas,
+        t.max_priority_fee_per_gas,
         t.nonce,
         t.r,
         t.s,
@@ -130,16 +148,19 @@ new_records AS (
         AND t.tx_hash = r.tx_hash
 
 {% if is_incremental() %}
-AND r._INSERTED_TIMESTAMP >= (
+AND t.block_number >= 31302048 
+AND b.block_number >= 31302048 
+AND r.block_number >= 31302048 
+{# AND r._INSERTED_TIMESTAMP >= (
     SELECT
         MAX(_inserted_timestamp) :: DATE - 1
     FROM
         {{ this }}
-)
+) #}
 {% endif %}
-)
+),
 
-{% if is_incremental() %},
+{# {% if is_incremental() %},
 missing_data AS (
     SELECT
         t.block_number,
@@ -150,6 +171,8 @@ missing_data AS (
         t.tx_hash,
         t.input_data,
         t.origin_function_signature,
+        t.max_fee_per_gas,
+        t.max_priority_fee_per_gas,
         t.nonce,
         t.r,
         t.s,
@@ -169,7 +192,7 @@ missing_data AS (
             t.gas_price * r.gas_used,
             9
         ) AS tx_fee_precise1,
-        tx_fee_precise1 as tx_fee_precise,
+        tx_fee_precise1 AS tx_fee_precise,
         tx_fee_precise1 :: FLOAT AS tx_fee,
         r.type AS tx_type,
         GREATEST(
@@ -191,7 +214,7 @@ missing_data AS (
     WHERE
         t.is_pending
 )
-{% endif %},
+{% endif %}, #}
 FINAL AS (
     SELECT
         block_number,
@@ -202,6 +225,8 @@ FINAL AS (
         tx_hash,
         input_data,
         origin_function_signature,
+        max_fee_per_gas,
+        max_priority_fee_per_gas,
         nonce,
         r,
         s,
@@ -225,7 +250,7 @@ FINAL AS (
     FROM
         new_records
 
-{% if is_incremental() %}
+{# {% if is_incremental() %}
 UNION
 SELECT
     block_number,
@@ -236,6 +261,8 @@ SELECT
     tx_hash,
     input_data,
     origin_function_signature,
+    max_fee_per_gas,
+    max_priority_fee_per_gas,
     nonce,
     r,
     s,
@@ -258,7 +285,7 @@ SELECT
     DATA
 FROM
     missing_data
-{% endif %}
+{% endif %} #}
 )
 SELECT
     *

@@ -54,28 +54,8 @@ FROM
             input_data,
             tx_status AS status,
             effective_gas_price,
-            TO_NUMBER(REPLACE(DATA :maxFeePerGas :: STRING, '0x'), REPEAT('X', LENGTH(REPLACE(DATA :maxFeePerGas :: STRING, '0x')))) / pow(
-                10,
-                9
-            ) AS max_fee_per_gas,
-            TO_NUMBER(
-                REPLACE(
-                    DATA :maxPriorityFeePerGas :: STRING,
-                    '0x'
-                ),
-                REPEAT(
-                    'X',
-                    LENGTH(
-                        REPLACE(
-                            DATA :maxPriorityFeePerGas :: STRING,
-                            '0x'
-                        )
-                    )
-                )
-            ) / pow(
-                10,
-                9
-            ) AS max_priority_fee_per_gas,
+            max_fee_per_gas,
+            max_priority_fee_per_gas,
             r,
             s,
             v,

@@ -115,5 +115,13 @@ models:
       - name: ORIGIN_FUNCTION_SIGNATURE
         tests:
           - not_null
+      - name: MAX_FEE_PER_GAS
+        tests:
+          - not_null:
+              where: BLOCK_NUMBER >= 31302048 AND TX_TYPE = 2
+      - name: MAX_PRIORITY_FEE_PER_GAS
+        tests:
+          - not_null:
+              where: BLOCK_NUMBER >= 31302048 AND TX_TYPE = 2
 
 
