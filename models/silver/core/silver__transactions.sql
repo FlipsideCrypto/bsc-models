@@ -1,14 +1,13 @@
 -- depends_on: {{ ref('bronze__streamline_transactions') }}
 {{ config(
     materialized = 'incremental',
-    on_schema_change = 'append_new_columns',
     incremental_strategy = 'delete+insert',
     unique_key = "block_number",
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
     tags = ['core','non_realtime']
 ) }}
-{# 
+{#
 #}
 WITH base AS (
 
@@ -19,17 +18,15 @@ WITH base AS (
     FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_FR_transactions') }}
+{{ ref('bronze__streamline_transactions') }}
 WHERE
-    _partition_by_block_id >= 31302000
-    AND block_number >= 31302048 
-    {# _inserted_timestamp >= (
-SELECT
-    MAX(_inserted_timestamp) _inserted_timestamp
-FROM
-    {{ this }}
-) #}
-AND IS_OBJECT(DATA)
+    _inserted_timestamp >= (
+        SELECT
+            MAX(_inserted_timestamp) _inserted_timestamp
+        FROM
+            {{ this }}
+    )
+    AND IS_OBJECT(DATA)
 {% else %}
     {{ ref('bronze__streamline_FR_transactions') }}
 WHERE
@@ -148,19 +145,16 @@ new_records AS (
         AND t.tx_hash = r.tx_hash
 
 {% if is_incremental() %}
-AND t.block_number >= 31302048 
-AND b.block_number >= 31302048 
-AND r.block_number >= 31302048 
-{# AND r._INSERTED_TIMESTAMP >= (
+AND r._INSERTED_TIMESTAMP >= (
     SELECT
         MAX(_inserted_timestamp) :: DATE - 1
     FROM
         {{ this }}
-) #}
+)
 {% endif %}
-),
+)
 
-{# {% if is_incremental() %},
+{% if is_incremental() %},
 missing_data AS (
     SELECT
         t.block_number,
@@ -214,7 +208,7 @@ missing_data AS (
     WHERE
         t.is_pending
 )
-{% endif %}, #}
+{% endif %},
 FINAL AS (
     SELECT
         block_number,
@@ -250,7 +244,7 @@ FINAL AS (
     FROM
         new_records
 
-{# {% if is_incremental() %}
+{% if is_incremental() %}
 UNION
 SELECT
     block_number,
@@ -285,7 +279,7 @@ SELECT
     DATA
 FROM
     missing_data
-{% endif %} #}
+{% endif %}
 )
 SELECT
     *
