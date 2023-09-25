@@ -54,15 +54,25 @@ FROM
             input_data,
             tx_status AS status,
             effective_gas_price,
-            utils.udf_hex_to_int(
-                DATA :maxFeePerGas :: STRING
-            ) :: INT / pow(
+            TO_NUMBER(REPLACE(DATA :maxFeePerGas :: STRING, '0x'), REPEAT('X', LENGTH(REPLACE(DATA :maxFeePerGas :: STRING, '0x')))) / pow(
                 10,
                 9
             ) AS max_fee_per_gas,
-            utils.udf_hex_to_int(
-                DATA :maxPriorityFeePerGas :: STRING
-            ) :: INT / pow(
+            TO_NUMBER(
+                REPLACE(
+                    DATA :maxPriorityFeePerGas :: STRING,
+                    '0x'
+                ),
+                REPEAT(
+                    'X',
+                    LENGTH(
+                        REPLACE(
+                            DATA :maxPriorityFeePerGas :: STRING,
+                            '0x'
+                        )
+                    )
+                )
+            ) / pow(
                 10,
                 9
             ) AS max_priority_fee_per_gas,
