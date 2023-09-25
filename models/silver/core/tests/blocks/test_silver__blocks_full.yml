@@ -23,6 +23,14 @@ models:
               column_type_list:
                 - TIMESTAMP_LTZ
                 - TIMESTAMP_NTZ
+      - name: BASE_FEE_PER_GAS
+        tests:
+          - not_null:
+              where: BLOCK_NUMBER >= 31302048
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - NUMBER
+                - FLOAT
       - name: DIFFICULTY
         tests:
           - not_null

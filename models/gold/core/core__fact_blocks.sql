@@ -22,6 +22,8 @@ SELECT
     SIZE,
     uncles AS uncle_blocks,
     OBJECT_CONSTRUCT(
+        'baseFeePerGas',
+        base_fee_per_gas,
         'difficulty',
         difficulty,
         'extraData',
