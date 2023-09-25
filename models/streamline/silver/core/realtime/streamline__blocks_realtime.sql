@@ -7,8 +7,18 @@
     tags = ['streamline_core_realtime']
 ) }}
 
-WITH tbl AS (
+WITH last_3_days AS (
 
+    SELECT
+        block_number
+    FROM
+        {{ ref("_max_block_by_date") }}
+        qualify ROW_NUMBER() over (
+            ORDER BY
+                block_number DESC
+        ) = 3
+),
+tbl AS (
     SELECT
         block_number,
         block_number_hex
@@ -16,6 +26,14 @@ WITH tbl AS (
         {{ ref("streamline__blocks") }}
     WHERE
         block_number IS NOT NULL
+        AND (
+            block_number >= (
+                SELECT
+                    block_number
+                FROM
+                    last_3_days
+            )
+        )
     EXCEPT
     SELECT
         block_number,
@@ -31,6 +49,14 @@ WITH tbl AS (
             'day',
             -4,
             SYSDATE()
+        )
+        AND (
+            block_number >= (
+                SELECT
+                    block_number
+                FROM
+                    last_3_days
+            )
         )
 )
 SELECT
