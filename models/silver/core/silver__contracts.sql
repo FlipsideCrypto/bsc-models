@@ -79,9 +79,7 @@ token_decimals AS (
     SELECT
         contract_address,
         CASE
-            WHEN read_output IS NOT NULL THEN utils.udf_hex_to_int(
-                read_output :: STRING
-            )
+            WHEN read_output IS NOT NULL THEN utils.udf_hex_to_int(LEFT(read_output :: STRING, 66))
             ELSE NULL
         END AS token_decimals,
         LENGTH(token_decimals) AS dec_length
@@ -91,6 +89,7 @@ token_decimals AS (
         function_signature = '0x313ce567'
         AND read_output IS NOT NULL
         AND read_output <> '0x'
+        AND dec_length < 3
 ),
 contracts AS (
     SELECT
