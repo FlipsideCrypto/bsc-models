@@ -7,8 +7,7 @@
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
     tags = ['core','non_realtime']
 ) }}
-{#
-#}
+
 WITH base AS (
 
     SELECT
