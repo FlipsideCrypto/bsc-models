@@ -7,8 +7,14 @@
     tags = ['streamline_core_realtime']
 ) }}
 
-WITH tbl AS (
+WITH last_3_days AS (
 
+    SELECT
+        block_number
+    FROM
+        {{ ref("_block_lookback") }}
+),
+tbl AS (
     SELECT
         block_number,
         block_number_hex
@@ -16,6 +22,14 @@ WITH tbl AS (
         {{ ref("streamline__blocks") }}
     WHERE
         block_number IS NOT NULL
+        AND (
+            block_number >= (
+                SELECT
+                    block_number
+                FROM
+                    last_3_days
+            )
+        )
     EXCEPT
     SELECT
         block_number,
@@ -26,6 +40,20 @@ WITH tbl AS (
         ) AS block_number_hex
     FROM
         {{ ref("streamline__complete_blocks") }}
+    WHERE
+        _inserted_timestamp >= DATEADD(
+            'day',
+            -4,
+            SYSDATE()
+        )
+        AND (
+            block_number >= (
+                SELECT
+                    block_number
+                FROM
+                    last_3_days
+            )
+        )
 )
 SELECT
     block_number,
@@ -37,3 +65,7 @@ SELECT
     ) AS params
 FROM
     tbl
+ORDER BY
+    block_number ASC
+LIMIT
+    1200
