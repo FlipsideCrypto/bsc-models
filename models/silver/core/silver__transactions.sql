@@ -184,9 +184,8 @@ missing_data AS (
         utils.udf_decimal_adjust (
             t.gas_price * r.gas_used,
             9
-        ) AS tx_fee_precise1,
-        tx_fee_precise1 AS tx_fee_precise,
-        tx_fee_precise1 :: FLOAT AS tx_fee,
+        ) AS tx_fee_precise_heal,
+        tx_fee_precise_heal :: FLOAT AS tx_fee,
         r.type AS tx_type,
         GREATEST(
             t._inserted_timestamp,
@@ -272,7 +271,7 @@ SELECT
     cumulative_gas_used,
     effective_gas_price,
     tx_fee,
-    tx_fee_precise,
+    tx_fee_precise_heal AS tx_fee_precise,
     tx_type,
     _inserted_timestamp,
     DATA
