@@ -5,7 +5,9 @@
     cluster_by = "block_timestamp::date",
     incremental_predicates = ["dynamic_range", "block_number"],
     full_refresh = false,
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
+    post_hook = [
+        "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
+        "{{ fsc_utils.block_reorg(this, 12) }}"],
     tags = ['decoded_logs']
 ) }}
 
