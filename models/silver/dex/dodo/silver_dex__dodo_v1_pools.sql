@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = "pool_address",
+    incremental_strategy = 'delete+insert',
+    unique_key = 'block_number',
     tags = ['non_realtime']
 ) }}
 
@@ -27,13 +28,12 @@ WITH pool_events AS (
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
     SELECT
-        MAX(_inserted_timestamp) :: DATE - 1
+        MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
 {% endif %}
 )
-
 SELECT
     block_number,
     block_timestamp,
@@ -46,4 +46,6 @@ SELECT
     _log_id AS _id,
     _inserted_timestamp
 FROM
-    pool_events
+    pool_events qualify(ROW_NUMBER() over (PARTITION BY pool_address
+ORDER BY
+    _inserted_timestamp ASC)) = 1
