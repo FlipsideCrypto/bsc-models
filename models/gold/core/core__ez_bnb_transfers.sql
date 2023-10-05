@@ -3,10 +3,8 @@
     incremental_strategy = 'delete+insert',
     unique_key = 'block_number',
     cluster_by = ['block_timestamp::DATE'],
-    post_hook = [
-        "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
-        "{{ fsc_utils.block_reorg(this, 12) }}"],
-    tags = ['core','non_realtime'],
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
+    tags = ['core','non_realtime','reorg'],
     persist_docs ={ "relation": true,
     "columns": true }
 ) }}
