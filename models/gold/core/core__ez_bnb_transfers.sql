@@ -21,21 +21,8 @@ WITH bnb_base AS (
         bnb_value,
         _call_id,
         _inserted_timestamp,
-        to_varchar(
-            TO_NUMBER(REPLACE(DATA :value :: STRING, '0x'), REPEAT('X', LENGTH(REPLACE(DATA :value :: STRING, '0x'))))
-        ) AS bnb_value_precise_raw,
-        IFF(LENGTH(bnb_value_precise_raw) > 18, LEFT(bnb_value_precise_raw, LENGTH(bnb_value_precise_raw) - 18) || '.' || RIGHT(bnb_value_precise_raw, 18), '0.' || LPAD(bnb_value_precise_raw, 18, '0')) AS rough_conversion,
-        IFF(
-            POSITION(
-                '.000000000000000000' IN rough_conversion
-            ) > 0,
-            LEFT(rough_conversion, LENGTH(rough_conversion) - 19),
-            REGEXP_REPLACE(
-                rough_conversion,
-                '0*$',
-                ''
-            )
-        ) AS bnb_value_precise,
+        bnb_value_precise_raw,
+        bnb_value_precise,
         tx_position,
         trace_index
     FROM
