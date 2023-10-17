@@ -1,3 +1,4 @@
+-- depends_on: {{ ref('silver__hourly_prices_priority') }}
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
@@ -159,7 +160,7 @@ heal_model AS (
                     SELECT
                         MAX(
                             _inserted_timestamp
-                        ) - INTERVAL '36 hours'
+                        ) - INTERVAL '24 hours'
                     FROM
                         {{ this }}
                 )
@@ -169,10 +170,42 @@ heal_model AS (
                     FROM
                         {{ ref('silver__contracts') }} C
                     WHERE
-                        C._inserted_timestamp > DATEADD('DAY', -7, SYSDATE())
+                        C._inserted_timestamp > DATEADD('DAY', -14, SYSDATE())
                         AND C.token_decimals IS NOT NULL
                         AND C.contract_address = t1.contract_address)
-                ) -- this is the list of blocks that need to be healed
+                )
+                OR t0.block_number IN (
+                    SELECT
+                        DISTINCT t2.block_number
+                    FROM
+                        {{ this }}
+                        t2
+                    WHERE
+                        t2.token_price IS NULL
+                        AND _inserted_timestamp < (
+                            SELECT
+                                MAX(
+                                    _inserted_timestamp
+                                ) - INTERVAL '24 hours'
+                            FROM
+                                {{ this }}
+                        )
+                        AND EXISTS (
+                            SELECT
+                                1
+                            FROM
+                                {{ ref('silver__hourly_prices_priority') }}
+                                p
+                            WHERE
+                                p._inserted_timestamp > DATEADD('DAY', -14, SYSDATE())
+                                AND p.price IS NOT NULL
+                                AND p.token_address = t2.contract_address
+                                AND p.hour = DATE_TRUNC(
+                                    'hour',
+                                    t2.block_timestamp
+                                )
+                        )
+                )
         )
     {% endif %}
     SELECT
