@@ -37,9 +37,9 @@ models:
       - name: AMOUNT_USD
         description: '{{ doc("bsc_transfer_amount_usd") }}'
       - name: DECIMALS
-        description: 'The number of decimal places this contract needs adjusted where token values exist.'
+        description: '{{ doc("bsc_decimals") }}'
       - name: SYMBOL
-        description: 'The symbol belonging to the address of the token.'
+        description: '{{ doc("bsc_symbol") }}'
       - name: TOKEN_PRICE
         description: '{{ doc("bsc_transfer_token_price") }}'
       - name: HAS_DECIMAL
