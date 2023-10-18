@@ -10,35 +10,41 @@ models:
         description: '{{ doc("bsc_block_timestamp") }}'
       - name: TX_HASH
         description: '{{ doc("bsc_transfer_tx_hash") }}'
-      - name: CONTRACT_ADDRESS
-        description: '{{ doc("bsc_transfer_contract_address") }}'
-      - name: FROM_ADDRESS
-        description: '{{ doc("bsc_transfer_from_address") }}'
-      - name: TO_ADDRESS
-        description: '{{ doc("bsc_transfer_to_address") }}'
-      - name: RAW_AMOUNT
-        description: '{{ doc("bsc_transfer_raw_amount") }}'
-      - name: DECIMALS
-        description: 'The number of decimal places this contract needs adjusted where token values exist.'
-      - name: SYMBOL
-        description: 'The symbol belonging to the address of the token.'
-      - name: TOKEN_PRICE
-        description: '{{ doc("bsc_transfer_token_price") }}'
-      - name: AMOUNT
-        description: '{{ doc("bsc_transfer_amount") }}'
-      - name: AMOUNT_USD
-        description: '{{ doc("bsc_transfer_amount_usd") }}'
-      - name: HAS_DECIMAL
-        description: '{{ doc("bsc_transfer_has_decimal") }}'
-      - name: HAS_PRICE
-        description: '{{ doc("bsc_transfer_has_price") }}'
-      - name: _LOG_ID
-        description: '{{ doc("bsc_log_id_transfers") }}'
+      - name: EVENT_INDEX
+        description: '{{ doc("bsc_event_index") }}'
       - name: ORIGIN_FUNCTION_SIGNATURE
         description: '{{ doc("bsc_origin_sig") }}'
       - name: ORIGIN_FROM_ADDRESS
         description: '{{ doc("bsc_origin_from") }}'
       - name: ORIGIN_TO_ADDRESS
         description: '{{ doc("bsc_origin_to") }}'
+      - name: CONTRACT_ADDRESS
+        description: '{{ doc("bsc_transfer_contract_address") }}'
+      - name: FROM_ADDRESS
+        description: '{{ doc("bsc_transfer_from_address") }}'
+      - name: TO_ADDRESS
+        description: '{{ doc("bsc_transfer_to_address") }}'
       - name: RAW_AMOUNT_PRECISE
-        description: '{{ doc("precise_amount_unadjusted") }}'
+        description: '{{ doc("bsc_transfer_raw_amount_precise") }}'
+      - name: RAW_AMOUNT
+        description: '{{ doc("bsc_transfer_raw_amount") }}'
+      - name: AMOUNT_PRECISE
+        description: '{{ doc("bsc_transfer_amount_precise") }}'
+      - name: TOKEN_PRICE
+        description: '{{ doc("bsc_transfer_token_price") }}'
+      - name: AMOUNT
+        description: '{{ doc("bsc_transfer_amount") }}'
+      - name: AMOUNT_USD
+        description: '{{ doc("bsc_transfer_amount_usd") }}'
+      - name: DECIMALS
+        description: 'The number of decimal places this contract needs adjusted where token values exist.'
+      - name: SYMBOL
+        description: 'The symbol belonging to the address of the token.'
+      - name: TOKEN_PRICE
+        description: '{{ doc("bsc_transfer_token_price") }}'
+      - name: HAS_DECIMAL
+        description: '{{ doc("bsc_transfer_has_decimal") }}'
+      - name: HAS_PRICE
+        description: '{{ doc("bsc_transfer_has_price") }}'
+      - name: _LOG_ID
+        description: '{{ doc("bsc_log_id_transfers") }}'

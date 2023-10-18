@@ -1,11 +1,9 @@
--- depends_on: {{ ref('silver__hourly_prices_priority') }}
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     unique_key = "block_number",
     cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
-    tags = ['non_realtime','reorg','heal_model'],
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(contract_address)"
+    tags = ['non_realtime','reorg','heal']
 ) }}
 
 WITH logs AS (
@@ -36,7 +34,7 @@ AND _inserted_timestamp >= (
     SELECT
         MAX(
             _inserted_timestamp
-        ) - INTERVAL '24 hours'
+        ) - INTERVAL '36 hours'
     FROM
         {{ this }}
 )
@@ -74,9 +72,14 @@ token_transfers AS (
         C.token_decimals AS decimals,
         C.token_symbol AS symbol,
         price AS token_price,
-        C.token_decimals IS NOT NULL AS has_decimal,
-        C.token_symbol IS NOT NULL AS has_symbol,
-        price IS NOT NULL AS has_price,
+        CASE
+            WHEN C.token_decimals IS NULL THEN 'false'
+            ELSE 'true'
+        END AS has_decimal,
+        CASE
+            WHEN price IS NULL THEN 'false'
+            ELSE 'true'
+        END AS has_price,
         _log_id,
         _inserted_timestamp
     FROM
@@ -130,9 +133,14 @@ heal_model AS (
         C.token_decimals AS decimals,
         C.token_symbol AS symbol,
         p.price AS token_price,
-        C.token_decimals IS NOT NULL AS has_decimal,
-        C.token_symbol IS NOT NULL AS has_symbol,
-        p.price IS NOT NULL AS has_price,
+        CASE
+            WHEN C.token_decimals IS NULL THEN 'false'
+            ELSE 'true'
+        END AS has_decimal,
+        CASE
+            WHEN p.price IS NULL THEN 'false'
+            ELSE 'true'
+        END AS has_price,
         t0._log_id,
         t0._inserted_timestamp
     FROM
@@ -160,7 +168,7 @@ heal_model AS (
                     SELECT
                         MAX(
                             _inserted_timestamp
-                        ) - INTERVAL '24 hours'
+                        ) - INTERVAL '36 hours'
                     FROM
                         {{ this }}
                 )
@@ -186,7 +194,7 @@ heal_model AS (
                             SELECT
                                 MAX(
                                     _inserted_timestamp
-                                ) - INTERVAL '24 hours'
+                                ) - INTERVAL '36 hours'
                             FROM
                                 {{ this }}
                         )
@@ -228,7 +236,6 @@ heal_model AS (
         symbol,
         token_price,
         has_decimal,
-        has_symbol,
         has_price,
         _log_id,
         _inserted_timestamp
@@ -259,7 +266,6 @@ SELECT
     symbol,
     token_price,
     has_decimal,
-    has_symbol,
     has_price,
     _log_id,
     _inserted_timestamp

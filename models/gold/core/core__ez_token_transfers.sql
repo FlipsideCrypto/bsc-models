@@ -24,7 +24,6 @@ SELECT
     symbol,
     token_price,
     has_decimal,
-    has_symbol,
     has_price,
     _log_id,
     _inserted_timestamp
