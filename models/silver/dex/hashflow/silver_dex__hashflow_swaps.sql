@@ -145,9 +145,29 @@ FINAL AS (
         swaps_base
 )
 SELECT
-    *
+    block_number,
+    block_timestamp,
+    tx_hash,
+    origin_function_signature,
+    origin_from_address,
+    origin_to_address,
+    event_index,
+    contract_address,
+    sender,
+    tx_to,
+    CASE
+        WHEN token_in = '0x0000000000000000000000000000000000000000' THEN '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+        ELSE token_in
+    END AS token_in,
+    CASE
+        WHEN token_out = '0x0000000000000000000000000000000000000000' THEN '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+        ELSE token_out
+    END AS token_out,
+    amount_in_unadj,
+    amount_out_unadj,
+    event_name,
+    platform,
+    _log_id,
+    _inserted_timestamp
 FROM
     FINAL
-WHERE
-    token_in <> '0x0000000000000000000000000000000000000000'
-    AND token_out <> '0x0000000000000000000000000000000000000000'
