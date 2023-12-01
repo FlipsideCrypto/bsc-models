@@ -42,7 +42,7 @@ dforce_borrows AS (
       segmented_data [3] :: STRING
     ) :: INTEGER AS totalBorrows,
     contract_address AS token,
-    'Dforce' AS platform,
+    'dForce' AS platform,
     _inserted_timestamp,
     _log_id
   FROM

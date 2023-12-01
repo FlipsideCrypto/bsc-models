@@ -39,7 +39,7 @@ dforce_deposits AS (
       segmented_data [1] :: STRING
     ) :: INTEGER AS mintAmount_raw,
     CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 25, 40)) AS supplier,
-    'dforce' AS platform,
+    'dForce' AS platform,
     _inserted_timestamp,
     _log_id
   FROM
