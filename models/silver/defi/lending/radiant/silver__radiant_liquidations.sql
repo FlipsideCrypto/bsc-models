@@ -84,7 +84,7 @@ SELECT
     liquidated_amount / pow(
         10,
         amc.atoken_decimals
-    ) AS liquidated_amount,
+    ) AS amount,
     debt_asset,
     amd.atoken_address AS debt_radiant_token,
     liquidator_address AS liquidator,

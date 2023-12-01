@@ -93,7 +93,7 @@ liquidation_union AS (
     repayAmount_raw / pow(
       10,
       asd1.underlying_decimals
-    ) AS liquidation_amount,
+    ) AS amount,
     asd1.underlying_decimals,
     asd1.underlying_asset_address AS liquidation_contract_address,
     asd1.underlying_symbol AS liquidation_contract_symbol,

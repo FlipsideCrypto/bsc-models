@@ -91,7 +91,7 @@ SELECT
     borrow_quantity / pow(
         10,
         atoken_meta.underlying_decimals
-    ) AS borrowed_tokens,
+    ) AS amount,
     borrower_address,
     CASE
         WHEN borrow_rate_mode = 2 THEN 'Variable Rate'
@@ -100,7 +100,7 @@ SELECT
     lending_pool_contract,
     atoken_meta.underlying_symbol AS symbol,
     atoken_meta.underlying_decimals AS underlying_decimals,
-'Radiant V2' AS platform,
+    'Radiant V2' AS platform,
     'arbitrum' AS blockchain,
     _log_id,
     _inserted_timestamp

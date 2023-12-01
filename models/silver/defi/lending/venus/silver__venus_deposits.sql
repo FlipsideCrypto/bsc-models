@@ -110,7 +110,7 @@ SELECT
   mintAmount_raw / pow(
     10,
     underlying_decimals
-  ) AS supplied_base_asset,
+  ) AS amount,
   supplied_contract_addr,
   supplied_symbol,
   supplier,

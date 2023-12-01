@@ -15,13 +15,13 @@ models:
           - dbt_expectations.expect_row_values_to_have_recent_data:
               datepart: day
               interval: 3
-      - name: token
+      - name: TOKEN_ADDRESS
         tests:
           - not_null
-      - name: token_SYMBOL
+      - name: TOKEN_SYMBOL
         tests:
           - not_null
-      - name: ISSUED_tokenS
+      - name: ISSUED_TOKENS
         tests:
         - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:

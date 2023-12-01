@@ -89,7 +89,7 @@ venus_combine AS (
     b._inserted_timestamp
   FROM
     venus_borrows b
-    LEFT JOIN {{ ref('silver__venus_asset_details') }} C
+    LEFT JOIN asset_details C
     ON b.token = C.token_address
 )
 SELECT
@@ -110,7 +110,7 @@ SELECT
   loan_amount_raw / pow(
     10,
     underlying_decimals
-  ) AS loan_amount,
+  ) AS amount,
   platform,
   _inserted_timestamp,
   _log_id

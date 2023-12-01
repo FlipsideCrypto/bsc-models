@@ -88,7 +88,7 @@ venus_combine AS (
         b._inserted_timestamp
     FROM
         venus_redemptions b
-        LEFT JOIN {{ ref('silver__venus_asset_details') }} C
+        LEFT JOIN asset_details C
         ON b.token = C.token_address
 )
 SELECT
@@ -106,7 +106,7 @@ SELECT
     received_amount_raw / pow(
         10,
         underlying_decimals
-    ) AS received_amount,
+    ) AS amount,
     received_contract_address,
     received_contract_symbol,
     redeemed_token_raw / pow(

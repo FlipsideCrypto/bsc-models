@@ -84,7 +84,7 @@ SELECT
     deposit_quantity / pow(
         10,
         atoken_meta.underlying_decimals
-    ) AS issued_tokens,
+    ) AS amount,
     depositor_address,
     lending_pool_contract,
 'Radiant V2' AS platform,

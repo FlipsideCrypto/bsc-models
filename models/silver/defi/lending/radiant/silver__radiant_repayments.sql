@@ -78,7 +78,7 @@ SELECT
     repayed_amount / pow(
         10,
         atoken_meta.underlying_decimals
-    ) AS repayed_tokens,
+    ) AS amount,
     repayer_address AS payer,
     borrower_address AS borrower,
     lending_pool_contract,

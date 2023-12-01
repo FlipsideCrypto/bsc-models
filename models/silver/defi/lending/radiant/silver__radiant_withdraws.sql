@@ -77,7 +77,7 @@ SELECT
     withdraw_amount / pow(
         10,
         atoken_meta.underlying_decimals
-    ) AS withdrawn_tokens,
+    ) AS amount,
     depositor AS depositor_address,
 'Radiant V2' AS platform,
     atoken_meta.underlying_symbol AS symbol,
