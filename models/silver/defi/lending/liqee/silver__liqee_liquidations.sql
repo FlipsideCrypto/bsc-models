@@ -6,6 +6,7 @@
   tags = ['reorg','curated']
 ) }}
 -- pull all token addresses and corresponding name
+-- add the collateral liquidated here
 WITH asset_details AS (
 
   SELECT
@@ -18,9 +19,9 @@ WITH asset_details AS (
     underlying_symbol,
     underlying_decimals
   FROM
-    {{ ref('silver__dforce_asset_details') }}
+    {{ ref('silver__liqee_asset_details') }}
 ),
-dforce_repayments AS (
+liqee_liquidations AS (
   SELECT
     block_number,
     block_timestamp,
@@ -33,11 +34,15 @@ dforce_repayments AS (
     regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
     CONCAT('0x', SUBSTR(segmented_data [1] :: STRING, 25, 40)) AS borrower,
     contract_address AS token,
-    CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 25, 40)) AS payer,
+    CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 25, 40)) AS liquidator,
+    utils.udf_hex_to_int(
+      segmented_data [4] :: STRING
+    ) :: INTEGER AS seizeTokens_raw,
     utils.udf_hex_to_int(
       segmented_data [2] :: STRING
-    ) :: INTEGER AS repayed_amount_raw,
-    'dforce' AS platform,
+    ) :: INTEGER AS repayAmount_raw,
+    CONCAT('0x', SUBSTR(segmented_data [3] :: STRING, 25, 40)) AS tokenCollateral,
+    'Liqee'AS platform,
     _inserted_timestamp,
     _log_id
   FROM
@@ -49,7 +54,7 @@ dforce_repayments AS (
       FROM
         asset_details
     )
-    AND topics [0] :: STRING = '0x6fadbf7329d21f278e724fa0d4511001a158f2a97ee35c5bc4cf8b64417399ef'
+    AND topics [0] :: STRING = '0x298637f684da70674f26509b10f07ec2fbc77a335ab1e7d6215a4b2484d8bb52'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -62,7 +67,7 @@ AND _inserted_timestamp >= (
 )
 {% endif %}
 ),
-dforce_combine AS (
+liquidation_union AS (
   SELECT
     block_number,
     block_timestamp,
@@ -74,44 +79,37 @@ dforce_combine AS (
     contract_address,
     borrower,
     token,
-    C.token_symbol,
-    payer,
-    repayed_amount_raw,
-    C.underlying_asset_address AS repay_contract_address,
-    C.underlying_symbol AS repay_contract_symbol,
-    C.underlying_decimals,
-    b.platform,
-    b._log_id,
-    b._inserted_timestamp
+    asd1.token_symbol AS token_symbol,
+    liquidator,
+    seizeTokens_raw / pow(
+      10,
+      asd2.token_decimals
+    ) AS tokens_seized,
+    tokenCollateral AS protocol_market,
+    asd2.token_symbol AS collateral_token_symbol,
+    asd2.underlying_asset_address AS collateral_token,
+    asd2.underlying_symbol AS collateral_symbol,
+    repayAmount_raw AS amount_unadj,
+    repayAmount_raw / pow(
+      10,
+      asd1.underlying_decimals
+    ) AS amount,
+    asd1.underlying_decimals,
+    asd1.underlying_asset_address AS liquidation_contract_address,
+    asd1.underlying_symbol AS liquidation_contract_symbol,
+    l.platform,
+    l._inserted_timestamp,
+    l._log_id
   FROM
-    dforce_repayments b
-    LEFT JOIN asset_details C
-    ON b.token = C.token_address
+    liqee_liquidations l
+    LEFT JOIN asset_details asd1
+    ON l.token = asd1.token_address
+    LEFT JOIN asset_details asd2
+    ON l.tokenCollateral = asd2.token_address
 )
 SELECT
-  block_number,
-  block_timestamp,
-  tx_hash,
-  event_index,
-  origin_from_address,
-  origin_to_address,
-  origin_function_signature,
-  contract_address,
-  borrower,
-  token,
-  token_symbol,
-  payer,
-  repay_contract_address,
-  repay_contract_symbol,
-  repayed_amount_raw AS amount_unadj,
-  repayed_amount_raw / pow(
-    10,
-    underlying_decimals
-  ) AS amount,
-  platform,
-  _inserted_timestamp,
-  _log_id
+  *
 FROM
-  dforce_combine qualify(ROW_NUMBER() over(PARTITION BY _log_id
+  liquidation_union qualify(ROW_NUMBER() over(PARTITION BY _log_id
 ORDER BY
   _inserted_timestamp DESC)) = 1

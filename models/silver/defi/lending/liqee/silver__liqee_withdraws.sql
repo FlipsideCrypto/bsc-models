@@ -18,9 +18,9 @@ WITH asset_details AS (
         underlying_symbol,
         underlying_decimals
     FROM
-        {{ ref('silver__dforce_asset_details') }}
+        {{ ref('silver__liqee_asset_details') }}
 ),
-dforce_redemptions AS (
+liqee_redemptions AS (
     SELECT
         block_number,
         block_timestamp,
@@ -39,7 +39,7 @@ dforce_redemptions AS (
             segmented_data [3] :: STRING
         ) :: INTEGER AS redeemed_token_raw,
         CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 25, 40)) AS redeemer,
-        'dforce' AS platform,
+        'Liqee'AS platform,
         _inserted_timestamp,
         _log_id
     FROM
@@ -64,7 +64,7 @@ AND _inserted_timestamp >= (
 )
 {% endif %}
 ),
-dforce_combine AS (
+liqee_combine AS (
     SELECT
         block_number,
         block_timestamp,
@@ -87,7 +87,7 @@ dforce_combine AS (
         b._log_id,
         b._inserted_timestamp
     FROM
-        dforce_redemptions b
+        liqee_redemptions b
         LEFT JOIN asset_details C
         ON b.token = C.token_address
 )
@@ -118,6 +118,6 @@ SELECT
     _inserted_timestamp,
     _log_id
 FROM
-    dforce_combine ee qualify(ROW_NUMBER() over(PARTITION BY _log_id
+    liqee_combine ee qualify(ROW_NUMBER() over(PARTITION BY _log_id
 ORDER BY
     _inserted_timestamp DESC)) = 1

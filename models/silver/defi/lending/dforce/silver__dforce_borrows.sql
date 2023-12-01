@@ -54,7 +54,7 @@ dforce_borrows AS (
       FROM
         asset_details
     )
-    AND topics [0] :: STRING = '0x13ed6866d4e1ee6da46f845c46d7e54120883d75c5ea9a2dacc1c4ca8984ab80'
+    AND topics [0] :: STRING = '0x2dd79f4fccfd18c360ce7f9132f3621bf05eee18f995224badb32d17f172df73'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

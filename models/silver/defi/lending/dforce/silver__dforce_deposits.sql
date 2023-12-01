@@ -51,7 +51,7 @@ dforce_deposits AS (
       FROM
         asset_details
     )
-    AND topics [0] :: STRING = '0xb4c03061fb5b7fed76389d5af8f2e0ddb09f8c70d1333abbb62582835e10accb'
+    AND topics [0] :: STRING = '0 0x2f00e3cdd69a77be7ed215ec7b2a36784dd158f921fca79ac29deffa353fe6ee'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
