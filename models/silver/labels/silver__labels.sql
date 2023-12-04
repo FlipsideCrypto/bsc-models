@@ -14,7 +14,7 @@ SELECT
     label_type,
     label_subtype,
     address_name,
-    project_name,,
+    project_name,
     {{ dbt_utils.generate_surrogate_key(
         ['address']
     ) }} AS labels_id,

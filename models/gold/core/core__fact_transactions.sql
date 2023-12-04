@@ -38,8 +38,14 @@ SELECT
             ['tx_hash']
         ) }}
     ) AS fact_transactions_id,
-    GREATEST(COALESCE(A.inserted_timestamp, '2000-01-01'), COALESCE(b.inserted_timestamp, '2000-01-01')) AS inserted_timestamp,
-    GREATEST(COALESCE(A.modified_timestamp, '2000-01-01'), COALESCE(b.modified_timestamp, '2000-01-01')) AS modified_timestamp,
+    COALESCE(
+        inserted_timestamp,
+        '2000-01-01'
+    ) AS inserted_timestamp,
+    COALESCE(
+        modified_timestamp,
+        '2000-01-01'
+    ) AS modified_timestamp,
     VALUE AS bnb_value,
     value_precise_raw AS bnb_value_precise_raw,
     value_precise AS bnb_value_precise

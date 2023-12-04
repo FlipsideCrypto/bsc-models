@@ -97,7 +97,8 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    LEFT JOIN {{ ref('silver__hourly_prices_all_providers') }} A
+    bnb_base A
+    LEFT JOIN {{ ref('silver__hourly_prices_all_providers') }}
     ON DATE_TRUNC(
         'hour',
         A.block_timestamp

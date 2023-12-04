@@ -176,7 +176,7 @@ FROM
 {% endif %}
 )
 SELECT
-    *,,
+    *,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash', 'event_index']
     ) }} AS logs_id,
