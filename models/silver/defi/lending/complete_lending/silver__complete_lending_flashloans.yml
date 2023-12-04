@@ -1,11 +1,11 @@
 version: 2
 models:
-  - name: silver__liqee_borrows
-
+  - name: silver__complete_lending_flashloans
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
-            - _log_id
+            - TX_HASH
+            - EVENT_INDEX
     columns:
       - name: BLOCK_NUMBER
         tests:
@@ -16,37 +16,39 @@ models:
           - dbt_expectations.expect_row_values_to_have_recent_data:
               datepart: day
               interval: 3
-      - name: BORROWER
+      - name: EVENT_INDEX
         tests:
           - not_null
-      - name: BORROWS_CONTRACT_ADDRESS
-        tests:
-          - not_null:
-              where: BORROWS_CONTRACT_SYMBOL <> 'ETH'
-      - name: BORROWS_CONTRACT_SYMBOL
+      - name: TX_HASH
         tests:
           - not_null
-      - name: ITOKEN
+      - name: PROTOCOL_MARKET
+        tests:
+          - not_null 
+      - name: INITIATOR
         tests:
           - not_null
-      - name: ITOKEN_SYMBOL
+      - name: TARGET
         tests:
           - not_null
-      - name: LOAN_AMOUNT
-        tests:
-        - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - decimal
-                - float    
-      - name: LOAN_AMOUNT_USD
+      - name: FLASHLOAN_AMOUNT_UNADJ
+        tests: 
+          - not_null
+      - name: FLASHLOAN_AMOUNT
         tests: 
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - decimal
-                - float
-      - name: TX_HASH
+                - float 
+      - name: FLASHLOAN_AMOUNT_USD
+        tests: 
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - decimal
+                - float 
+      - name: PLATFORM
         tests: 
           - not_null
-      - name: EVENT_INDEX
-        tests: 
+      - name: BLOCKCHAIN
+        tests:
           - not_null

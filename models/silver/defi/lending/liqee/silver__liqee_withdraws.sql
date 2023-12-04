@@ -5,14 +5,14 @@
     cluster_by = ['block_timestamp::DATE'],
     tags = ['reorg','curated']
 ) }}
--- pull all token addresses and corresponding name
+-- pull all ITOKEN addresses and corresponding name
 WITH asset_details AS (
 
     SELECT
-        token_address,
-        token_symbol,
-        token_name,
-        token_decimals,
+        itoken_address,
+        itoken_symbol,
+        itoken_name,
+        itoken_decimals,
         underlying_asset_address,
         underlying_name,
         underlying_symbol,
@@ -30,7 +30,7 @@ liqee_redemptions AS (
         origin_to_address,
         origin_function_signature,
         contract_address,
-        contract_address AS token,
+        contract_address AS itoken,
         regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         utils.udf_hex_to_int(
             segmented_data [3] :: STRING
@@ -47,7 +47,7 @@ liqee_redemptions AS (
     WHERE
         contract_address IN (
             SELECT
-                token_address
+                itoken_address
             FROM
                 asset_details
         )
@@ -74,14 +74,14 @@ liqee_combine AS (
         origin_to_address,
         origin_function_signature,
         contract_address,
-        token,
+        itoken,
         redeemer,
         received_amount_raw,
         redeemed_token_raw,
         C.underlying_asset_address AS received_contract_address,
         C.underlying_symbol AS received_contract_symbol,
-        C.token_symbol,
-        C.token_decimals,
+        C.itoken_symbol,
+        C.itoken_decimals,
         C.underlying_decimals,
         b.platform,
         b._log_id,
@@ -89,7 +89,7 @@ liqee_combine AS (
     FROM
         liqee_redemptions b
         LEFT JOIN asset_details C
-        ON b.token = C.token_address
+        ON b.itoken = C.itoken_address
 )
 SELECT
     block_number,
@@ -100,8 +100,8 @@ SELECT
     origin_to_address,
     origin_function_signature,
     contract_address,
-    token,
-    token_symbol,
+    itoken,
+    itoken_symbol,
     received_amount_raw AS amount_unadj,
     received_amount_raw / pow(
         10,
@@ -111,7 +111,7 @@ SELECT
     received_contract_symbol,
     redeemed_token_raw / pow(
         10,
-        token_decimals
+        itoken_decimals
     ) AS redeemed_token,
     redeemer,
     platform,

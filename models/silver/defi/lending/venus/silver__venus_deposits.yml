@@ -18,7 +18,7 @@ models:
       - name: TOKEN_ADDRESS
         tests:
           - not_null
-      - name: TOKEN_SYMBOL
+      - name: ITOKEN_symbol
         tests:
           - not_null
       - name: ISSUED_TOKENS

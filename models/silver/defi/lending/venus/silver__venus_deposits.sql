@@ -5,14 +5,14 @@
   cluster_by = ['block_timestamp::DATE'],
   tags = ['reorg','curated']
 ) }}
--- pull all token addresses and corresponding name
+-- pull all itoken addresses and corresponding name
 WITH asset_details AS (
 
   SELECT
-    token_address,
-    token_symbol,
-    token_name,
-    token_decimals,
+    itoken_address,
+    itoken_symbol,
+    itoken_name,
+    itoken_decimals,
     underlying_asset_address,
     underlying_name,
     underlying_symbol,
@@ -30,7 +30,7 @@ venus_deposits AS (
     origin_to_address,
     origin_function_signature,
     contract_address,
-    contract_address AS token_address,
+    contract_address AS itoken_address,
     regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
     utils.udf_hex_to_int(
       segmented_data [2] :: STRING
@@ -47,7 +47,7 @@ venus_deposits AS (
   WHERE
     contract_address IN (
       SELECT
-        token_address
+        itoken_address
       FROM
         asset_details
     )
@@ -79,9 +79,9 @@ venus_combine AS (
     mintAmount_raw,
     C.underlying_asset_address AS supplied_contract_addr,
     C.underlying_symbol AS supplied_symbol,
-    C.token_address,
-    C.token_symbol,
-    C.token_decimals,
+    C.itoken_address,
+    C.itoken_symbol,
+    C.itoken_decimals,
     C.underlying_decimals,
     b.platform,
     b._log_id,
@@ -89,7 +89,7 @@ venus_combine AS (
   FROM
     venus_deposits b
     LEFT JOIN asset_details C
-    ON b.token_address = C.token_address
+    ON b.itoken_address = C.itoken_address
 )
 SELECT
   block_number,
@@ -100,11 +100,11 @@ SELECT
   origin_to_address,
   origin_function_signature,
   contract_address,
-  token_address,
-  token_symbol,
+  itoken_address as itoken,
+  itoken_symbol,
   minttokens_raw / pow(
     10,
-    token_decimals
+    itoken_decimals
   ) AS issued_tokens,
   mintAmount_raw AS amount_unadj,
   mintAmount_raw / pow(

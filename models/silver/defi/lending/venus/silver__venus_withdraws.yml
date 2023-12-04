@@ -15,10 +15,10 @@ models:
           - dbt_expectations.expect_row_values_to_have_recent_data:
               datepart: day
               interval: 3
-      - name: token
+      - name: ITOKEN
         tests:
           - not_null
-      - name: token_SYMBOL
+      - name: ITOKEN_symbol
         tests:
           - not_null
       - name: RECEIVED_AMOUNT

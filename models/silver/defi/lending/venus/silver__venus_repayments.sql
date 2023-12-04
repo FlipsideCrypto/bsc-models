@@ -9,10 +9,10 @@
 WITH asset_details AS (
 
   SELECT
-    token_address,
-    token_symbol,
-    token_name,
-    token_decimals,
+    itoken_address,
+    itoken_symbol,
+    itoken_name,
+    itoken_decimals,
     underlying_asset_address,
     underlying_name,
     underlying_symbol,
@@ -32,7 +32,7 @@ venus_repayments AS (
     contract_address,
     regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
     CONCAT('0x', SUBSTR(segmented_data [1] :: STRING, 25, 40)) AS borrower,
-    contract_address AS token,
+    contract_address AS itoken,
     CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 25, 40)) AS payer,
     utils.udf_hex_to_int(
       segmented_data [2] :: STRING
@@ -45,7 +45,7 @@ venus_repayments AS (
   WHERE
     contract_address IN (
       SELECT
-        token_address
+        itoken_address
       FROM
         asset_details
     )
@@ -73,8 +73,8 @@ venus_combine AS (
     origin_function_signature,
     contract_address,
     borrower,
-    token,
-    C.token_symbol,
+    itoken,
+    C.itoken_symbol,
     payer,
     repayed_amount_raw,
     C.underlying_asset_address AS repay_contract_address,
@@ -86,7 +86,7 @@ venus_combine AS (
   FROM
     venus_repayments b
     LEFT JOIN asset_details C
-    ON b.token = C.token_address
+    ON b.itoken = C.itoken_address
 )
 SELECT
   block_number,
@@ -98,8 +98,8 @@ SELECT
   origin_function_signature,
   contract_address,
   borrower,
-  token,
-  token_symbol,
+  itoken,
+  itoken_symbol,
   payer,
   repay_contract_address,
   repay_contract_symbol,

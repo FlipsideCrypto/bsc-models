@@ -104,7 +104,7 @@ SELECT
   borrower,
   borrows_contract_address,
   borrows_contract_symbol,
-  token,
+  token as token_address,
   token_symbol,
   loan_amount_raw AS amount_unadj,
   loan_amount_raw / pow(

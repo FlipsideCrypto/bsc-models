@@ -81,10 +81,10 @@ underlying_add AS (
         vtoken_pulls
 )
 SELECT
-    l.contract_address as token_address,
-    l.token_name,
-    l.token_symbol,
-    l.token_decimals,
+    l.contract_address as itoken_address,
+    l.token_name as itoken_name,
+    l.token_symbol as itoken_symbol,
+    l.token_decimals as itoken_decimals,
     l.underlying_address AS underlying_asset_address,
     C.token_name AS underlying_name,
     C.token_decimals AS underlying_decimals,

@@ -5,14 +5,14 @@
   cluster_by = ['block_timestamp::DATE'],
   tags = ['reorg','curated']
 ) }}
--- pull all token addresses and corresponding name
+-- pull all itoken addresses and corresponding name
 WITH asset_details AS (
 
   SELECT
-    token_address,
-    token_symbol,
-    token_name,
-    token_decimals,
+    itoken_address,
+    itoken_symbol,
+    itoken_name,
+    itoken_decimals,
     underlying_asset_address,
     underlying_name,
     underlying_symbol,
@@ -41,7 +41,7 @@ venus_borrows AS (
     utils.udf_hex_to_int(
       segmented_data [3] :: STRING
     ) :: INTEGER AS totalBorrows,
-    contract_address AS token,
+    contract_address AS itoken,
     'Venus' AS platform,
     _inserted_timestamp,
     _log_id
@@ -50,7 +50,7 @@ venus_borrows AS (
   WHERE
     contract_address IN (
       SELECT
-        token_address
+        itoken_address
       FROM
         asset_details
     )
@@ -81,8 +81,8 @@ venus_combine AS (
     loan_amount_raw,
     C.underlying_asset_address AS borrows_contract_address,
     C.underlying_symbol AS borrows_contract_symbol,
-    token,
-    C.token_symbol,
+    itoken,
+    C.itoken_symbol,
     C.underlying_decimals,
     b.platform,
     b._log_id,
@@ -90,7 +90,7 @@ venus_combine AS (
   FROM
     venus_borrows b
     LEFT JOIN asset_details C
-    ON b.token = C.token_address
+    ON b.itoken = C.itoken_address
 )
 SELECT
   block_number,
@@ -104,8 +104,8 @@ SELECT
   borrower,
   borrows_contract_address,
   borrows_contract_symbol,
-  token,
-  token_symbol,
+  itoken,
+  itoken_symbol,
   loan_amount_raw AS amount_unadj,
   loan_amount_raw / pow(
     10,
