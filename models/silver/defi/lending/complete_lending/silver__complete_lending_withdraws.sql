@@ -23,8 +23,8 @@ WITH withdraws AS (
         amount_unadj,
         amount,
         depositor_address,
-        'Kinza' AS platform,
-        'arbitrum' AS blockchain,
+        platform,
+        'bsc' AS blockchain,
         _LOG_ID,
         _INSERTED_TIMESTAMP
     FROM
@@ -58,7 +58,7 @@ SELECT
     amount,
     depositor_address,
     platform,
-    'arbitrum' AS blockchain,
+    'bsc' AS blockchain,
     _LOG_ID,
     _INSERTED_TIMESTAMP
 FROM
@@ -92,7 +92,7 @@ SELECT
     amount,
     redeemer AS depositor_address,
     platform,
-    'arbitrum' AS blockchain,
+    'bsc' AS blockchain,
     _LOG_ID,
     _INSERTED_TIMESTAMP
 FROM
@@ -126,7 +126,7 @@ SELECT
     amount,
     redeemer AS depositor_address,
     platform,
-    'arbitrum' AS blockchain,
+    'bsc' AS blockchain,
     _LOG_ID,
     _INSERTED_TIMESTAMP
 FROM
@@ -160,7 +160,7 @@ SELECT
     amount,
     redeemer AS depositor_address,
     platform,
-    'arbitrum' AS blockchain,
+    'bsc' AS blockchain,
     _LOG_ID,
     _INSERTED_TIMESTAMP
 FROM
@@ -189,8 +189,7 @@ FINAL AS (
         origin_function_signature,
         A.contract_address,
         CASE
-            WHEN platform = 'Compound V3' THEN 'WithdrawCollateral'
-            WHEN platform = 'Lodestar' THEN 'Redeem'
+            WHEN platform in ('dForce','Liqee','Venus') THEN 'Redeem'
             ELSE 'Withdraw'
         END AS event_name,
         protocol_market,

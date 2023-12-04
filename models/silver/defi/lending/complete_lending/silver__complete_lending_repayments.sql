@@ -24,8 +24,8 @@ WITH repayments AS (
     symbol AS token_symbol,
     payer AS payer_address,
     borrower,
-    'Aave V3' AS platform,
-    'arbitrum' AS blockchain,
+    platform,
+    'bsc' AS blockchain,
     _LOG_ID,
     _INSERTED_TIMESTAMP
   FROM
@@ -58,7 +58,7 @@ SELECT
   payer AS payer_address,
   borrower,
   platform,
-  'arbitrum' AS blockchain,
+  'bsc' AS blockchain,
   _LOG_ID,
   _INSERTED_TIMESTAMP
 FROM
@@ -91,7 +91,7 @@ SELECT
   payer AS payer_address,
   borrower,
   platform,
-  'arbitrum' AS blockchain,
+  'bsc' AS blockchain,
   _LOG_ID,
   _INSERTED_TIMESTAMP
 FROM
@@ -124,7 +124,7 @@ SELECT
   payer AS payer_address,
   borrower,
   platform,
-  'arbitrum' AS blockchain,
+  'bsc' AS blockchain,
   _LOG_ID,
   _INSERTED_TIMESTAMP
 FROM
@@ -157,7 +157,7 @@ SELECT
   payer AS payer_address,
   borrower,
   platform,
-  'arbitrum' AS blockchain,
+  'bsc' AS blockchain,
   _LOG_ID,
   _INSERTED_TIMESTAMP
 FROM
@@ -184,8 +184,7 @@ FINAL AS (
     origin_function_signature,
     A.contract_address,
     CASE
-      WHEN platform = 'Compound V3' THEN 'Supply'
-      WHEN platform = 'Lodestar' THEN 'RepayBorrow'
+      WHEN platform in ('dForce','Liqee','Venus')  THEN 'RepayBorrow'
       ELSE 'Repay'
     END AS event_name,
     protocol_market,

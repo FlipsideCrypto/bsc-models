@@ -28,7 +28,7 @@ WITH liquidation_union AS (
     collateral_token AS debt_asset,
     collateral_symbol AS debt_asset_symbol,
     platform,
-    'arbitrum' AS blockchain,
+    'bsc' AS blockchain,
     l._LOG_ID,
     l._INSERTED_TIMESTAMP
   FROM
@@ -65,7 +65,7 @@ SELECT
   collateral_token AS debt_asset,
   collateral_symbol AS debt_asset_symbol,
   platform,
-  'arbitrum' AS blockchain,
+  'bsc' AS blockchain,
   l._LOG_ID,
   l._INSERTED_TIMESTAMP
 FROM
@@ -101,8 +101,8 @@ SELECT
   collateral_token_symbol AS collateral_asset_symbol,
   debt_asset,
   debt_token_symbol AS debt_asset_symbol,
-  'Aave V3' AS platform,
-  'arbitrum' AS blockchain,
+  platform,
+  'bsc' AS blockchain,
   _LOG_ID,
   _INSERTED_TIMESTAMP
 FROM
@@ -138,7 +138,7 @@ SELECT
   debt_asset,
   debt_token_symbol AS debt_asset_symbol,
   platform,
-  'arbitrum' AS blockchain,
+  'bsc' AS blockchain,
   _LOG_ID,
   _INSERTED_TIMESTAMP
 FROM
@@ -174,7 +174,7 @@ SELECT
   collateral_token AS debt_asset,
   collateral_symbol AS debt_asset_symbol,
   platform,
-  'arbitrum' AS blockchain,
+  'bsc' AS blockchain,
   l._LOG_ID,
   l._INSERTED_TIMESTAMP
 FROM
@@ -235,9 +235,7 @@ FINAL AS (
     origin_function_signature,
     A.contract_address,
     CASE
-      WHEN platform = 'Compound V3' THEN 'AbsorbCollateral'
-      WHEN platform = 'Lodestar' THEN 'LiquidateBorrow'
-      WHEN platform = 'Silo' THEN 'Liquidate'
+      WHEN platform in ('dForce','Liqee','Venus')  THEN 'LiquidateBorrow'
       ELSE 'LiquidationCall'
     END AS event_name,
     liquidator,

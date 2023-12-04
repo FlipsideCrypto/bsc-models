@@ -24,7 +24,7 @@ WITH deposits AS (
     amount_unadj,
     amount,
     platform,
-    'arbitrum' AS blockchain,
+    'bsc' AS blockchain,
     _LOG_ID,
     _INSERTED_TIMESTAMP
   FROM
@@ -56,7 +56,7 @@ SELECT
   amount_unadj,
   amount,
   platform,
-  'arbitrum' AS blockchain,
+  'bsc' AS blockchain,
   _LOG_ID,
   _INSERTED_TIMESTAMP
 FROM
@@ -88,7 +88,7 @@ SELECT
   amount_unadj,
   amount,
   platform,
-  'arbitrum' AS blockchain,
+  'bsc' AS blockchain,
   _LOG_ID,
   _INSERTED_TIMESTAMP
 FROM
@@ -120,7 +120,7 @@ SELECT
   amount_unadj,
   amount,
   platform,
-  'arbitrum' AS blockchain,
+  'bsc' AS blockchain,
   _LOG_ID,
   _INSERTED_TIMESTAMP
 FROM
@@ -152,7 +152,7 @@ SELECT
   amount_unadj,
   amount,
   platform,
-  'arbitrum' AS blockchain,
+  'bsc' AS blockchain,
   _LOG_ID,
   _INSERTED_TIMESTAMP
 FROM
@@ -179,9 +179,8 @@ FINAL AS (
     origin_function_signature,
     A.contract_address,
     CASE
-      WHEN platform = 'Lodestar' THEN 'Mint'
-      WHEN platform = 'Compound V3' THEN 'SupplyCollateral'
-      WHEN platform = 'Aave V3' THEN 'Supply'
+      WHEN platform in ('dForce','Liqee','Venus') THEN 'Mint'
+      WHEN platform in ('Radiant','Kinza') THEN 'Supply'
       ELSE 'Deposit'
     END AS event_name,
     protocol_market,
