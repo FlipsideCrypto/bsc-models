@@ -85,10 +85,12 @@ base_tx AS (
         A.data :v :: STRING AS v,
         utils.udf_hex_to_int(
             A.data :value :: STRING
-        ) / pow(
-            10,
+        ) AS value_precise_raw,
+        utils.udf_decimal_adjust(
+            value_precise_raw,
             18
-        ) :: FLOAT AS VALUE,
+        ) AS value_precise,
+        value_precise :: FLOAT AS VALUE,
         A._INSERTED_TIMESTAMP,
         A.data
     FROM
@@ -113,6 +115,8 @@ new_records AS (
         t.position,
         t.type,
         t.v,
+        t.value_precise_raw,
+        t.value_precise,
         t.value,
         block_timestamp,
         CASE
@@ -126,10 +130,15 @@ new_records AS (
         cumulative_gas_used,
         effective_gas_price,
         utils.udf_decimal_adjust (
-            gas_price * r.gas_used,
-            9
+            utils.udf_hex_to_int(
+                t.data :gasPrice :: STRING
+            ) :: bigint * r.gas_used,
+            18
         ) AS tx_fee_precise,
-        tx_fee_precise :: FLOAT AS tx_fee,
+        COALESCE(
+            tx_fee_precise :: FLOAT,
+            0
+        ) AS tx_fee,
         r.type AS tx_type,
         t._inserted_timestamp,
         t.data
@@ -173,6 +182,8 @@ missing_data AS (
         t.position,
         t.type,
         t.v,
+        t.value_precise_raw,
+        t.value_precise,
         t.value,
         b.block_timestamp,
         FALSE AS is_pending,
@@ -181,11 +192,16 @@ missing_data AS (
         r.tx_status,
         r.cumulative_gas_used,
         r.effective_gas_price,
-        utils.udf_decimal_adjust (
-            t.gas_price * r.gas_used,
-            9
+        utils.udf_decimal_adjust(
+            utils.udf_hex_to_int(
+                t.data :gasPrice :: STRING
+            ) :: bigint * r.gas_used,
+            18
         ) AS tx_fee_precise_heal,
-        tx_fee_precise_heal :: FLOAT AS tx_fee,
+        COALESCE(
+            tx_fee_precise_heal :: FLOAT,
+            0
+        ) AS tx_fee,
         r.type AS tx_type,
         GREATEST(
             t._inserted_timestamp,
@@ -227,6 +243,8 @@ FINAL AS (
         TYPE,
         v,
         VALUE,
+        value_precise_raw,
+        value_precise,
         block_timestamp,
         is_pending,
         gas_used,
@@ -263,6 +281,8 @@ SELECT
     TYPE,
     v,
     VALUE,
+    value_precise_raw,
+    value_precise,
     block_timestamp,
     is_pending,
     gas_used,
@@ -280,7 +300,13 @@ FROM
 {% endif %}
 )
 SELECT
-    *
+    *,
+    {{ dbt_utils.generate_surrogate_key(
+        ['tx_hash']
+    ) }} AS transactions_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     FINAL qualify(ROW_NUMBER() over (PARTITION BY block_number, POSITION
 ORDER BY

@@ -1,6 +1,7 @@
 {{ config (
     materialized = "incremental",
     unique_key = "created_contract_address",
+    merge_exclude_columns = ["inserted_timestamp"],
     cluster_by = "block_timestamp::DATE",
     tags = ['non_realtime']
 ) }}
@@ -12,7 +13,13 @@ SELECT
     to_address AS created_contract_address,
     from_address AS creator_address,
     input AS created_contract_input,
-    _inserted_timestamp
+    _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['to_address']
+    ) }} AS created_contracts_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
     {{ ref('silver__traces') }}
 WHERE
