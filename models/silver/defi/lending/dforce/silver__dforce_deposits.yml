@@ -12,7 +12,6 @@ models:
       - name: BLOCK_TIMESTAMP
         tests:
           - not_null
-
       - name: TOKEN_ADDRESS
         tests:
           - not_null
@@ -39,8 +38,7 @@ models:
                 - float
       - name: SUPPLIED_CONTRACT_ADDR
         tests:
-          - not_null:
-              where: SUPPLIED_SYMBOL <> 'ETH'
+          - not_null
       - name: SUPPLIED_SYMBOL
         tests:
           - not_null

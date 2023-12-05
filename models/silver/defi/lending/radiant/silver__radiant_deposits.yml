@@ -16,7 +16,6 @@ models:
       - name: BLOCK_TIMESTAMP
         tests:
           - not_null
-  
       - name: TX_HASH
         tests:
           - not_null

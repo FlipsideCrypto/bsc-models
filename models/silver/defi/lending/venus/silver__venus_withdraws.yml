@@ -15,7 +15,7 @@ models:
       - name: ITOKEN
         tests:
           - not_null
-      - name: ITOKEN_symbol
+      - name: ITOKEN_SYMBOL
         tests:
           - not_null
       - name: RECEIVED_AMOUNT
@@ -32,12 +32,11 @@ models:
                 - float    
       - name: RECEIVED_CONTRACT_ADDRESS
         tests:
-          - not_null:
-              where: RECEIVED_CONTRACT_SYMBOL <> 'ETH'
+          - not_null
       - name: RECEIVED_CONTRACT_SYMBOL
         tests:
           - not_null
-      - name: REDEEMED_token
+      - name: REDEEMED_TOKEN
         tests: 
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:

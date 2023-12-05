@@ -13,7 +13,6 @@ models:
       - name: BLOCK_TIMESTAMP
         tests:
           - not_null
-
       - name: BORROWER
         tests:
           - not_null

@@ -12,7 +12,6 @@ models:
       - name: BLOCK_TIMESTAMP
         tests:
           - not_null
-
       - name: BORROWER
         tests:
           - not_null
@@ -27,8 +26,7 @@ models:
           - not_null
       - name: REPAY_CONTRACT_ADDRESS
         tests:
-          - not_null:
-              where: REPAY_CONTRACT_SYMBOL <> 'ETH'
+          - not_null
       - name: REPAY_CONTRACT_SYMBOL
         tests:
           - not_null    

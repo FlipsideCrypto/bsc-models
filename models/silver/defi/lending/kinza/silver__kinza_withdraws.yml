@@ -19,7 +19,6 @@ models:
       - name: BLOCK_TIMESTAMP
         tests:
           - not_null
-
       - name: EVENT_INDEX
         tests: 
           - not_null
@@ -27,26 +26,14 @@ models:
         tests:
           - not_null 
       - name: KINZA_TOKEN
-      - name: WITHDRAWN_TOKENS
+      - name: AMOUNT
         tests: 
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - decimal
                 - float 
-      - name: WITHDRAWN_USD
-        tests: 
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - decimal
-                - float
       - name: DEPOSITOR_ADDRESS
       - name: PLATFORM
         tests: 
           - not_null
-      - name: TOKEN_PRICE
-        tests: 
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - decimal
-                - float 
       - name: SYMBOL

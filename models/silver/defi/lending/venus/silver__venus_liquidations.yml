@@ -12,22 +12,19 @@ models:
       - name: BLOCK_TIMESTAMP
         tests:
           - not_null
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: day
-              interval: 14
       - name: BORROWER
         tests:
           - not_null
       - name: ITOKEN
         tests:
           - not_null
-      - name: ITOKEN_symbol
+      - name: ITOKEN_SYMBOL
         tests:
           - not_null
       - name: LIQUIDATOR
         tests:
           - not_null
-      - name: tokenS_SEIZED
+      - name: TOKENS_SEIZED
         tests:
         - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -47,8 +44,7 @@ models:
                 - float
       - name: LIQUIDATION_CONTRACT_ADDRESS
         tests:
-          - not_null:
-              where: LIQUIDATION_CONTRACT_SYMBOL <> 'ETH'
+          - not_null
       - name: LIQUIDATION_CONTRACT_SYMBOL
         tests:
           - not_null

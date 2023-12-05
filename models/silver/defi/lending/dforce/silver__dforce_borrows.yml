@@ -13,7 +13,6 @@ models:
       - name: BLOCK_TIMESTAMP
         tests:
           - not_null
-
       - name: BORROWER
         tests:
           - not_null
@@ -23,10 +22,10 @@ models:
       - name: BORROWS_CONTRACT_SYMBOL
         tests:
           - not_null
-      - name: token
+      - name: TOKEN_ADDRESS
         tests:
           - not_null
-      - name: token_SYMBOL
+      - name: TOKEN_SYMBOL
         tests:
           - not_null
       - name: LOAN_AMOUNT

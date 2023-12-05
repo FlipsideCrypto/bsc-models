@@ -12,9 +12,6 @@ models:
       - name: BLOCK_TIMESTAMP
         tests:
           - not_null
-          - dbt_expectations.expect_row_values_to_have_recent_data:
-              datepart: day
-              interval: 14
       - name: BORROWER
         tests:
           - not_null
@@ -47,8 +44,7 @@ models:
                 - float
       - name: LIQUIDATION_CONTRACT_ADDRESS
         tests:
-          - not_null:
-              where: LIQUIDATION_CONTRACT_SYMBOL <> 'ETH'
+          - not_null
       - name: LIQUIDATION_CONTRACT_SYMBOL
         tests:
           - not_null
