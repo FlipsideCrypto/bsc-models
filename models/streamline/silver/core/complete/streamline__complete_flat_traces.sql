@@ -1,4 +1,4 @@
--- depends_on: {{ ref('bronze__streamline_traces') }}
+-- depends_on: {{ ref('bronze__streamline_flat_traces') }}
 {{ config (
     materialized = "incremental",
     unique_key = "id",
