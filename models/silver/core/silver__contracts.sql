@@ -81,44 +81,27 @@ token_names AS (
                         base_metadata
                     GROUP BY
                         1
-                ),
-                test AS (
-                    SELECT
-                        c1.contract_address :: STRING AS contract_address,
-                        token_name,
-                        TRY_TO_NUMBER(token_decimals) AS token_decimals,
-                        token_symbol,
-                        _inserted_timestamp,
-                        {{ dbt_utils.generate_surrogate_key(
-                            ['c1.contract_address']
-                        ) }} AS contracts_id,
-                        SYSDATE() AS inserted_timestamp,
-                        SYSDATE() AS modified_timestamp,
-                        '{{ invocation_id }}' AS _invocation_id
-                    FROM
-                        contracts c1
-                        LEFT JOIN token_names
-                        ON c1.contract_address = token_names.contract_address
-                        LEFT JOIN token_symbols
-                        ON c1.contract_address = token_symbols.contract_address
-                        LEFT JOIN token_decimals
-                        ON c1.contract_address = token_decimals.contract_address
-                        AND dec_length < 3 qualify(ROW_NUMBER() over(PARTITION BY c1.contract_address
-                    ORDER BY
-                        _inserted_timestamp DESC)) = 1
                 )
             SELECT
-                *
+                c1.contract_address :: STRING AS contract_address,
+                token_name,
+                TRY_TO_NUMBER(token_decimals) AS token_decimals,
+                token_symbol,
+                _inserted_timestamp,
+                {{ dbt_utils.generate_surrogate_key(
+                    ['c1.contract_address']
+                ) }} AS contracts_id,
+                SYSDATE() AS inserted_timestamp,
+                SYSDATE() AS modified_timestamp,
+                '{{ invocation_id }}' AS _invocation_id
             FROM
-                test
-            UNION ALL
-            SELECT
-                '0x2dfeb752222cccecb9bc0a934b02c3a86f633900',
-                'sam test',
-                1,
-                'sam test',
-                SYSDATE(),
-                NULL,
-                SYSDATE(),
-                SYSDATE(),
-                NULL
+                contracts c1
+                LEFT JOIN token_names
+                ON c1.contract_address = token_names.contract_address
+                LEFT JOIN token_symbols
+                ON c1.contract_address = token_symbols.contract_address
+                LEFT JOIN token_decimals
+                ON c1.contract_address = token_decimals.contract_address
+                AND dec_length < 3 qualify(ROW_NUMBER() over(PARTITION BY c1.contract_address
+            ORDER BY
+                _inserted_timestamp DESC)) = 1
