@@ -4,7 +4,7 @@
     unique_key = 'block_number',
     cluster_by = ['block_timestamp::DATE', '_inserted_timestamp::DATE'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(contract_address, tx_hash)",
-    tags = ['curated','reorg']
+    tags = ['curated','reorg', 'heal']
 ) }}
 
 WITH base AS (
@@ -325,61 +325,59 @@ transfer_base AS (
         to_address IS NOT NULL
 )
 
-{% if is_incremental() %},
-fill_transfers AS (
+{% if is_incremental() and var(
+    'HEAL_MODEL'
+) %},
+heal_model AS (
     SELECT
-        t.block_number,
-        t.block_timestamp,
-        t.tx_hash,
-        t.event_index,
-        t.intra_event_index,
-        t.contract_address,
+        block_number,
+        block_timestamp,
+        tx_hash,
+        event_index,
+        intra_event_index,
+        contract_address,
         C.token_name AS project_name,
-        t.from_address,
-        t.to_address,
-        t.tokenId,
-        t.erc1155_value,
-        t.event_type,
-        t.token_transfer_type,
-        t._log_id,
-        GREATEST(
-            t._inserted_timestamp,
-            C._inserted_timestamp
-        ) AS _inserted_timestamp
+        from_address,
+        to_address,
+        tokenId,
+        erc1155_value,
+        event_type,
+        token_transfer_type,
+        _log_id,
+        t._inserted_timestamp
     FROM
         {{ this }}
         t
-        INNER JOIN {{ ref('silver__contracts') }} C USING (contract_address)
+        LEFT JOIN {{ ref('silver__contracts') }} C USING (contract_address)
     WHERE
-        t.project_name IS NULL
-        AND C.token_name IS NOT NULL
-),
-blocks_fill AS (
-    SELECT
-        * exclude (
-            nft_transfers_id,
-            inserted_timestamp,
-            modified_timestamp,
-            _invocation_id
-        )
-    FROM
-        {{ this }}
-    WHERE
-        block_number IN (
+        t.block_number IN (
             SELECT
-                block_number
+                DISTINCT t1.block_number AS block_number
             FROM
-                fill_transfers
+                {{ this }}
+                t1
+            WHERE
+                t1.project_name IS NULL
+                AND _inserted_timestamp < (
+                    SELECT
+                        MAX(
+                            _inserted_timestamp
+                        ) - INTERVAL '36 hours'
+                    FROM
+                        {{ this }}
+                )
+                AND EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        {{ ref('silver__contracts') }} C
+                    WHERE
+                        C._inserted_timestamp > DATEADD('DAY', -14, SYSDATE())
+                        AND C.token_name IS NOT NULL
+                        AND C.contract_address = t1.contract_address)
+                )
         )
-        AND _log_id NOT IN (
-            SELECT
-                _log_id
-            FROM
-                fill_transfers
-        )
-)
-{% endif %},
-final_base AS (
+    {% endif %}
     SELECT
         block_number,
         block_timestamp,
@@ -395,32 +393,24 @@ final_base AS (
         event_type,
         token_transfer_type,
         _log_id,
-        _inserted_timestamp
+        _inserted_timestamp,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_hash','event_index','intra_event_index']
+        ) }} AS nft_transfers_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
-        transfer_base
+        transfer_base qualify ROW_NUMBER() over (
+            PARTITION BY _log_id
+            ORDER BY
+                _inserted_timestamp DESC
+        ) = 1
 
-{% if is_incremental() %}
+{% if is_incremental() and var(
+    'HEAL_MODEL'
+) %}
 UNION ALL
-SELECT
-    block_number,
-    block_timestamp,
-    tx_hash,
-    event_index,
-    intra_event_index,
-    contract_address,
-    project_name,
-    from_address,
-    to_address,
-    tokenId,
-    erc1155_value,
-    event_type,
-    token_transfer_type,
-    _log_id,
-    _inserted_timestamp
-FROM
-    fill_transfers
-{% endif %}
-)
 SELECT
     block_number,
     block_timestamp,
@@ -444,8 +434,5 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    final_base qualify ROW_NUMBER() over (
-        PARTITION BY _log_id
-        ORDER BY
-            _inserted_timestamp DESC
-    ) = 1
+    heal_model
+{% endif %}

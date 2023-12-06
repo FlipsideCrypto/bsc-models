@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     unique_key = ['block_number','platform_name','platform_exchange_version'],
     cluster_by = ['block_timestamp::DATE'],
-    tags = ['curated','reorg']
+    tags = ['curated','reorg', 'heal']
 ) }}
 
 WITH nft_base_models AS (
@@ -195,7 +195,6 @@ final_base AS (
         seller_address,
         buyer_address,
         nft_address,
-        C.token_name AS project_name,
         erc1155_value,
         tokenId,
         p.symbol AS currency_symbol,
@@ -286,12 +285,12 @@ final_base AS (
             'hour',
             b.block_timestamp
         ) = e.hour
-        LEFT JOIN {{ ref('silver__contracts') }} C
-        ON b.nft_address = C.contract_address
 )
 
-{% if is_incremental() %},
-label_fill_sales AS (
+{% if is_incremental() and var(
+    'HEAL_MODEL'
+) %},
+heal_model AS (
     SELECT
         block_number,
         block_timestamp,
@@ -301,7 +300,7 @@ label_fill_sales AS (
         platform_address,
         platform_name,
         platform_exchange_version,
-        NULL AS aggregator_name,
+        aggregator_name,
         seller_address,
         buyer_address,
         nft_address,
@@ -330,63 +329,97 @@ label_fill_sales AS (
         nft_log_id,
         input_data,
         _log_id,
-        GREATEST(
-            t._inserted_timestamp,
-            C._inserted_timestamp
-        ) AS _inserted_timestamp
+        t._inserted_timestamp
     FROM
         {{ this }}
         t
-        INNER JOIN {{ ref('silver__contracts') }} C
+        LEFT JOIN {{ ref('silver__contracts') }} C
         ON t.nft_address = C.contract_address
     WHERE
-        t.project_name IS NULL
-        AND C.token_name IS NOT NULL
-),
-blocks_fill AS (
-    SELECT
-        * exclude (
-            complete_nft_sales_id,
-            inserted_timestamp,
-            modified_timestamp,
-            _invocation_id
-        )
-    FROM
-        {{ this }}
-    WHERE
-        block_number IN (
+        t.block_number IN (
             SELECT
-                block_number
+                DISTINCT t1.block_number AS block_number
             FROM
-                label_fill_sales
+                {{ this }}
+                t1
+            WHERE
+                t1.project_name IS NULL
+                AND _inserted_timestamp < (
+                    SELECT
+                        MAX(
+                            _inserted_timestamp
+                        ) - INTERVAL '36 hours'
+                    FROM
+                        {{ this }}
+                )
+                AND EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        {{ ref('silver__contracts') }} C
+                    WHERE
+                        C._inserted_timestamp > DATEADD('DAY', -14, SYSDATE())
+                        AND C.token_name IS NOT NULL
+                        AND C.contract_address = t1.nft_address)
+                )
         )
-        AND nft_log_id NOT IN (
-            SELECT
-                nft_log_id
-            FROM
-                label_fill_sales
-        )
-)
-{% endif %},
-final_joins AS (
+    {% endif %}
     SELECT
-        *
+        block_number,
+        block_timestamp,
+        tx_hash,
+        event_index,
+        event_type,
+        platform_address,
+        platform_name,
+        platform_exchange_version,
+        aggregator_name,
+        seller_address,
+        buyer_address,
+        nft_address,
+        C.token_name AS project_name,
+        erc1155_value,
+        tokenId,
+        currency_symbol,
+        currency_address,
+        total_price_raw,
+        total_fees_raw,
+        platform_fee_raw,
+        creator_fee_raw,
+        price,
+        price_usd,
+        total_fees,
+        total_fees_usd,
+        platform_fee,
+        platform_fee_usd,
+        creator_fee,
+        creator_fee_usd,
+        tx_fee,
+        tx_fee_usd,
+        origin_from_address,
+        origin_to_address,
+        origin_function_signature,
+        nft_log_id,
+        input_data,
+        _log_id,
+        b._inserted_timestamp,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_hash', 'event_index', 'nft_address','tokenId','platform_exchange_version']
+        ) }} AS complete_nft_sales_id,
+        SYSDATE() AS inserted_timestamp,
+        SYSDATE() AS modified_timestamp,
+        '{{ invocation_id }}' AS _invocation_id
     FROM
-        final_base
+        final_base b
+        LEFT JOIN {{ ref('silver__contracts') }} C
+        ON b.nft_address = C.contract_address qualify(ROW_NUMBER() over(PARTITION BY nft_log_id
+    ORDER BY
+        b._inserted_timestamp DESC)) = 1
 
-{% if is_incremental() %}
+{% if is_incremental() and var(
+    'HEAL_MODEL'
+) %}
 UNION ALL
-SELECT
-    *
-FROM
-    label_fill_sales
-UNION ALL
-SELECT
-    *
-FROM
-    blocks_fill
-{% endif %}
-)
 SELECT
     block_number,
     block_timestamp,
@@ -433,6 +466,5 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    final_joins qualify(ROW_NUMBER() over(PARTITION BY nft_log_id
-ORDER BY
-    _inserted_timestamp DESC)) = 1
+    heal_model
+{% endif %}
