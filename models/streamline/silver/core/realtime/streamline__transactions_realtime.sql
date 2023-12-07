@@ -1,7 +1,7 @@
 {{ config (
     materialized = "view",
     post_hook = if_data_call_function(
-        func = "{{this.schema}}.udf_json_rpc(object_construct('sql_source', '{{this.identifier}}', 'external_table', 'transactions', 'exploded_key','[\"result\", \"transactions\"]', 'method', 'eth_getBlockByNumber', 'producer_batch_size',1000, 'producer_limit_size',5000000, 'worker_batch_size',100))",
+        func = "{{this.schema}}.udf_json_rpc(object_construct('sql_source', '{{this.identifier}}', 'external_table', 'transactions', 'exploded_key','[\"result\", \"transactions\"]', 'method', 'eth_getBlockByNumber', 'producer_batch_size',200, 'producer_limit_size',5000000, 'worker_batch_size',20))",
         target = "{{this.schema}}.{{this.identifier}}"
     ),
     tags = ['streamline_core_realtime']
