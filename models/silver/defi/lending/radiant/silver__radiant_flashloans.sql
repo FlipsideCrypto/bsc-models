@@ -87,6 +87,7 @@ SELECT
         10,
         atoken_meta.underlying_decimals
     ) AS flashloan_amount,
+    premium_quantity as premium_amount_unadj,
     premium_quantity / pow(
         10,
         atoken_meta.underlying_decimals

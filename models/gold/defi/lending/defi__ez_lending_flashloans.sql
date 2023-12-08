@@ -31,6 +31,9 @@ SELECT
     flashloan_amount_unadj,
     flashloan_amount,
     flashloan_amount_usd,
+    premium_amount_unadj,
+    premium_amount,
+    premium_amount_usd,
         COALESCE (
         complete_lending_flashloans_id,
         {{ dbt_utils.generate_surrogate_key(
