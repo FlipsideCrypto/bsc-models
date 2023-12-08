@@ -30,9 +30,9 @@ contract_pull as (
         l.BLOCK_NUMBER,
         l.BLOCK_TIMESTAMP,
         l.CONTRACT_ADDRESS,
-        c.token_name,
-        c.token_symbol,
-        c.token_decimals,
+        CASE WHEN L.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 'StaFi' ELSE c.token_name END AS token_name,
+        CASE WHEN L.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 'rATOM' ELSE c.token_symbol END AS token_symbol,
+        CASE WHEN L.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 18 ELSE c.token_decimals END AS token_decimals,
         CASE
             WHEN L.contract_address = '0x450e09a303aa4bcc518b5f74dd00433bd9555a77' THEN '0xb5102cee1528ce2c760893034a4603663495fd72'
             WHEN L.contract_address = '0x09d0d2c90d09dd817559425479a573faa354c9d2' THEN '0x1dab2a526c8ac1ddea86838a7b968626988d33de'
@@ -40,6 +40,7 @@ contract_pull as (
             WHEN L.contract_address = '0x89934cf95c8ffa4d748b3a9963fad13dba52c52f' THEN '0x0d8ce2a99bb6e3b7db580ed848240e4a0f9ae153'
             WHEN L.contract_address = '0xf51422c47c6c3e40cfca4a7b04232aedb7f49948' THEN '0x7083609fce4d1d8dc0c979aab8c869ea2c873402'
             WHEN L.contract_address = '0x88131dd9f6a78d3d23abcf4960d91913d2dc2307' THEN '0x2170ed0880ac9a755fd29b2688956bd959f933f8'
+            WHEN L.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN '0x1e5f6d5355ae5f1c5c687d3041c55f0aeec57eab'
             ELSE NULL
         END AS underlying_asset
     from 
@@ -60,9 +61,9 @@ SELECT
     l.token_symbol as itoken_symbol,
     l.token_decimals as itoken_decimals,
     l.underlying_asset as underlying_asset_address,
-    c.token_name as underlying_name,
-    c.token_symbol as underlying_symbol,
-    c.token_decimals as underlying_decimals
+    CASE WHEN L.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 'StaFi' ELSE c.token_name END AS underlying_name,
+    CASE WHEN L.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 'rATOM' ELSE c.token_symbol END AS underlying_symbol,
+    CASE WHEN L.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 18 ELSE c.token_decimals END AS underlying_decimals
 FROM
     CONTRACT_PULL l 
 left join

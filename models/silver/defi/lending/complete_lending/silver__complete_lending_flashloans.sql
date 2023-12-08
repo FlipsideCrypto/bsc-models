@@ -23,7 +23,7 @@ WITH flashloans AS (
     flashloan_amount,
     initiator_address,
     target_address,
-    platform,
+    'Aave V3' AS platform,
     symbol,
     blockchain,
     _LOG_ID,

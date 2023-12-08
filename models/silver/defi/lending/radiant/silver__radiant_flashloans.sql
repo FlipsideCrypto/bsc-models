@@ -82,7 +82,7 @@ SELECT
     contract_address,
     radiant_market,
     atoken_meta.atoken_address AS radiant_token,
-    flashloan_quantity AS flashloan_amount_unadj,
+    flashloan_quantity AS amount_unadj,
     flashloan_quantity / pow(
         10,
         atoken_meta.underlying_decimals
