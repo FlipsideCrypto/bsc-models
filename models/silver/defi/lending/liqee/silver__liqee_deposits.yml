@@ -12,14 +12,13 @@ models:
       - name: BLOCK_TIMESTAMP
         tests:
           - not_null
-
-      - name: TOKEN_ADDRESS
+      - name: ITOKEN
         tests:
           - not_null
       - name: ITOKEN_SYMBOL
         tests:
           - not_null
-      - name: ISSUED_TOKENS
+      - name: ISSUED_ITOKENS
         tests:
         - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -30,17 +29,10 @@ models:
         - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - decimal
-                - float    
-      - name: SUPPLIED_BASE_ASSET_USD
-        tests: 
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - decimal
-                - float
+                - float   
       - name: SUPPLIED_CONTRACT_ADDR
         tests:
-          - not_null:
-              where: SUPPLIED_SYMBOL <> 'ETH'
+          - not_null
       - name: SUPPLIED_SYMBOL
         tests:
           - not_null

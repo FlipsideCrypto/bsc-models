@@ -47,6 +47,11 @@ borrow AS (
         topics [0] :: STRING = '0xc6a898309e823ee50bac64e45ca8adba6690e99e7841c45d754e2a38e9019d9b'
         AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
         AND tx_status = 'SUCCESS' --excludes failed txs
+        AND kinza_market not in (
+        '0x2dd73dcc565761b684c56908fa01ac270a03f70f',
+        '0xf0daf89f387d9d4ac5e3326eadb20e7bec0ffc7c',
+        '0x45b817b36cadba2c3b6c2427db5b22e2e65400dd'
+        ) --weird 1 holder tokens with no event logs on creation, completely different different function signature than typical as well
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

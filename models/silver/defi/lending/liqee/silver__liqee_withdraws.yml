@@ -12,7 +12,6 @@ models:
       - name: BLOCK_TIMESTAMP
         tests:
           - not_null
-
       - name: ITOKEN
         tests:
           - not_null
@@ -25,20 +24,13 @@ models:
               column_type_list:
                 - decimal
                 - float  
-      - name: RECEIVED_AMOUNT_USD
-        tests:
-        - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - decimal
-                - float    
       - name: RECEIVED_CONTRACT_ADDRESS
         tests:
-          - not_null:
-              where: RECEIVED_CONTRACT_SYMBOL <> 'ETH'
+          - not_null
       - name: RECEIVED_CONTRACT_SYMBOL
         tests:
           - not_null
-      - name: REDEEMED_token
+      - name: REDEEMED_ITOKEN
         tests: 
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:

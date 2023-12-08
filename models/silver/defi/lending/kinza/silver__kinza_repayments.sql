@@ -32,6 +32,13 @@ WITH repay AS(
         {{ ref('silver__logs') }}
     WHERE
         topics [0] :: STRING = '0x4cdde6e09bb755c9a5589ebaec640bbfedff1362d4b255ebf8339782b9942faa'
+    AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
+    AND tx_status = 'SUCCESS' --excludes failed txs
+    AND kinza_market not in (
+            '0x2dd73dcc565761b684c56908fa01ac270a03f70f',
+            '0xf0daf89f387d9d4ac5e3326eadb20e7bec0ffc7c',
+            '0x45b817b36cadba2c3b6c2427db5b22e2e65400dd'
+            ) --weird 1 holder tokens with no event logs on creation, completely different different function signature than typical as well
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -43,8 +50,6 @@ AND _inserted_timestamp >= (
         {{ this }}
 )
 {% endif %}
-AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
-AND tx_status = 'SUCCESS' --excludes failed txs
 ),
 atoken_meta AS (
     SELECT

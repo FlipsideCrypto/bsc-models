@@ -38,6 +38,8 @@ WITH liquidation AS(
         {{ ref('silver__logs') }}
     WHERE
         topics [0] :: STRING = '0xe76026d190f8c969db64638eaf9bc7087a3758e7fe58c017135a5051b4d7c4f8'
+    AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
+    AND tx_status = 'SUCCESS' --excludes failed txs
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -49,8 +51,6 @@ AND _inserted_timestamp >= (
         {{ this }}
 )
 {% endif %}
-AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
-AND tx_status = 'SUCCESS' --excludes failed txs
 ),
 atoken_meta AS (
     SELECT

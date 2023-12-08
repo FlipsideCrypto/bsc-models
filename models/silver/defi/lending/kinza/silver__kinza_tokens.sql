@@ -32,7 +32,10 @@ WITH DECODE AS (
     WHERE
         topics [0] = '0xb19e051f8af41150ccccb3fc2c2d8d15f4a4cf434f32a559ba75fe73d6eea20b'
     AND
-        origin_from_address = lower('0xCCB8F7Cb8C49aB596E6F0EdDCEd3d3A6B1912c92')
+        origin_from_address in(
+            lower('0xCCB8F7Cb8C49aB596E6F0EdDCEd3d3A6B1912c92'),
+            lower('0x9cBde15Db0A6910696fED74B0694d024809D289b')
+        )
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -78,7 +81,10 @@ debt_tokens AS (
     WHERE
         topics [0] = '0x3a0ca721fc364424566385a1aa271ed508cc2c0949c2272575fb3013a163a45f'
     AND
-        origin_from_address = lower('0xCCB8F7Cb8C49aB596E6F0EdDCEd3d3A6B1912c92')
+        origin_from_address in(
+            lower('0xCCB8F7Cb8C49aB596E6F0EdDCEd3d3A6B1912c92'),
+            lower('0x9cBde15Db0A6910696fED74B0694d024809D289b')
+        )
 ),
 a_token_step_2 AS (
     SELECT
@@ -92,7 +98,7 @@ a_token_step_2 AS (
         atoken_symbol,
         _inserted_timestamp,
         _log_id,
-        'Radiant' AS protocol
+        'Kinza' AS protocol
     FROM
         a_token_step_1
 )

@@ -19,13 +19,10 @@ models:
       - name: TX_HASH
         tests:
           - not_null
-      - name: SUPPLIED_USD
+      - name: AMOUNT_UNADJ
         tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - decimal
-                - float
-      - name: ISSUED_TOKENS
+          - not_null
+      - name: AMOUNT
         tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -46,10 +43,6 @@ models:
       - name: PLATFORM
         tests: 
           - not_null
-      - name: TOKEN_PRICE
-        tests: 
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - decimal
-                - float 
       - name: SYMBOL
+        tests: 
+          - not_null

@@ -2,6 +2,7 @@ version: 2
 models:
   - name: silver__radiant_repayments
     tests:
+    tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - TX_HASH
@@ -19,7 +20,6 @@ models:
       - name: BLOCK_TIMESTAMP
         tests:
           - not_null
-
       - name: EVENT_INDEX
         tests:
           - not_null
@@ -27,13 +27,10 @@ models:
         tests:
           - not_null 
       - name: RADIANT_TOKEN
-      - name: REPAYED_TOKENS
+      - name: AMOUNT_UNADJ
         tests: 
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - decimal
-                - float 
-      - name: REPAYED_USD
+          - not_null
+      - name: AMOUNT
         tests: 
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
@@ -50,11 +47,7 @@ models:
           - not_null
       - name: PLATFORM
         tests: 
-          - not_null
-      - name: TOKEN_PRICE
-        tests: 
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - decimal
-                - float 
+          - not_null 
       - name: SYMBOL
+        tests: 
+          - not_null
