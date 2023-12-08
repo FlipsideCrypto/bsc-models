@@ -39,7 +39,7 @@ WITH flashloan AS (
     FROM
         {{ ref('silver__logs') }}
     WHERE
-        topics [0] :: STRING = '0x631042c832b07452973831137f2d73e395028b44b250dedc5abb0ee766e168ac'
+        topics [0] :: STRING = '0xefefaba5e921573100900a3ad9cf29f222d995fb3b6045797eaea7521bd8d6f0'
 AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
 AND tx_status = 'SUCCESS' --excludes failed txs
 AND kinza_market not in (
@@ -101,7 +101,7 @@ SELECT
     target_address AS target_address,
 'Kinza' AS platform,
     atoken_meta.underlying_symbol AS symbol,
-    'arbitrum' AS blockchain,
+    'bsc' AS blockchain,
     _log_id,
     _inserted_timestamp
 FROM

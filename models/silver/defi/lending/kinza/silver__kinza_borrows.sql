@@ -44,7 +44,7 @@ borrow AS (
     FROM
         {{ ref('silver__logs') }}
     WHERE
-        topics [0] :: STRING = '0xc6a898309e823ee50bac64e45ca8adba6690e99e7841c45d754e2a38e9019d9b'
+        topics [0] :: STRING = '0xb3d084820fb1a9decffb176436bd02558d15fac9b0ddfed8c465bc7359d7dce0'
         AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
         AND tx_status = 'SUCCESS' --excludes failed txs
         AND kinza_market not in (
@@ -106,7 +106,7 @@ SELECT
     atoken_meta.underlying_symbol AS symbol,
     atoken_meta.underlying_decimals AS underlying_decimals,
     'Kinza' AS platform,
-    'arbitrum' AS blockchain,
+    'bsc' AS blockchain,
     _log_id,
     _inserted_timestamp
 FROM

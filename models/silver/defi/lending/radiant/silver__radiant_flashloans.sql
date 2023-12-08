@@ -96,7 +96,7 @@ SELECT
     target_address AS target_address,
 'Radiant V2' AS platform,
     atoken_meta.underlying_symbol AS symbol,
-    'arbitrum' AS blockchain,
+    'bsc' AS blockchain,
     _log_id,
     _inserted_timestamp
 FROM

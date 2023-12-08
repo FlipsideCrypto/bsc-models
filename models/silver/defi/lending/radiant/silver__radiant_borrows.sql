@@ -101,7 +101,7 @@ SELECT
     atoken_meta.underlying_symbol AS symbol,
     atoken_meta.underlying_decimals AS underlying_decimals,
     'Radiant V2' AS platform,
-    'arbitrum' AS blockchain,
+    'bsc' AS blockchain,
     _log_id,
     _inserted_timestamp
 FROM

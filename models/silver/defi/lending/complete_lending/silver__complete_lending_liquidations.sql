@@ -190,6 +190,43 @@ WHERE
       {{ this }}
   )
 {% endif %}
+UNION ALL
+SELECT
+  tx_hash,
+  block_number,
+  block_timestamp,
+  event_index,
+  origin_from_address,
+  origin_to_address,
+  origin_function_signature,
+  contract_address,
+  liquidator,
+  borrower,
+  amount_unadj,
+  amount,
+  NULL AS amount_usd,
+  itoken AS protocol_collateral_asset,
+  liquidation_contract_address AS collateral_asset,
+  liquidation_contract_symbol AS collateral_asset_symbol,
+  collateral_token AS debt_asset,
+  collateral_symbol AS debt_asset_symbol,
+  platform,
+  'bsc' AS blockchain,
+  l._LOG_ID,
+  l._INSERTED_TIMESTAMP
+FROM
+  {{ ref('silver__liqee_liquidations') }}
+  l
+
+{% if is_incremental() %}
+WHERE
+  l._inserted_timestamp >= (
+    SELECT
+      MAX(_inserted_timestamp) - INTERVAL '36 hours'
+    FROM
+      {{ this }}
+  )
+{% endif %}
 ),
 contracts AS (
   SELECT

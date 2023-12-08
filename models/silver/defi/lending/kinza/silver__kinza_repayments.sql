@@ -31,7 +31,7 @@ WITH repay AS(
     FROM
         {{ ref('silver__logs') }}
     WHERE
-        topics [0] :: STRING = '0x4cdde6e09bb755c9a5589ebaec640bbfedff1362d4b255ebf8339782b9942faa'
+        topics [0] :: STRING = '0xa534c8dbe71f871f9f3530e97a74601fea17b426cae02e1c5aee42c96c784051'
     AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
     AND tx_status = 'SUCCESS' --excludes failed txs
     AND kinza_market not in (
@@ -89,7 +89,7 @@ SELECT
     lending_pool_contract,
 'Kinza' AS platform,
     atoken_meta.underlying_symbol AS symbol,
-    'arbitrum' AS blockchain,
+    'bsc' AS blockchain,
     _log_id,
     _inserted_timestamp
 FROM

@@ -37,7 +37,7 @@ WITH liquidation AS(
     FROM
         {{ ref('silver__logs') }}
     WHERE
-        topics [0] :: STRING = '0xe76026d190f8c969db64638eaf9bc7087a3758e7fe58c017135a5051b4d7c4f8'
+        topics [0] :: STRING = '0xe413a321e8681d831f4dbccbca790d2952b56f977908e45be37335533e005286'
     AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
     AND tx_status = 'SUCCESS' --excludes failed txs
 
@@ -92,7 +92,7 @@ SELECT
 'Kinza' AS platform,
     amc.underlying_symbol AS collateral_token_symbol,
     amd.underlying_symbol AS debt_token_symbol,
-    'arbitrum' AS blockchain,
+    'bsc' AS blockchain,
     _log_id,
     _inserted_timestamp
 FROM
