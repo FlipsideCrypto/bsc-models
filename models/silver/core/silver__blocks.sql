@@ -3,14 +3,18 @@
     materialized = 'incremental',
     unique_key = "block_number",
     cluster_by = "block_timestamp::date",
-    tags = ['core','non_realtime']
+    tags = ['core','non_realtime'],
+    merge_exclude_columns = ["inserted_timestamp"],
+    full_refresh = false
 ) }}
 
 SELECT
     block_number,
-    TRY_TO_NUMBER(utils.udf_hex_to_int(
-        DATA :result :baseFeePerGas :: STRING
-    )) AS base_fee_per_gas,
+    TRY_TO_NUMBER(
+        utils.udf_hex_to_int(
+            DATA :result :baseFeePerGas :: STRING
+        )
+    ) AS base_fee_per_gas,
     utils.udf_hex_to_int(
         DATA :result :difficulty :: STRING
     ) :: INT AS difficulty,
@@ -49,7 +53,13 @@ SELECT
     DATA :result :transactionsRoot :: STRING AS transactions_root,
     DATA :result :uncles AS uncles,
     DATA,
-    _inserted_timestamp
+    _inserted_timestamp,
+    {{ dbt_utils.generate_surrogate_key(
+        ['block_number']
+    ) }} AS blocks_id,
+    SYSDATE() AS inserted_timestamp,
+    SYSDATE() AS modified_timestamp,
+    '{{ invocation_id }}' AS _invocation_id
 FROM
 
 {% if is_incremental() %}

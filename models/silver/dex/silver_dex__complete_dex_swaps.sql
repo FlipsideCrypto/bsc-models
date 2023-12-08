@@ -9,10 +9,10 @@
 WITH contracts AS (
 
   SELECT
-    contract_address as address,
-    token_symbol as symbol,
-    token_name as NAME,
-    token_decimals as decimals
+    contract_address AS address,
+    token_symbol AS symbol,
+    token_name AS NAME,
+    token_decimals AS decimals
   FROM
     {{ ref('silver__contracts') }}
 ),
@@ -166,13 +166,25 @@ woofi_swaps AS (
     token_out,
     CONCAT(
       LEAST(
-          COALESCE(symbol_in, CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))),
-          COALESCE(symbol_out, CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42)))
+        COALESCE(
+          symbol_in,
+          CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))
+        ),
+        COALESCE(
+          symbol_out,
+          CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42))
+        )
       ),
       '-',
       GREATEST(
-          COALESCE(symbol_in, CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))),
-          COALESCE(symbol_out, CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42)))
+        COALESCE(
+          symbol_in,
+          CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))
+        ),
+        COALESCE(
+          symbol_out,
+          CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42))
+        )
       )
     ) AS pool_name,
     _log_id,
@@ -592,13 +604,25 @@ hashflow_swaps AS (
     token_out,
     CONCAT(
       LEAST(
-          COALESCE(symbol_in, CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))),
-          COALESCE(symbol_out, CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42)))
+        COALESCE(
+          symbol_in,
+          CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))
+        ),
+        COALESCE(
+          symbol_out,
+          CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42))
+        )
       ),
       '-',
       GREATEST(
-          COALESCE(symbol_in, CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))),
-          COALESCE(symbol_out, CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42)))
+        COALESCE(
+          symbol_in,
+          CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))
+        ),
+        COALESCE(
+          symbol_out,
+          CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42))
+        )
       )
     ) AS pool_name,
     _log_id,
@@ -654,13 +678,25 @@ hashflow_v3_swaps AS (
     token_out,
     CONCAT(
       LEAST(
-          COALESCE(symbol_in, CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))),
-          COALESCE(symbol_out, CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42)))
+        COALESCE(
+          symbol_in,
+          CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))
+        ),
+        COALESCE(
+          symbol_out,
+          CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42))
+        )
       ),
       '-',
       GREATEST(
-          COALESCE(symbol_in, CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))),
-          COALESCE(symbol_out, CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42)))
+        COALESCE(
+          symbol_in,
+          CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))
+        ),
+        COALESCE(
+          symbol_out,
+          CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42))
+        )
       )
     ) AS pool_name,
     _log_id,
@@ -924,13 +960,25 @@ levelfi_swaps AS (
     token_out,
     CONCAT(
       LEAST(
-          COALESCE(symbol_in, CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))),
-          COALESCE(symbol_out, CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42)))
+        COALESCE(
+          symbol_in,
+          CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))
+        ),
+        COALESCE(
+          symbol_out,
+          CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42))
+        )
       ),
       '-',
       GREATEST(
-          COALESCE(symbol_in, CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))),
-          COALESCE(symbol_out, CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42)))
+        COALESCE(
+          symbol_in,
+          CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))
+        ),
+        COALESCE(
+          symbol_out,
+          CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42))
+        )
       )
     ) AS pool_name,
     _log_id,
@@ -1090,13 +1138,25 @@ pancakeswap_v2_mm_swaps AS (
     token_out,
     CONCAT(
       LEAST(
-          COALESCE(symbol_in, CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))),
-          COALESCE(symbol_out, CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42)))
+        COALESCE(
+          symbol_in,
+          CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))
+        ),
+        COALESCE(
+          symbol_out,
+          CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42))
+        )
       ),
       '-',
       GREATEST(
-          COALESCE(symbol_in, CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))),
-          COALESCE(symbol_out, CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42)))
+        COALESCE(
+          symbol_in,
+          CONCAT(SUBSTRING(token_in, 1, 5), '...', SUBSTRING(token_in, 39, 42))
+        ),
+        COALESCE(
+          symbol_out,
+          CONCAT(SUBSTRING(token_out, 1, 5), '...', SUBSTRING(token_out, 39, 42))
+        )
       )
     ) AS pool_name,
     _log_id,
@@ -2016,7 +2076,7 @@ SELECT
   amount_in_unadj,
   amount_in,
   CASE
-    WHEN amount_out_usd IS NULL 
+    WHEN amount_out_usd IS NULL
     OR ABS((amount_in_usd - amount_out_usd) / NULLIF(amount_out_usd, 0)) > 0.75
     OR ABS((amount_in_usd - amount_out_usd) / NULLIF(amount_in_usd, 0)) > 0.75 THEN NULL
     ELSE amount_in_usd
@@ -2039,8 +2099,15 @@ SELECT
   symbol_in,
   symbol_out,
   f._log_id,
-  f._inserted_timestamp
+  f._inserted_timestamp,
+  {{ dbt_utils.generate_surrogate_key(
+    ['f.tx_hash','f.event_index']
+  ) }} AS complete_dex_swaps_id,
+  SYSDATE() AS inserted_timestamp,
+  SYSDATE() AS modified_timestamp,
+  '{{ invocation_id }}' AS _invocation_id
 FROM
   FINAL f
-LEFT JOIN {{ ref('silver_dex__complete_dex_liquidity_pools') }} p
+  LEFT JOIN {{ ref('silver_dex__complete_dex_liquidity_pools') }}
+  p
   ON f.contract_address = p.pool_address
