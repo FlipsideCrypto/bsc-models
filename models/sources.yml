@@ -45,6 +45,7 @@ sources:
       - name: confirm_blocks
       - name: token_balances
       - name: bnb_balances
+      - name: flat_traces
   - name: bsc_silver
     database: bsc
     schema: silver
