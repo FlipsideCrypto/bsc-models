@@ -21,7 +21,7 @@ WITH liquidation_union AS (
     borrower,
     amount_unadj,
     amount,
-    NULL AS amount_usd,
+
     itoken AS protocol_collateral_asset,
     liquidation_contract_address AS collateral_asset,
     liquidation_contract_symbol AS collateral_asset_symbol,
@@ -29,15 +29,15 @@ WITH liquidation_union AS (
     collateral_symbol AS debt_asset_symbol,
     platform,
     'bsc' AS blockchain,
-    l._LOG_ID,
-    l._INSERTED_TIMESTAMP
+    _LOG_ID,
+    _INSERTED_TIMESTAMP
   FROM
     {{ ref('silver__venus_liquidations') }}
     l
 
 {% if is_incremental() %}
 WHERE
-  l._inserted_timestamp >= (
+  _inserted_timestamp >= (
     SELECT
       MAX(_inserted_timestamp) - INTERVAL '36 hours'
     FROM
@@ -58,7 +58,6 @@ SELECT
   borrower,
   amount_unadj,
   amount,
-  NULL AS amount_usd,
   token AS protocol_collateral_asset,
   liquidation_contract_address AS collateral_asset,
   liquidation_contract_symbol AS collateral_asset_symbol,
@@ -66,15 +65,15 @@ SELECT
   collateral_symbol AS debt_asset_symbol,
   platform,
   'bsc' AS blockchain,
-  l._LOG_ID,
-  l._INSERTED_TIMESTAMP
+  _LOG_ID,
+  _INSERTED_TIMESTAMP
 FROM
   {{ ref('silver__dforce_liquidations') }}
   l
 
 {% if is_incremental() %}
 WHERE
-  l._inserted_timestamp >= (
+  _inserted_timestamp >= (
     SELECT
       MAX(_inserted_timestamp) - INTERVAL '36 hours'
     FROM
@@ -95,7 +94,6 @@ SELECT
   borrower,
   amount_unadj,
   amount,
-  NULL AS amount_usd,
   collateral_kinza_token AS protocol_collateral_asset,
   collateral_asset,
   collateral_token_symbol AS collateral_asset_symbol,
@@ -131,7 +129,6 @@ SELECT
   borrower,
   amount_unadj,
   amount,
-  NULL AS amount_usd,
   collateral_radiant_token AS protocol_collateral_asset,
   collateral_asset,
   collateral_token_symbol AS collateral_asset_symbol,
@@ -167,7 +164,6 @@ SELECT
   borrower,
   amount_unadj,
   amount,
-  NULL AS amount_usd,
   itoken AS protocol_collateral_asset,
   liquidation_contract_address AS collateral_asset,
   liquidation_contract_symbol AS collateral_asset_symbol,
@@ -175,15 +171,15 @@ SELECT
   collateral_symbol AS debt_asset_symbol,
   platform,
   'bsc' AS blockchain,
-  l._LOG_ID,
-  l._INSERTED_TIMESTAMP
+  _LOG_ID,
+  _INSERTED_TIMESTAMP
 FROM
   {{ ref('silver__venus_liquidations') }}
   l
 
 {% if is_incremental() %}
 WHERE
-  l._inserted_timestamp >= (
+  _inserted_timestamp >= (
     SELECT
       MAX(_inserted_timestamp) - INTERVAL '36 hours'
     FROM
@@ -204,7 +200,6 @@ SELECT
   borrower,
   amount_unadj,
   amount,
-  NULL AS amount_usd,
   itoken AS protocol_collateral_asset,
   liquidation_contract_address AS collateral_asset,
   liquidation_contract_symbol AS collateral_asset_symbol,
@@ -212,54 +207,21 @@ SELECT
   collateral_symbol AS debt_asset_symbol,
   platform,
   'bsc' AS blockchain,
-  l._LOG_ID,
-  l._INSERTED_TIMESTAMP
+  _LOG_ID,
+  _INSERTED_TIMESTAMP
 FROM
   {{ ref('silver__liqee_liquidations') }}
-  l
+  
 
 {% if is_incremental() %}
 WHERE
-  l._inserted_timestamp >= (
+  _inserted_timestamp >= (
     SELECT
       MAX(_inserted_timestamp) - INTERVAL '36 hours'
     FROM
       {{ this }}
   )
 {% endif %}
-),
-contracts AS (
-  SELECT
-    *
-  FROM
-    {{ ref('silver__contracts') }} C
-  WHERE
-    C.contract_address IN (
-      SELECT
-        DISTINCT(collateral_asset) AS asset
-      FROM
-        liquidation_union
-    )
-),
-prices AS (
-  SELECT
-    *
-  FROM
-    {{ ref('price__ez_hourly_token_prices') }}
-    p
-  WHERE
-    token_address IN (
-      SELECT
-        DISTINCT(collateral_asset) AS asset
-      FROM
-        liquidation_union
-    )
-    AND HOUR > (
-      SELECT
-        MIN(block_timestamp)
-      FROM
-        liquidation_union
-    )
 ),
 FINAL AS (
   SELECT
@@ -294,13 +256,13 @@ FINAL AS (
     A._INSERTED_TIMESTAMP
   FROM
     liquidation_union A
-    LEFT JOIN prices p
+    LEFT JOIN {{ ref('price__ez_hourly_token_prices') }}
     ON collateral_asset = p.token_address
     AND DATE_TRUNC(
       'hour',
       block_timestamp
     ) = p.hour
-    LEFT JOIN contracts C
+    LEFT JOIN {{ ref('silver__contracts') }} C
     ON collateral_asset = C.contract_address
 )
 SELECT

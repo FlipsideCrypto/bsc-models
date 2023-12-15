@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'table',
-    tags = ['curated']
+    tags = ['stale']
 ) }}
 
 WITH vtoken_pulls AS (

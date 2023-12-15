@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'table',
-    tags = ['curated']
+    tags = ['stale']
 ) }}
 
 with log_pull as (
@@ -30,8 +30,8 @@ contract_pull as (
         l.BLOCK_NUMBER,
         l.BLOCK_TIMESTAMP,
         l.CONTRACT_ADDRESS,
-        CASE WHEN L.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 'StaFi' ELSE c.token_name END AS token_name,
-        CASE WHEN L.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 'rATOM' ELSE c.token_symbol END AS token_symbol,
+        CASE WHEN L.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 'Liqee StaFi' ELSE c.token_name END AS token_name,
+        CASE WHEN L.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 'qrATOM' ELSE c.token_symbol END AS token_symbol,
         CASE WHEN L.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 18 ELSE c.token_decimals END AS token_decimals,
         CASE
             WHEN L.contract_address = '0x450e09a303aa4bcc518b5f74dd00433bd9555a77' THEN '0xb5102cee1528ce2c760893034a4603663495fd72'

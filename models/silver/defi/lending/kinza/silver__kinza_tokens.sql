@@ -85,6 +85,16 @@ debt_tokens AS (
             lower('0xCCB8F7Cb8C49aB596E6F0EdDCEd3d3A6B1912c92'),
             lower('0x9cBde15Db0A6910696fED74B0694d024809D289b')
         )
+{% if is_incremental() %}
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(
+            _inserted_timestamp
+        ) - INTERVAL '12 hours'
+    FROM
+        {{ this }}
+)
+{% endif %}
 ),
 a_token_step_2 AS (
     SELECT
