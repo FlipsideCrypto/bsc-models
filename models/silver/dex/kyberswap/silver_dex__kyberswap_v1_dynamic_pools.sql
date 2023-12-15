@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    unique_key = 'block_number',
+    unique_key = 'pool_address',
     tags = ['curated']
 ) }}
 
@@ -34,16 +34,11 @@ WITH pool_creation AS (
     WHERE
         contract_address = '0x878dfe971d44e9122048308301f540910bbd934c' --dynamic fee factory
         AND topics [0] :: STRING = '0xfc574402c445e75f2b79b67884ff9c662244dce454c5ae68935fcd0bebb7c8ff' --created pool
+
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
-    FROM
-        {{ this }}
-)
-AND pool_address NOT IN (
-    SELECT
-        DISTINCT pool_address
     FROM
         {{ this }}
 )
@@ -63,4 +58,6 @@ SELECT
     _log_id,
     _inserted_timestamp
 FROM
-    pool_creation
+    pool_creation qualify(ROW_NUMBER() over (PARTITION BY pool_address
+ORDER BY
+    _inserted_timestamp DESC)) = 1
