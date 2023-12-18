@@ -4,9 +4,9 @@
     unique_key = ['block_number', 'event_index'],
     cluster_by = "block_timestamp::date",
     incremental_predicates = ["dynamic_range", "block_number"],
-    full_refresh = false,
-    merge_exclude_columns = ["inserted_timestamp"],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
+    merge_exclude_columns = ["inserted_timestamp"],
+    full_refresh = false,
     tags = ['decoded_logs','reorg']
 ) }}
 
@@ -40,15 +40,17 @@ WHERE
         FROM
             {{ this }}
     )
+    AND DATA NOT ILIKE '%Event topic is not present in given ABI%'
 {% else %}
     {{ ref('bronze__fr_decoded_logs') }}
 WHERE
     _partition_by_block_number <= 2500000
+    AND DATA NOT ILIKE '%Event topic is not present in given ABI%'
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY block_number, event_index
 ORDER BY
-    _inserted_timestamp DESC)) = 1
+    _inserted_timestamp DESC, _partition_by_created_date DESC)) = 1
 ),
 transformed_logs AS (
     SELECT
@@ -60,7 +62,7 @@ transformed_logs AS (
         decoded_data,
         _inserted_timestamp,
         _log_id,
-        ethereum.silver.udf_transform_logs(decoded_data) AS transformed
+        utils.udf_transform_logs(decoded_data) AS transformed
     FROM
         base_data
 ),
@@ -119,7 +121,7 @@ new_records AS (
         origin_to_address,
         topics,
         DATA,
-        event_removed,
+        event_removed :: STRING AS event_removed,
         tx_status,
         CASE
             WHEN block_timestamp IS NULL THEN TRUE
@@ -145,8 +147,12 @@ missing_data AS (
         t.transformed,
         t._log_id,
         GREATEST(
-            t._inserted_timestamp,
-            l._inserted_timestamp
+            TO_TIMESTAMP_NTZ(
+                t._inserted_timestamp
+            ),
+            TO_TIMESTAMP_NTZ(
+                l._inserted_timestamp
+            )
         ) AS _inserted_timestamp,
         t.decoded_flat,
         l.block_timestamp,
@@ -155,7 +161,7 @@ missing_data AS (
         l.origin_to_address,
         l.topics,
         l.data,
-        l.event_removed,
+        l.event_removed :: STRING AS event_removed,
         l.tx_status,
         FALSE AS is_pending
     FROM
@@ -231,7 +237,3 @@ SELECT
 FROM
     missing_data
 {% endif %}
-
-qualify(ROW_NUMBER() over (PARTITION BY block_number, event_index
-ORDER BY
-    _inserted_timestamp DESC, is_pending ASC)) = 1
