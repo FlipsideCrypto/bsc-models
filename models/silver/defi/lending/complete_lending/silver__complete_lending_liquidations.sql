@@ -256,7 +256,7 @@ FINAL AS (
     A._INSERTED_TIMESTAMP
   FROM
     liquidation_union A
-    LEFT JOIN {{ ref('price__ez_hourly_token_prices') }}
+    LEFT JOIN {{ ref('price__ez_hourly_token_prices') }} P
     ON collateral_asset = p.token_address
     AND DATE_TRUNC(
       'hour',
