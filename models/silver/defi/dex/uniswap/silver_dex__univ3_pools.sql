@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    unique_key = 'block_number',
+    unique_key = 'pool_address',
     cluster_by = ['block_timestamp::DATE'],
     tags = ['curated']
 ) }}
@@ -16,14 +16,18 @@ WITH created_pools AS (
         regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         LOWER(CONCAT('0x', SUBSTR(topics [1] :: STRING, 27, 40))) AS token0_address,
         LOWER(CONCAT('0x', SUBSTR(topics [2] :: STRING, 27, 40))) AS token1_address,
-        TRY_TO_NUMBER(utils.udf_hex_to_int(
-            's2c',
-            topics [3] :: STRING
-        )) AS fee, 
-        TRY_TO_NUMBER(utils.udf_hex_to_int(
-            's2c',
-            segmented_data [0] :: STRING
-        )) AS tick_spacing,
+        TRY_TO_NUMBER(
+            utils.udf_hex_to_int(
+                's2c',
+                topics [3] :: STRING
+            )
+        ) AS fee,
+        TRY_TO_NUMBER(
+            utils.udf_hex_to_int(
+                's2c',
+                segmented_data [0] :: STRING
+            )
+        ) AS tick_spacing,
         CONCAT('0x', SUBSTR(segmented_data [1] :: STRING, 25, 40)) AS pool_address,
         _log_id,
         _inserted_timestamp
@@ -70,7 +74,6 @@ AND _inserted_timestamp >= (
 )
 {% endif %}
 ),
-
 FINAL AS (
     SELECT
         block_number,
@@ -96,7 +99,6 @@ FINAL AS (
         LEFT JOIN initial_info i
         ON p.pool_address = i.contract_address
 )
-
 SELECT
     *
 FROM
