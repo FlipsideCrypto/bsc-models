@@ -22,7 +22,7 @@ tbl AS (
         CONCAT(
             block_number_hex,
             '_-_',
-            '{"tracer": "callTracer"}'
+            '{"tracer": "callTracer","timeout": "30s"}'
         ) AS params
     FROM
         {{ ref("streamline__blocks") }}
@@ -52,7 +52,7 @@ tbl AS (
                 ''
             ),
             '_-_',
-            '{"tracer": "callTracer"}'
+            '{"tracer": "callTracer","timeout": "30s"}'
         ) AS params
     FROM
         {{ ref("streamline__complete_traces") }}

@@ -24,7 +24,7 @@ SELECT
     CONCAT(
         block_number_hex,
         '_-_',
-        '{"tracer": "callTracer"}'
+        '{"tracer": "callTracer","timeout": "30s"}'
     ) AS params
 FROM
     {{ ref("streamline__blocks") }}
@@ -49,7 +49,7 @@ SELECT
             ''
         ),
         '_-_',
-        '{"tracer": "callTracer"}'
+        '{"tracer": "callTracer","timeout": "30s"}'
     ) AS params
 FROM
     {{ ref("streamline__complete_traces") }}
