@@ -1,5 +1,5 @@
 {{ config (
-    materialized = "view"
+    materialized = "ephemeral"
 ) }}
 
 WITH base AS (
@@ -33,5 +33,4 @@ FROM
     t
     ON m._partition_by_block_id = t._partition_by_block_id
     AND m.block_number = t.block_number
-WHERE
-    t._partition_by_block_id > 33000000
+    AND t._partition_by_block_id > 33000000
