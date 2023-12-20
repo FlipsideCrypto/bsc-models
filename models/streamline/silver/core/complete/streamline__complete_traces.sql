@@ -10,6 +10,7 @@
 SELECT
     id,
     block_number,
+    file_name,
     _inserted_timestamp
 FROM
 
