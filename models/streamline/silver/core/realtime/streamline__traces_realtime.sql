@@ -83,7 +83,7 @@ retry_blocks AS (
                 ''
             ),
             '_-_',
-            '{"tracer": "callTracer"}'
+            '{"tracer": "callTracer","timeout": "30s"}'
         ) AS params
     FROM
         (
