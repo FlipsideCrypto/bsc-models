@@ -96,6 +96,27 @@ retry_blocks AS (
                 block_number
             FROM
                 {{ ref("_unconfirmed_blocks") }}
+            UNION
+            SELECT
+                block_number
+            FROM
+                (
+                    SELECT
+                        VALUE :: INT AS block_number
+                    FROM
+                        (
+                            SELECT
+                                blocks_impacted_array
+                            FROM
+                                {{ ref("silver_observability__traces_completeness") }}
+                            ORDER BY
+                                test_timestamp DESC
+                            LIMIT
+                                1
+                        ), LATERAL FLATTEN (
+                            input => blocks_impacted_array
+                        )
+                )
         )
 )
 SELECT
