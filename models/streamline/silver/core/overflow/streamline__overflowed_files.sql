@@ -2,15 +2,6 @@
     materialized = "view"
 ) }}
 
-WITH base AS (
-
-    SELECT
-        file_name
-    FROM
-        {{ ref("streamline__potential_missing_trace_files") }}
-    LIMIT
-        100
-)
 SELECT
     file_name,
     build_scoped_file_url(
@@ -23,4 +14,4 @@ SELECT
         index_cols
     ) AS index_vals
 FROM
-    base
+    {{ ref("streamline__potential_overflowed_traces") }}
