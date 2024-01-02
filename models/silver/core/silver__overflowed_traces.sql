@@ -62,7 +62,7 @@ WITH bronze_overflowed_traces AS (
         ) AS str_array
     FROM
         {{ ref("bronze__overflowed_traces") }}
-        -- this is a view that finds up to two files we are missing from fact_traces, which unions this table with the silver.traces table. Therefore, we do not need an incremental strategy explicitly for this table.
+        -- this is a view that finds one tx we are missing from all_traces, which unions this table with the silver.traces table. Therefore, we do not need an incremental strategy explicitly for this table.
     GROUP BY
         block_number,
         tx_position,

@@ -2,78 +2,62 @@
     materialized = "view"
 ) }}
 
-WITH block_range AS (
+WITH potential_overflows AS (
 
     SELECT
-        COALESCE(
-            b.block_number,
-            bl.block_number
-        ) AS block_number
-    FROM
-        (
-            SELECT
-                MIN(
-                    VALUE :: INT
-                ) AS block_number
-            FROM
-                (
-                    SELECT
-                        blocks_impacted_array
-                    FROM
-                        {{ ref("silver_observability__traces_completeness") }}
-                    ORDER BY
-                        test_timestamp DESC
-                    LIMIT
-                        1
-                ), LATERAL FLATTEN (
-                    input => blocks_impacted_array
-                )
-        ) b
-        JOIN {{ ref("_block_lookback") }}
-        bl
-),
-missing_blocks AS (
-    SELECT
-        DISTINCT tx.block_number
-    FROM
-        {{ ref("silver__transactions") }}
-        tx
-        LEFT JOIN {{ ref("core__fact_traces") }}
-        tr USING (
-            block_number,
-            tx_hash
-        )
-        JOIN block_range br
-        ON tx.block_number >= br.block_number
-    WHERE
-        tr.tx_hash IS NULL
-),
-missing_files AS (
-    SELECT
-        DISTINCT file_name
-    FROM
-        missing_blocks
-        INNER JOIN {{ ref("streamline__complete_traces") }} USING (block_number)
-    WHERE
-        file_name IS NOT NULL
-    ORDER BY
-        file_name ASC
-    LIMIT
-        2
-), overflowed_files AS (
-    SELECT
+        block_number,
+        POSITION,
         file_name,
-        build_scoped_file_url(
-            @streamline.bronze.external_tables,
-            file_name
-        ) AS file_url,
-        ['block_number', 'array_index'] AS index_cols,
+        file_url,
+        index_cols
+    FROM
+        {{ ref("bronze__potential_overflowed_traces") }}
+    ORDER BY
+        block_number ASC,
+        POSITION ASC
+    LIMIT
+        1
+), overflowed_responses AS (
+    SELECT
+        block_number,
+        POSITION,
+        file_name,
+        file_url,
+        index_cols,
         utils.udf_detect_overflowed_responses(
             file_url,
             index_cols
         ) AS index_vals
     FROM
-        missing_files
+        potential_overflows
+),
+overflowed_txs AS (
+    SELECT
+        block_number,
+        POSITION,
+        file_name,
+        file_url,
+        index_cols,
+        VALUE [0] AS overflowed_block,
+        VALUE [1] AS overflowed_tx,
+        block_number = overflowed_block
+        AND POSITION = overflowed_tx AS missing
+    FROM
+        overflowed_responses,
+        LATERAL FLATTEN (
+            input => index_vals
+        )
+),
+overflowed_files AS (
+    SELECT
+        file_name,
+        file_url,
+        index_cols,
+        [overflowed_block, overflowed_tx] AS index_vals
+    FROM
+        overflowed_txs
+    WHERE
+        missing = TRUE
 )
 SELECT
     o.file_name,
@@ -84,7 +68,7 @@ FROM
         utils.udtf_flatten_overflowed_responses(
             o.file_url,
             o.index_cols,
-            o.index_vals
+            [o.index_vals]
         )
     ) f
 WHERE
