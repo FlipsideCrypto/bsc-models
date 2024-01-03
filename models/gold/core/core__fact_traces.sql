@@ -74,7 +74,7 @@ SELECT
     bnb_value_precise
 FROM
     {{ source(
-        'bsc_silver_dev',
+        'bsc_silver',
         'overflowed_traces'
     ) }}
     -- source works around circular dependency
