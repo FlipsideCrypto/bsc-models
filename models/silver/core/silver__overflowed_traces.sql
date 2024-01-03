@@ -3,9 +3,11 @@
     incremental_strategy = 'delete+insert',
     unique_key = ['block_number','tx_position'],
     cluster_by = 'block_timestamp::date, _inserted_timestamp::date',
-    tags = ['overflow']
+    tags = ['overflow'],
+    snowflake_warehouse = 'DBT_SNOWPARK',
+    full_refresh = False
 ) }}
---- to do: add full_refresh = False to config
+
 WITH bronze_overflowed_traces AS (
 
     SELECT
@@ -38,7 +40,7 @@ WITH bronze_overflowed_traces AS (
             'ORIGIN',
             REGEXP_REPLACE(REGEXP_REPLACE(path, '[^0-9]+', '_'), '^_|_$', '')
         ) AS trace_address,
-        DATEADD('day', -3, SYSDATE()) :: timestamp_ltz AS _inserted_timestamp,
+        SYSDATE() :: timestamp_ltz AS _inserted_timestamp,
         OBJECT_AGG(
             key,
             value_
@@ -62,7 +64,6 @@ WITH bronze_overflowed_traces AS (
         ) AS str_array
     FROM
         {{ ref("bronze__overflowed_traces") }}
-        -- this is a view that finds one tx we are missing from all_traces, which unions this table with the silver.traces table. Therefore, we do not need an incremental strategy explicitly for this table.
     GROUP BY
         block_number,
         tx_position,

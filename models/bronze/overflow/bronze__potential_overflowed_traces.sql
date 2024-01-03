@@ -54,7 +54,12 @@ SELECT
         @streamline.bronze.external_tables,
         file_name
     ) AS file_url,
-    ['block_number', 'array_index'] AS index_cols
+    ['block_number', 'array_index'] AS index_cols,
+    ROW_NUMBER() over (
+        ORDER BY
+            block_number ASC,
+            POSITION ASC
+    ) AS row_no
 FROM
     missing_txs
 ORDER BY

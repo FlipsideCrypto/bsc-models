@@ -1,83 +1,80 @@
 {{ config (
-    materialized = "view"
+    materialized = "view",
+    snowflake_warehouse = 'DBT_SNOWPARK'
 ) }}
 
-WITH potential_overflows AS (
+{% for item in range(
+        1,
+        11
+    ) %}
 
     SELECT
-        block_number,
-        POSITION,
-        file_name,
-        file_url,
-        index_cols
+        o.file_name,
+        f.block_number,
+        f.index_vals,
+        f.path,
+        f.key,
+        f.value_
     FROM
-        {{ ref("bronze__potential_overflowed_traces") }}
-    ORDER BY
-        block_number ASC,
-        POSITION ASC
-    LIMIT
-        1
-), overflowed_responses AS (
-    SELECT
-        block_number,
-        POSITION,
-        file_name,
-        file_url,
-        index_cols,
-        utils.udf_detect_overflowed_responses(
-            file_url,
-            index_cols
-        ) AS index_vals
-    FROM
-        potential_overflows
-),
-overflowed_txs AS (
-    SELECT
-        block_number,
-        POSITION,
-        file_name,
-        file_url,
-        index_cols,
-        VALUE [0] AS overflowed_block,
-        VALUE [1] AS overflowed_tx,
-        block_number = overflowed_block
-        AND POSITION = overflowed_tx AS missing
-    FROM
-        overflowed_responses,
-        LATERAL FLATTEN (
-            input => index_vals
-        )
-),
-overflowed_files AS (
-    SELECT
-        file_name,
-        file_url,
-        index_cols,
-        [overflowed_block, overflowed_tx] AS index_vals
-    FROM
-        overflowed_txs
+        (
+            SELECT
+                file_name,
+                file_url,
+                index_cols,
+                [overflowed_block, overflowed_tx] AS index_vals
+            FROM
+                (
+                    SELECT
+                        block_number,
+                        POSITION,
+                        file_name,
+                        file_url,
+                        index_cols,
+                        VALUE [0] AS overflowed_block,
+                        VALUE [1] AS overflowed_tx,
+                        block_number = overflowed_block
+                        AND POSITION = overflowed_tx AS missing
+                    FROM
+                        (
+                            SELECT
+                                block_number,
+                                POSITION,
+                                file_name,
+                                file_url,
+                                index_cols,
+                                utils.udf_detect_overflowed_responses(
+                                    file_url,
+                                    index_cols
+                                ) AS index_vals
+                            FROM
+                                {{ ref("bronze__potential_overflowed_traces") }}
+                            WHERE
+                                row_no = {{ item }}
+                        ),
+                        LATERAL FLATTEN (
+                            input => index_vals
+                        )
+                )
+            WHERE
+                missing = TRUE
+        ) o,
+        TABLE(
+            utils.udtf_flatten_overflowed_responses(
+                o.file_url,
+                o.index_cols,
+                [o.index_vals]
+            )
+        ) f
     WHERE
-        missing = TRUE
-)
-SELECT
-    o.file_name,
-    f.*
-FROM
-    overflowed_files o,
-    TABLE(
-        utils.udtf_flatten_overflowed_responses(
-            o.file_url,
-            o.index_cols,
-            [o.index_vals]
+        NOT IS_OBJECT(
+            f.value_
         )
-    ) f
-WHERE
-    NOT IS_OBJECT(
-        f.value_
-    )
-    AND NOT IS_ARRAY(
-        f.value_
-    )
-    AND NOT IS_NULL_VALUE(
-        f.value_
-    )
+        AND NOT IS_ARRAY(
+            f.value_
+        )
+        AND NOT IS_NULL_VALUE(
+            f.value_
+        ) {% if not loop.last %}
+        UNION ALL
+        {% endif %}
+    {% endfor %}
