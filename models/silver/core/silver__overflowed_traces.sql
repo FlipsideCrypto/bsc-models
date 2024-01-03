@@ -4,7 +4,6 @@
     unique_key = ['block_number','tx_position'],
     cluster_by = 'block_timestamp::date, _inserted_timestamp::date',
     tags = ['overflow'],
-    snowflake_warehouse = 'DBT_SNOWPARK',
     full_refresh = false
 ) }}
 

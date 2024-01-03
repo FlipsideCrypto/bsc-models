@@ -1,6 +1,5 @@
 {{ config (
-    materialized = "view",
-    snowflake_warehouse = 'DBT_SNOWPARK'
+    materialized = "view"
 ) }}
 
 {% for item in range(
