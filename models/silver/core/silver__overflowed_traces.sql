@@ -5,7 +5,7 @@
     cluster_by = 'block_timestamp::date, _inserted_timestamp::date',
     tags = ['overflow'],
     snowflake_warehouse = 'DBT_SNOWPARK',
-    full_refresh = False
+    full_refresh = false
 ) }}
 
 WITH bronze_overflowed_traces AS (
