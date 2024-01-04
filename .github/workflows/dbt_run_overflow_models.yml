@@ -3,9 +3,8 @@ run-name: dbt_run_overflow_models
 
 on:
   workflow_dispatch:
-  schedule:
-    # Run every hour at 23 minutes past the hour
-    - cron: '23 * * * *'
+    branches:
+      - "main"
     
 env:
   DBT_PROFILES_DIR: ./
