@@ -25,6 +25,7 @@ WITH allbridge AS (
         NULL AS destination_chain_id,
         destination_chain,
         token_address,
+        NULL AS token_symbol,
         amount AS amount_unadj,
         _log_id AS _id,
         _inserted_timestamp
