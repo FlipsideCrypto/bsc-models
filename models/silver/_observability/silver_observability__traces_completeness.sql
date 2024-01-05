@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'incremental',
     unique_key = 'test_timestamp',
+    full_refresh = false,
     tags = ['observability']
 ) }}
 
@@ -108,7 +109,22 @@ SELECT
     blocks_tested,
     blocks_impacted_count,
     blocks_impacted_array,
-    CURRENT_TIMESTAMP() AS test_timestamp
+    CURRENT_TIMESTAMP() AS test_timestamp,
+    IFF(
+        blocks_impacted_count > 0,
+        TRUE,
+        FALSE
+    ) AS overflowed,
+    IFF(
+        blocks_impacted_count > 0,
+        github_actions.workflow_dispatches(
+            'FlipsideCrypto',
+            'bsc-models',
+            'dbt_run_overflow_models.yml',
+            NULL
+        ) :status_code :: INT,
+        NULL
+    ) AS trigger_workflow
 FROM
     summary_stats
     JOIN impacted_blocks
