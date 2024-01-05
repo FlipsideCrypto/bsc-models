@@ -4,7 +4,7 @@ run-name: dbt_run_streamline_decoder_history_range_7
 on:
   workflow_dispatch:
   schedule:
-    # Runs "at 14:00 UTC PM" (see https://crontab.guru)
+    # Runs "at 2:00 UTC AM" (see https://crontab.guru)
     - cron: '0 2 * * *'
     
 env:
