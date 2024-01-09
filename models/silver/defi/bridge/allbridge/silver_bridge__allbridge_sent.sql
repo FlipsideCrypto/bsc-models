@@ -143,4 +143,4 @@ SELECT
 FROM
     base_evt
 WHERE
-    source_chain = 'avalanche c-chain'
+    source_chain = 'bnb smart chain mainnet'
