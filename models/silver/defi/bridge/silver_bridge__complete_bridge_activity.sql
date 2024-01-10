@@ -493,6 +493,8 @@ SELECT
     SYSDATE() AS modified_timestamp,
     '{{ invocation_id }}' AS _invocation_id
 FROM
-    FINAL qualify (ROW_NUMBER() over (PARTITION BY _id
+    FINAL 
+WHERE destination_chain <> 'bsc' 
+qualify (ROW_NUMBER() over (PARTITION BY _id
 ORDER BY
     _inserted_timestamp DESC)) = 1
