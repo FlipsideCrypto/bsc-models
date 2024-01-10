@@ -1,7 +1,7 @@
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
-    unique_key = 'block_number',
+    unique_key = "block_number",
     cluster_by = ['block_timestamp::DATE'],
     tags = ['curated','reorg']
 ) }}
@@ -9,7 +9,8 @@
 WITH pools AS (
 
     SELECT
-        pool_address
+        pool_address,
+        pool_name
     FROM
         {{ ref('silver_dex__hashflow_pools') }}
 ),
@@ -23,18 +24,40 @@ router_swaps_base AS (
         origin_to_address,
         l.event_index,
         l.contract_address,
-        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS segmented_data,
-        CONCAT('0x', SUBSTR(segmented_data [1] :: STRING, 25, 40)) AS account_address,
-        CONCAT('0x', SUBSTR(segmented_data [3] :: STRING, 25, 40)) AS tokenIn,
-        CONCAT('0x', SUBSTR(segmented_data [4] :: STRING, 25, 40)) AS tokenOut,
+        p.pool_name,
+        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS l_segmented_data,
+        CONCAT(
+            '0x',
+            SUBSTR(
+                l_segmented_data [1] :: STRING,
+                25,
+                40
+            )
+        ) AS account_address,
+        CONCAT(
+            '0x',
+            SUBSTR(
+                l_segmented_data [3] :: STRING,
+                25,
+                40
+            )
+        ) AS tokenIn,
+        CONCAT(
+            '0x',
+            SUBSTR(
+                l_segmented_data [4] :: STRING,
+                25,
+                40
+            )
+        ) AS tokenOut,
         TRY_TO_NUMBER(
             utils.udf_hex_to_int(
-                segmented_data [5] :: STRING
+                l_segmented_data [5] :: STRING
             )
         ) AS amountIn,
         TRY_TO_NUMBER(
             utils.udf_hex_to_int(
-                segmented_data [6] :: STRING
+                l_segmented_data [6] :: STRING
             )
         ) AS amountOut,
         l._log_id,
@@ -66,18 +89,40 @@ swaps_base AS (
         origin_to_address,
         l.event_index,
         l.contract_address,
-        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS segmented_data,
-        CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 25, 40)) AS account_address,
-        CONCAT('0x', SUBSTR(segmented_data [2] :: STRING, 25, 40)) AS tokenIn,
-        CONCAT('0x', SUBSTR(segmented_data [3] :: STRING, 25, 40)) AS tokenOut,
+        pool_name,
+        regexp_substr_all(SUBSTR(l.data, 3, len(l.data)), '.{64}') AS l_segmented_data,
+        CONCAT(
+            '0x',
+            SUBSTR(
+                l_segmented_data [0] :: STRING,
+                25,
+                40
+            )
+        ) AS account_address,
+        CONCAT(
+            '0x',
+            SUBSTR(
+                l_segmented_data [2] :: STRING,
+                25,
+                40
+            )
+        ) AS tokenIn,
+        CONCAT(
+            '0x',
+            SUBSTR(
+                l_segmented_data [3] :: STRING,
+                25,
+                40
+            )
+        ) AS tokenOut,
         TRY_TO_NUMBER(
             utils.udf_hex_to_int(
-                segmented_data [4] :: STRING
+                l_segmented_data [4] :: STRING
             )
         ) AS amountIn,
         TRY_TO_NUMBER(
             utils.udf_hex_to_int(
-                segmented_data [5] :: STRING
+                l_segmented_data [5] :: STRING
             )
         ) AS amountOut,
         l._log_id,
@@ -109,6 +154,7 @@ FINAL AS (
         origin_to_address,
         event_index,
         contract_address,
+        pool_name,
         origin_from_address AS sender,
         account_address AS tx_to,
         tokenIn AS token_in,
@@ -131,6 +177,7 @@ FINAL AS (
         origin_to_address,
         event_index,
         contract_address,
+        pool_name,
         origin_from_address AS sender,
         account_address AS tx_to,
         tokenIn AS token_in,
@@ -153,6 +200,7 @@ SELECT
     origin_to_address,
     event_index,
     contract_address,
+    pool_name,
     sender,
     tx_to,
     CASE
