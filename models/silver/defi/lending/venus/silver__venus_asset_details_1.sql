@@ -6,22 +6,35 @@
     tags = ['reorg','curated']
 ) }}
 
-WITH log_pull AS (
+WITH contracts as (
+    select
+        *
+    from
+        bsc_dev.silver.contracts
+),
+log_pull AS (
 
-    SELECT
+    SELECT 
         tx_hash,
         block_number,
         block_timestamp,
-        contract_address,
-        _inserted_timestamp,
-        _log_id
+        origin_from_address,
+        l.contract_address,
+        token_name,
+        token_symbol,
+        token_decimals,
+        l._inserted_timestamp,
+        l._log_id
     FROM
-        {{ ref('silver__logs') }}
+        BSC_DEV.silver.logs l 
+    LEFT JOIN 
+        contracts c
+    ON
+        l.contract_address = c.contract_address
     WHERE
-        (topics [0] :: STRING = '0x70aea8d848e8a90fb7661b227dc522eb6395c3dac71b63cb59edd5c9899b2364'
-        AND origin_from_address = LOWER('0x4375c89AF5b4aF46791b05810C4B795A0470207F'))
-        OR tx_hash = '0xcf0ea37207cc7f54c90b6dcb8208cdcb247768836ad1d33ccbb6cbe5d13dee80' --edge case where Liqee token is token collateral in liquidations table
-
+        topics [0] :: STRING = '0x7ac369dbd14fa5ea3f473ed67cc9d598964a77501540ba6751eb0b3decf5870d'
+    AND 
+        TOKEN_NAME LIKE '%Venus%'
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
     SELECT
@@ -31,14 +44,15 @@ AND _inserted_timestamp >= (
     FROM
         {{ this }}
 )
-{% endif %}
+{% endif %}    
+
 ),
 traces_pull AS (
     SELECT
         from_address AS token_address,
         to_address AS underlying_asset
     FROM
-        {{ ref('silver__traces') }}
+        BSC_DEV.silver.traces
     WHERE
         tx_hash IN (
             SELECT
@@ -47,12 +61,6 @@ traces_pull AS (
                 log_pull
         )
         AND TYPE = 'STATICCALL'
-),
-contracts AS (
-    SELECT
-        *
-    FROM
-        {{ ref('silver__contracts') }}
 ),
 contract_pull AS (
     SELECT
@@ -82,10 +90,10 @@ SELECT
     l.tx_hash,
     l.block_number,
     l.block_timestamp,
-    l.contract_address AS token_address,
-    l.token_name,
-    l.token_symbol,
-    l.token_decimals,
+    l.contract_address AS itoken_address,
+    l.token_name as itoken_name,
+    l.token_symbol as itoken_symbol,
+    l.token_decimals itoken_decimals,
     l.underlying_asset AS underlying_asset_address,
     C.token_name AS underlying_name,
     C.token_symbol AS underlying_symbol,
@@ -99,19 +107,3 @@ FROM
 WHERE
     underlying_asset IS NOT NULL
     AND l.token_name IS NOT NULL
-UNION ALL
---manually adding iBNB, no token creation log 
-SELECT
-    '0x593fd69bcd788afd9a19adae0783f5c429f821d6c46d20c742e5443b8a067d73' AS tx_hash,
-    6580133 AS block_number,
-    '2021-04-15 06:36:40.000' as block_timestamp,
-    lower('0xd57e1425837567f74a35d07669b23bfb67aa4a93') AS token_address,
-    'dForce BNB' AS token_name,
-    'iBNB' AS token_symbol,
-    18 AS token_decimals,
-    lower('0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c') AS underlying_asset_address,
-    'Wrapped BNB' AS underlying_name,
-    'WBNB' AS underlying_symbol,
-    18 AS underlying_decimals,
-    '2023-05-22 19:26:31.000 +0000' AS _inserted_timestamp,
-    NULL AS _log_id
