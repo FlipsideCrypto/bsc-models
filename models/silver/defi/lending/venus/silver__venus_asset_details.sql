@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'table',
-    tags = ['stale']
+    tags = ['curated']
 ) }}
 
 WITH vtoken_pulls AS (
@@ -12,6 +12,7 @@ WITH vtoken_pulls AS (
     WHERE
         contract_address IN (
             '0x26da28954763b92139ed49283625cecaf52c6f94',
+            '0xc4ef4229fec74ccfe17b2bdef7715fac740ba0ba',
             '0x9a0af7fdb2065ce470d72664de73cae409da28ec',
             '0x5f0388ebc2b94fa8e123f404b79ccf5f40b29176',
             '0x972207a639cc1b374b893cc33fa251b55ceb7c07',
@@ -75,6 +76,7 @@ underlying_add AS (
             WHEN contract_address = '0x6cfdec747f37daf3b87a35a1d9c8ad3063a1a8a0' THEN '0xa2e3356610840701bdf5611a53974510ae27e2e1'
             WHEN contract_address = '0xb248a295732e0225acd3337607cc01068e3b9c10' THEN '0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe'
             WHEN contract_address = '0x151b1e2635a717bcdc836ecd6fbb62b674fe3e1d' THEN '0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63'
+            WHEN contract_address = '0xc4ef4229fec74ccfe17b2bdef7715fac740ba0ba' THEN '0xc5f0f7b66764f6ec8c8dff7ba683102295e16409'
             ELSE NULL
         END AS underlying_address
     FROM

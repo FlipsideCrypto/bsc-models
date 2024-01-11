@@ -48,6 +48,7 @@ dforce_repayments AS (
         token_address
       FROM
         asset_details
+      WHERE token_address <> '0xf51422c47c6c3e40cfca4a7b04232aedb7f49948' --excludes qDOT edge case
     )
     AND topics [0] :: STRING = '0x6fadbf7329d21f278e724fa0d4511001a158f2a97ee35c5bc4cf8b64417399ef'
 

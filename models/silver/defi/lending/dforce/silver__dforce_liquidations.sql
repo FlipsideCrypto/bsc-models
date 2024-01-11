@@ -53,6 +53,7 @@ dforce_liquidations AS (
         token_address
       FROM
         asset_details
+      WHERE token_address <> '0xf51422c47c6c3e40cfca4a7b04232aedb7f49948' --excludes qDOT edge case
     )
     AND topics [0] :: STRING = '0x298637f684da70674f26509b10f07ec2fbc77a335ab1e7d6215a4b2484d8bb52'
 

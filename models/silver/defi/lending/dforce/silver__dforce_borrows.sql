@@ -53,6 +53,7 @@ dforce_borrows AS (
         token_address
       FROM
         asset_details
+      WHERE token_address <> '0xf51422c47c6c3e40cfca4a7b04232aedb7f49948' --excludes qDOT edge case
     )
     AND topics [0] :: STRING = '0x2dd79f4fccfd18c360ce7f9132f3621bf05eee18f995224badb32d17f172df73'
 

@@ -31,11 +31,8 @@ WITH DECODE AS (
         l
     WHERE
         topics [0] = '0xb19e051f8af41150ccccb3fc2c2d8d15f4a4cf434f32a559ba75fe73d6eea20b'
-    AND
-        origin_from_address in(
-            lower('0xCCB8F7Cb8C49aB596E6F0EdDCEd3d3A6B1912c92'),
-            lower('0x9cBde15Db0A6910696fED74B0694d024809D289b')
-        )
+    AND 
+        block_number >= 29232668
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -80,11 +77,8 @@ debt_tokens AS (
         {{ ref('silver__logs') }}
     WHERE
         topics [0] = '0x3a0ca721fc364424566385a1aa271ed508cc2c0949c2272575fb3013a163a45f'
-    AND
-        origin_from_address in(
-            lower('0xCCB8F7Cb8C49aB596E6F0EdDCEd3d3A6B1912c92'),
-            lower('0x9cBde15Db0A6910696fED74B0694d024809D289b')
-        )
+    AND 
+        block_number >= 29232668
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
     SELECT
