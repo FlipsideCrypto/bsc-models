@@ -111,7 +111,10 @@ transfers AS (
         {{ ref('silver__transfers') }}
     WHERE
         from_address = '0xce16f69375520ab01377ce7b88f5ba8c48f8d666'
-        AND to_address = '0x304acf330bbe08d1e512eefaa92f6a57871fd895'
+        AND to_address IN (
+            '0x304acf330bbe08d1e512eefaa92f6a57871fd895',
+            '0x0000000000000000000000000000000000000000'
+        )
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -137,7 +140,7 @@ FINAL AS (
         b.tx_status,
         b.contract_address AS bridge_address,
         b.name AS platform,
-        b.sender,
+        b.origin_from_address AS sender,
         CASE
             WHEN b.recipient = '0x0000000000000000000000000000000000000000' THEN refundAddress
             ELSE b.recipient

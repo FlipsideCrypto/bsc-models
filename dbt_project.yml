@@ -77,6 +77,7 @@ vars:
   BALANCES_START: 0
   BALANCES_END: 10000000
   HEAL_MODEL: False
+  HEAL_CURATED_MODEL: []
   START_GHA_TASKS: False
   API_INTEGRATION: '{{ var("config")[target.name]["API_INTEGRATION"] if var("config")[target.name] else var("config")["dev"]["API_INTEGRATION"] }}' 
   EXTERNAL_FUNCTION_URI: '{{ var("config")[target.name]["EXTERNAL_FUNCTION_URI"] if var("config")[target.name] else var("config")["dev"]["EXTERNAL_FUNCTION_URI"] }}'
