@@ -104,7 +104,7 @@ SELECT
         ELSE NULL
     END AS destination_chain,
     CASE
-        WHEN token_address = '0x0000000000000000000000000000000000000000' THEN LOWER('0x82aF49447D8a07e3bd95BD0d56f35241523fBab1')
+        WHEN token_address = '0x0000000000000000000000000000000000000000' THEN LOWER('0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c')
         ELSE token_address
     END AS token_address,
     decoded_flat,
