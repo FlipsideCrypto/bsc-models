@@ -28,6 +28,7 @@ sources:
       - name: asset_metadata_priority
       - name: asset_metadata_all_providers
       - name: near_address_encoded
+      - name: labels_combined
   - name: crosschain_public
     database: crosschain
     schema: bronze_public
