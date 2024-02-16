@@ -31,8 +31,7 @@ WITH DECODE AS (
         l
     WHERE
         topics [0] = '0xb19e051f8af41150ccccb3fc2c2d8d15f4a4cf434f32a559ba75fe73d6eea20b'
-    AND
-        origin_from_address = '0x23d82b00ae85657a933bfd88b764f6b270af6f4a'
+        AND origin_from_address = '0x23d82b00ae85657a933bfd88b764f6b270af6f4a'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -40,6 +39,12 @@ AND _inserted_timestamp >= (
         MAX(
             _inserted_timestamp
         ) - INTERVAL '12 hours'
+    FROM
+        {{ this }}
+)
+AND contract_address NOT IN (
+    SELECT
+        atoken_address
     FROM
         {{ this }}
 )
@@ -77,14 +82,14 @@ debt_tokens AS (
         {{ ref('silver__logs') }}
     WHERE
         topics [0] = '0x3a0ca721fc364424566385a1aa271ed508cc2c0949c2272575fb3013a163a45f'
-    AND
-        origin_from_address = '0x23d82b00ae85657a933bfd88b764f6b270af6f4a'
+        AND origin_from_address = '0x23d82b00ae85657a933bfd88b764f6b270af6f4a'
         AND CONCAT('0x', SUBSTR(topics [2] :: STRING, 27, 40)) IN (
             SELECT
                 a_token_address
             FROM
                 a_token_step_1
         )
+
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
     SELECT
