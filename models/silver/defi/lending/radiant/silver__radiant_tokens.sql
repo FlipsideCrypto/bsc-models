@@ -79,6 +79,12 @@ debt_tokens AS (
         topics [0] = '0x3a0ca721fc364424566385a1aa271ed508cc2c0949c2272575fb3013a163a45f'
     AND
         origin_from_address = '0x23d82b00ae85657a933bfd88b764f6b270af6f4a'
+        AND CONCAT('0x', SUBSTR(topics [2] :: STRING, 27, 40)) IN (
+            SELECT
+                a_token_address
+            FROM
+                a_token_step_1
+        )
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
     SELECT
