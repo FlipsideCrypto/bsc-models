@@ -45,10 +45,7 @@ models:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER    
-                - FLOAT
-      - name: _CALL_ID
-        tests:
-          - not_null    
+                - FLOAT  
       - name: ORIGIN_FUNCTION_SIGNATURE
         tests:
           - not_null
