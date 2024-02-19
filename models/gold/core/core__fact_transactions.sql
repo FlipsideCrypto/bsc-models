@@ -45,9 +45,6 @@ SELECT
     COALESCE(
         modified_timestamp,
         '2000-01-01'
-    ) AS modified_timestamp,
-    VALUE AS bnb_value,
-    value_precise_raw AS bnb_value_precise_raw,
-    value_precise AS bnb_value_precise
+    ) AS modified_timestamp
 FROM
     {{ ref('silver__transactions') }}

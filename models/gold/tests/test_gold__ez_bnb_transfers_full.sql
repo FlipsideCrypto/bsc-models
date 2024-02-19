@@ -6,4 +6,4 @@
 SELECT
     *
 FROM
-    {{ ref('core__ez_bnb_transfers') }}
+    {{ ref('core__ez_native_transfers') }}

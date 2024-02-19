@@ -29,12 +29,12 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_match_regex:
               regex: 0[xX][0-9a-fA-F]+
-      - name: BNB_FROM_ADDRESS
+      - name: FROM_ADDRESS
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_match_regex:
               regex: 0[xX][0-9a-fA-F]+
-      - name: BNB_TO_ADDRESS
+      - name: TO_ADDRESS
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_match_regex:

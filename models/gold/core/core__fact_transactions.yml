@@ -1,7 +1,7 @@
 version: 2
 models:
   - name: core__fact_transactions
-    description: 'Deprecating soon! The columns `BNB_VALUE`, `BNB_VALUE_PRECISE_RAW` and `BNB_VALUE_PRECISE` will be deprecated on February 14, 2024. Please migrate to `VALUE`, `VALUE_PRECISE_RAW` and `VALUE_PRECISE`. Note: These columns are the ONLY changes being made to this table.'    
+    description: '{{ doc("bsc_tx_table_doc") }}' 
 
     columns:
       - name: BLOCK_NUMBER
@@ -20,12 +20,6 @@ models:
         description: '{{ doc("bsc_from_address") }}' 
       - name: TO_ADDRESS
         description: '{{ doc("bsc_to_address") }}' 
-      - name: BNB_VALUE
-        description: '{{ doc("amount_deprecation") }}'
-      - name: BNB_VALUE_PRECISE_RAW
-        description: '{{ doc("amount_deprecation") }}'
-      - name: BNB_VALUE_PRECISE
-        description: '{{ doc("amount_deprecation") }}'
       - name: VALUE
         description: '{{ doc("bsc_value") }}' 
       - name: VALUE_PRECISE_RAW

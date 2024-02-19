@@ -1,7 +1,7 @@
 version: 2
 models:
   - name: core__fact_traces
-    description: 'Deprecating soon! The columns `BNB_VALUE`, `BNB_VALUE_PRECISE_RAW` and `BNB_VALUE_PRECISE` will be deprecated on February 14, 2024. Please migrate to `VALUE`, `VALUE_PRECISE_RAW` and `VALUE_PRECISE`. Note: These columns are the ONLY changes being made to this table.'    
+    description: '{{ doc("bsc_traces_table_doc") }}'   
 
     columns:
       - name: BLOCK_NUMBER
@@ -14,11 +14,11 @@ models:
         description: '{{ doc("bsc_traces_from") }}'
       - name: TO_ADDRESS
         description: '{{ doc("bsc_traces_to") }}'
-      - name: BNB_VALUE
+      - name: VALUE
         description: '{{ doc("bsc_traces_value") }}'
-      - name: BNB_VALUE_PRECISE_RAW
+      - name: VALUE_PRECISE_RAW
         description: '{{ doc("precise_amount_unadjusted") }}'
-      - name: BNB_VALUE_PRECISE
+      - name: VALUE_PRECISE
         description: '{{ doc("precise_amount_adjusted") }}'
       - name: GAS
         description: '{{ doc("bsc_traces_gas") }}'
