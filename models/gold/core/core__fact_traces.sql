@@ -38,10 +38,7 @@ SELECT
     COALESCE(
         modified_timestamp,
         '2000-01-01'
-    ) AS modified_timestamp,
-    bnb_value,
-    bnb_value_precise_raw,
-    bnb_value_precise
+    ) AS modified_timestamp
 FROM
     {{ ref('silver__traces') }}
 UNION ALL
@@ -68,10 +65,7 @@ SELECT
     trace_index,
     traces_id AS fact_traces_id,
     inserted_timestamp,
-    modified_timestamp,
-    bnb_value,
-    bnb_value_precise_raw,
-    bnb_value_precise
+    modified_timestamp
 FROM
     {{ source(
         'bsc_silver',
