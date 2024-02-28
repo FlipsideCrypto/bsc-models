@@ -46,7 +46,7 @@ row_nos AS (
 ),
 batched AS ({% for item in range(150) %}
 SELECT
-    rn.contract_address, live.udf_api('GET', CONCAT('https://api.bscscan.com/api?module=contract&action=getabi&address=', rn.contract_address, '&apikey={bsc_key}'),{},{},'EXPLORER') AS abi_data, SYSDATE() AS _inserted_timestamp
+    rn.contract_address, live.udf_api('GET', CONCAT('https://api.bscscan.com/api?module=contract&action=getabi&address=', rn.contract_address, '&apikey={key}'),{},{}, 'Vault/prod/block_explorers/bsc_scan') AS abi_data, SYSDATE() AS _inserted_timestamp
 FROM
     row_nos rn
 WHERE

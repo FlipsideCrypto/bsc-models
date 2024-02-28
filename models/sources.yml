@@ -13,16 +13,10 @@ sources:
     tables:
       - name: fact_hourly_token_prices
       - name: ez_hourly_token_prices
-  - name: streamline_crosschain
-    database: streamline
-    schema: crosschain
-    tables:
-      - name: node_mapping
   - name: crosschain_silver
     database: "{{ 'crosschain' if target.database == 'BSC' else 'crosschain_dev' }}"
     schema: silver
     tables:
-      - name: apis_keys
       - name: token_prices_priority_hourly
       - name: token_prices_all_providers_hourly
       - name: asset_metadata_priority
