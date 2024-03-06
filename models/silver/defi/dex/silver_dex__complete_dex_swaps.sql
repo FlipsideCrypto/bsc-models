@@ -1095,7 +1095,7 @@ pancakeswap_v1_swaps AS (
     LEFT JOIN contracts c2
     ON s.token_out = c2.address
 
-{% if is_incremental() and 'pancake_v1_swaps' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'pancakeswap_v1_swaps' not in var('HEAL_CURATED_MODEL') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
