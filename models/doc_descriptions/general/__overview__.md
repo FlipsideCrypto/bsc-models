@@ -38,7 +38,7 @@ There is more information on how to use dbt docs in the last section of this doc
 - [ez_asset_metadata](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.price__ez_asset_metadata)
 - 
 **Convenience Tables:**
-- [ez_bnb_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_bnb_transfers)
+- [ez_native_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_native_transfers)
 - [ez_decoded_event_logs](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_decoded_event_logs)
 - [ez_token_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_token_transfers)
 
