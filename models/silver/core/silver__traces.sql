@@ -302,7 +302,13 @@ missing_data AS (
         t.error_reason,
         t.trace_status,
         t.data,
-        FALSE AS is_pending,
+        IFF(
+            txs.tx_hash IS NULL
+            OR txs.block_timestamp IS NULL
+            OR txs.tx_status IS NULL,
+            TRUE,
+            FALSE
+        ) AS is_pending,
         t._call_id,
         GREATEST(
             t._inserted_timestamp,
