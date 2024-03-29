@@ -6,7 +6,7 @@
 
 {% set start = this.identifier.split("_") [-2] %}
 {% set stop = this.identifier.split("_") [-1] %}
-{{ fsc_utils.decode_logs_history(
+{{ decode_logs_history_bsc(
     start,
     stop
 ) }}

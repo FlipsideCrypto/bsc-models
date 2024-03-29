@@ -34,3 +34,23 @@ SELECT
     ) AS modified_timestamp
 FROM
     {{ ref('silver__logs') }}
+UNION ALL
+SELECT
+    block_number,
+    block_timestamp::timestamp_ntz AS block_timestamp,
+    tx_hash,
+    origin_function_signature,
+    origin_from_address,
+    origin_to_address,
+    event_index,
+    contract_address,
+    topics,
+    DATA,
+    event_removed,
+    tx_status,
+    _log_id,
+    logs_id AS fact_event_logs_id,
+    inserted_timestamp,
+    modified_timestamp
+FROM
+    bsc_dev.silver.overflowed_logs -- update to a source table for circular dependency

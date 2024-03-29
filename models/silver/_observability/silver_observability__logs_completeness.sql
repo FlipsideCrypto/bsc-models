@@ -81,7 +81,7 @@ broken_blocks AS (
     FROM
         {{ ref("silver__receipts") }}
         r
-        LEFT JOIN {{ ref("silver__logs") }}
+        LEFT JOIN {{ ref("core__fact_event_logs") }}
         l USING (
             block_number,
             tx_hash

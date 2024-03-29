@@ -48,6 +48,7 @@ sources:
     tables:
       - name: verified_abis
       - name: overflowed_traces
+      - name: overflowed_receipts
   - name: bsc_bronze_api
     database: bsc
     schema: bronze_api

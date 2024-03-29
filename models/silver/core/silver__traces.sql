@@ -311,7 +311,7 @@ missing_data AS (
     FROM
         {{ this }}
         t
-        INNER JOIN {{ ref('silver__transactions') }}
+        INNER JOIN {{ ref('core__fact_transactions') }}
         txs
         ON t.tx_position = txs.position
         AND t.block_number = txs.block_number

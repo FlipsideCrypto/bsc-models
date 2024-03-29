@@ -20,7 +20,11 @@ WITH look_back AS (
 )
 SELECT
     l.block_number,
-    l._log_id,
+    CONCAT(
+        l.tx_hash :: STRING,
+        '-',
+        l.event_index :: STRING
+    ) AS _log_id,
     A.abi AS abi,
     OBJECT_CONSTRUCT(
         'topics',
@@ -31,7 +35,7 @@ SELECT
         l.contract_address
     ) AS DATA
 FROM
-    {{ ref("silver__logs") }}
+    {{ ref("core__fact_event_logs") }}
     l
     INNER JOIN {{ ref("silver__complete_event_abis") }} A
     ON A.parent_contract_address = l.contract_address
@@ -49,7 +53,11 @@ WHERE
     )
     AND l.block_number IS NOT NULL
     AND l.block_timestamp >= DATEADD('day', -2, CURRENT_DATE())
-    AND _log_id NOT IN (
+    AND CONCAT(
+        l.tx_hash :: STRING,
+        '-',
+        l.event_index :: STRING
+    ) NOT IN (
         SELECT
             _log_id
         FROM
@@ -61,5 +69,4 @@ WHERE
                 FROM
                     look_back
             )
-            AND _inserted_timestamp >= DATEADD('day', -2, CURRENT_DATE())
-    )
+            AND _inserted_timestamp >= DATEADD('day', -2, CURRENT_DATE()))

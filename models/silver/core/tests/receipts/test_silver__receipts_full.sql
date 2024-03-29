@@ -6,4 +6,4 @@
 SELECT
     *
 FROM
-    {{ ref('silver__receipts') }}
+    {{ ref('silver__all_receipts') }}

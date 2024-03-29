@@ -6,4 +6,4 @@
 SELECT
     *
 FROM
-    {{ ref('silver__transactions') }}
+    {{ ref('core__fact_transactions') }}
