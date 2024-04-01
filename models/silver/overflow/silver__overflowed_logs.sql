@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'view',
-    tags = ['overflow']
+    tags = ['overflowed_receipts']
 ) }}
 
 WITH base AS (

@@ -343,7 +343,7 @@ FROM
             DISTINCT block_number
         FROM
             missing_data
-    ) USING block_number
+    ) USING (block_number)
 {% endif %}
 )
 SELECT

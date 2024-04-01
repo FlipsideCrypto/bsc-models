@@ -1,5 +1,6 @@
 {{ config (
-    materialized = "view"
+    materialized = "view",
+    tags = ['overflowed_receipts']
 ) }}
 
 {% for item in range(
