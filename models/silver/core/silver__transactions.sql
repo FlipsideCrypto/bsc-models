@@ -186,7 +186,11 @@ missing_data AS (
         t.value_precise,
         t.value,
         b.block_timestamp,
-        FALSE AS is_pending,
+        CASE
+            WHEN b.block_timestamp IS NULL
+            OR r.tx_status IS NULL THEN TRUE
+            ELSE FALSE
+        END AS is_pending,
         r.gas_used,
         r.tx_success,
         r.tx_status,

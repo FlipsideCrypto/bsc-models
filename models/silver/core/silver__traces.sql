@@ -5,7 +5,7 @@
     unique_key = "block_number",
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
-    tags = ['core','non_realtime'],
+    tags = ['core','non_realtime','overflowed_receipts'],
     full_refresh = false
 ) }}
 
@@ -302,7 +302,13 @@ missing_data AS (
         t.error_reason,
         t.trace_status,
         t.data,
-        FALSE AS is_pending,
+        IFF(
+            txs.tx_hash IS NULL
+            OR txs.block_timestamp IS NULL
+            OR txs.tx_status IS NULL,
+            TRUE,
+            FALSE
+        ) AS is_pending,
         t._call_id,
         GREATEST(
             t._inserted_timestamp,
@@ -377,6 +383,40 @@ SELECT
     _inserted_timestamp
 FROM
     missing_data
+UNION ALL
+SELECT
+    block_number,
+    tx_hash,
+    block_timestamp,
+    tx_status,
+    tx_position,
+    trace_index,
+    from_address,
+    to_address,
+    bnb_value_precise_raw,
+    bnb_value_precise,
+    bnb_value,
+    gas,
+    gas_used,
+    input,
+    output,
+    TYPE,
+    identifier,
+    sub_traces,
+    error_reason,
+    trace_status,
+    DATA,
+    is_pending,
+    _call_id,
+    _inserted_timestamp
+FROM
+    {{ this }}
+    INNER JOIN (
+        SELECT
+            DISTINCT block_number
+        FROM
+            missing_data
+    ) USING (block_number)
 {% endif %}
 )
 SELECT
