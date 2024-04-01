@@ -106,7 +106,7 @@ overflowed_receipts AS (
         POSITION,
         TYPE
     FROM
-        bsc_dev.silver.overflowed_receipts -- change to source for prod to work around cyclic dependency
+        silver.overflowed_receipts -- change to source for prod to work around cyclic dependency
 ),
 existing_blocks AS (
     SELECT
