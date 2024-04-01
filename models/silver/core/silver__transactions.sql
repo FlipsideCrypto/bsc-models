@@ -298,6 +298,53 @@ SELECT
 FROM
     missing_data
 {% endif %}
+
+{% if is_incremental() and var(
+    'OVERFLOWED_RECEIPTS',
+) %}
+UNION ALL
+SELECT
+    block_number,
+    block_hash,
+    from_address,
+    gas,
+    gas_price,
+    tx_hash,
+    input_data,
+    origin_function_signature,
+    max_fee_per_gas,
+    max_priority_fee_per_gas,
+    nonce,
+    r,
+    s,
+    to_address,
+    POSITION,
+    TYPE,
+    v,
+    VALUE,
+    value_precise_raw,
+    value_precise,
+    block_timestamp,
+    is_pending,
+    gas_used,
+    tx_success,
+    tx_status,
+    cumulative_gas_used,
+    effective_gas_price,
+    tx_fee,
+    tx_fee_precise,
+    tx_type,
+    _inserted_timestamp,
+    DATA
+FROM
+    {{ this }}
+    JOIN (
+        SELECT
+            DISTINCT block_number
+        FROM
+            missing_data
+    ) USING block_number
+{% endif %}
 )
 SELECT
     *,
