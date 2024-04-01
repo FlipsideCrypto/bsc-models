@@ -5,7 +5,7 @@
     unique_key = "block_number",
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
-    tags = ['core','non_realtime','overflowed_receipts']
+    tags = ['core','non_realtime']
 ) }}
 
 WITH base AS (
@@ -301,11 +301,6 @@ SELECT
     DATA
 FROM
     missing_data
-{% endif %}
-
-{% if is_incremental() and var(
-    'OVERFLOWED_RECEIPTS',
-) %}
 UNION ALL
 SELECT
     block_number,
