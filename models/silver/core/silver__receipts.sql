@@ -82,10 +82,166 @@ FINAL AS (
     FROM
         base
 )
+
+{% if is_incremental() and var(
+    'OVERFLOWED_RECEIPTS',
+) %},
+overflowed_receipts AS (
+    SELECT
+        block_number,
+        block_hash,
+        blockNumber,
+        cumulative_gas_used,
+        effective_gas_price,
+        from_address,
+        gas_used,
+        [] :: variant AS logs,
+        logs_bloom,
+        status,
+        tx_success,
+        tx_status,
+        to_address1,
+        to_address,
+        tx_hash,
+        POSITION,
+        TYPE
+    FROM
+        bsc_dev.silver.overflowed_receipts -- change to source for prod to work around cyclic dependency
+),
+existing_blocks AS (
+    SELECT
+        block_number,
+        block_hash,
+        blockNumber,
+        cumulative_gas_used,
+        effective_gas_price,
+        from_address,
+        gas_used,
+        logs,
+        logs_bloom,
+        status,
+        tx_success,
+        tx_status,
+        to_address1,
+        to_address,
+        tx_hash,
+        POSITION,
+        TYPE,
+        _inserted_timestamp
+    FROM
+        {{ this }}
+        INNER JOIN (
+            SELECT
+                DISTINCT block_number
+            FROM
+                overflowed_receipts
+        ) USING(block_number)
+),
+final_overflowed AS (
+    SELECT
+        block_number,
+        block_hash,
+        blockNumber,
+        cumulative_gas_used,
+        effective_gas_price,
+        from_address,
+        gas_used,
+        logs,
+        logs_bloom,
+        status,
+        tx_success,
+        tx_status,
+        to_address1,
+        to_address,
+        tx_hash,
+        POSITION,
+        TYPE,
+        _inserted_timestamp
+    FROM
+        FINAL
+    UNION ALL
+    SELECT
+        block_number,
+        block_hash,
+        blockNumber,
+        cumulative_gas_used,
+        effective_gas_price,
+        from_address,
+        gas_used,
+        logs,
+        logs_bloom,
+        status,
+        tx_success,
+        tx_status,
+        to_address1,
+        to_address,
+        tx_hash,
+        POSITION,
+        TYPE,
+        _inserted_timestamp
+    FROM
+        existing_blocks
+    UNION ALL
+    SELECT
+        block_number,
+        block_hash,
+        blockNumber,
+        cumulative_gas_used,
+        effective_gas_price,
+        gas_used,
+        logs,
+        logs_bloom,
+        status,
+        tx_success,
+        tx_status,
+        to_address1,
+        to_address,
+        tx_hash,
+        POSITION,
+        TYPE,
+        _inserted_timestamp
+    FROM
+        overflowed_receipts
+        INNER JOIN (
+            SELECT
+                block_number,
+                MAX(_inserted_timestamp) AS _inserted_timestamp
+            FROM
+                existing_blocks
+            GROUP BY
+                block_number
+        ) USING(
+            block_number
+        )
+)
+{% endif %}
 SELECT
-    *
+    block_number,
+    block_hash,
+    blockNumber,
+    cumulative_gas_used,
+    effective_gas_price,
+    gas_used,
+    logs,
+    logs_bloom,
+    status,
+    tx_success,
+    tx_status,
+    to_address1,
+    to_address,
+    tx_hash,
+    POSITION,
+    TYPE,
+    _inserted_timestamp
 FROM
+
+{% if is_incremental() and var(
+    'OVERFLOWED_RECEIPTS',
+) %}
+final_overflowed
+{% else %}
     FINAL
+{% endif %}
 WHERE
     tx_hash IS NOT NULL qualify(ROW_NUMBER() over (PARTITION BY block_number, POSITION
 ORDER BY

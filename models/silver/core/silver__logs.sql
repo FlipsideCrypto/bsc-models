@@ -4,7 +4,7 @@
     unique_key = "block_number",
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
-    tags = ['core','non_realtime'],
+    tags = ['core','non_realtime','overflowed_receipts'],
     full_refresh = false
 ) }}
 
@@ -131,6 +131,75 @@ missing_data AS (
         t.is_pending
 )
 {% endif %},
+
+{% if is_incremental() and var(
+    'OVERFLOWED_RECEIPTS',
+) %}
+overflowed_logs AS (
+    SELECT
+        block_number,
+        block_timestamp,
+        tx_hash,
+        origin_from_address,
+        origin_to_address,
+        origin_function_signature,
+        tx_status,
+        contract_address,
+        block_hash,
+        DATA,
+        event_index,
+        event_removed,
+        topics,
+        _inserted_timestamp,
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        CASE
+            WHEN block_timestamp IS NULL
+            OR origin_function_signature IS NULL THEN TRUE
+            ELSE FALSE
+        END AS is_pending
+    FROM
+        bsc_dev.silver.overflowed_logs -- change to source for prod to work around cyclic dependency
+        LEFT JOIN {{ ref('silver__transactions') }}
+        txs USING (
+            block_number,
+            tx_hash
+        )
+),
+existing_blocks AS (
+    SELECT
+        block_number,
+        block_timestamp,
+        tx_hash,
+        origin_from_address,
+        origin_to_address,
+        origin_function_signature,
+        tx_status,
+        contract_address,
+        block_hash,
+        DATA,
+        event_index,
+        event_removed,
+        topics,
+        _inserted_timestamp,
+        _log_id,
+        is_pending
+    FROM
+        {{ this }}
+        JOIN (
+            SELECT
+                DISTINCT block_number
+            FROM
+                overflowed_logs
+        ) USING (
+            block_number
+        )
+),
+{% endif %}
+
 FINAL AS (
     SELECT
         block_number,
@@ -173,6 +242,51 @@ SELECT
     is_pending
 FROM
     missing_data
+{% endif %}
+
+{% if is_incremental() and var(
+    'OVERFLOWED_RECEIPTS',
+) %}
+UNION ALL
+SELECT
+    block_number,
+    block_timestamp,
+    tx_hash,
+    origin_from_address,
+    origin_to_address,
+    origin_function_signature,
+    tx_status,
+    contract_address,
+    block_hash,
+    DATA,
+    event_index,
+    event_removed,
+    topics,
+    _inserted_timestamp,
+    _log_id,
+    is_pending
+FROM
+    overflowed_logs
+UNION ALL
+SELECT
+    block_number,
+    block_timestamp,
+    tx_hash,
+    origin_from_address,
+    origin_to_address,
+    origin_function_signature,
+    tx_status,
+    contract_address,
+    block_hash,
+    DATA,
+    event_index,
+    event_removed,
+    topics,
+    _inserted_timestamp,
+    _log_id,
+    is_pending
+FROM
+    existing_blocks
 {% endif %}
 )
 SELECT
