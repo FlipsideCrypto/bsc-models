@@ -78,7 +78,8 @@ FINAL AS (
         utils.udf_hex_to_int(
             DATA :type :: STRING
         ) :: INT AS TYPE,
-        _inserted_timestamp
+        _inserted_timestamp,
+        FALSE AS overflowed
     FROM
         base
 )
@@ -156,7 +157,8 @@ final_overflowed AS (
         tx_hash,
         POSITION,
         TYPE,
-        _inserted_timestamp
+        _inserted_timestamp,
+        FALSE AS overflowed
     FROM
         FINAL
     UNION ALL
@@ -178,7 +180,8 @@ final_overflowed AS (
         tx_hash,
         POSITION,
         TYPE,
-        _inserted_timestamp
+        _inserted_timestamp,
+        FALSE AS overflowed
     FROM
         existing_blocks
     UNION ALL
@@ -200,7 +203,8 @@ final_overflowed AS (
         tx_hash,
         POSITION,
         TYPE,
-        _inserted_timestamp
+        _inserted_timestamp,
+        TRUE AS overflowed
     FROM
         overflowed_receipts
         INNER JOIN (
@@ -234,7 +238,8 @@ SELECT
     tx_hash,
     POSITION,
     TYPE,
-    _inserted_timestamp
+    _inserted_timestamp,
+    overflowed
 FROM
 
 {% if is_incremental() and var(

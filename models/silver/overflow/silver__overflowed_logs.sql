@@ -15,7 +15,7 @@ WITH base AS (
         SYSDATE() AS _inserted_timestamp,
         OBJECT_AGG(IFNULL(key, SPLIT(path, '.') [1]), value_) AS json_data
     FROM
-        {{ ref("bronze__overflowed_receipts") }}
+        {{ ref("bronze__overflowed_logs") }}
     GROUP BY
         ALL
 ),
