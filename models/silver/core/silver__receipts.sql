@@ -107,7 +107,11 @@ overflowed_receipts AS (
         POSITION,
         TYPE
     FROM
-        silver.overflowed_receipts -- change to source for prod to work around cyclic dependency
+        {{ source(
+            'bsc_silver',
+            'overflowed_receipts'
+        ) }}
+        -- source works around circular dependency
 ),
 existing_blocks AS (
     SELECT

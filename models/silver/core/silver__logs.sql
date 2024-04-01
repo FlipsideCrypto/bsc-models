@@ -162,7 +162,11 @@ overflowed_logs AS (
             ELSE FALSE
         END AS is_pending
     FROM
-        silver.overflowed_logs -- change to source for prod to work around cyclic dependency
+        {{ source(
+            'bsc_silver',
+            'overflowed_logs'
+        ) }}
+        -- source works around circular dependency
         LEFT JOIN {{ ref('silver__transactions') }}
         txs USING (
             block_number,
