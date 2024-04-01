@@ -1,0 +1,52 @@
+{{ config(
+    materialized = 'incremental',
+    unique_key = 'test_timestamp',
+    tags = ['observability']
+) }}
+
+WITH base AS (
+
+    SELECT
+        blocks_impacted_count
+    FROM
+        {{ ref('silver_observability__receipts_completeness') }}
+    WHERE
+        test_timestamp > DATEADD('day', -5, CURRENT_TIMESTAMP())
+    ORDER BY
+        test_timestamp DESC
+    LIMIT
+        1), run_model AS (
+            SELECT
+                blocks_impacted_count,
+                github_actions.workflow_dispatches(
+                    'FlipsideCrypto',
+                    'bsc-models',
+                    'dbt_run_overflow_models_v2.yml',
+                    NULL
+                ) AS run_overflow_models
+            FROM
+                base
+            WHERE
+                blocks_impacted_count > 0
+        )
+    SELECT
+        dummy,
+        COALESCE(
+            blocks_impacted_count,
+            0
+        ) AS blocks_impacted_count,
+        COALESCE(
+            run_overflow_models,
+            OBJECT_CONSTRUCT(
+                'status',
+                'skipped'
+            )
+        ) AS run_overflow_models,
+        SYSDATE() AS test_timestamp
+    FROM
+        (
+            SELECT
+                1 AS dummy
+        )
+        LEFT JOIN run_model
+        ON 1 = 1
