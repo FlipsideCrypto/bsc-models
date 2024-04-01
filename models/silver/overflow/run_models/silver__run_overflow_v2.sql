@@ -9,7 +9,7 @@ WITH base AS (
     SELECT
         blocks_impacted_count
     FROM
-        {{ ref('silver_observability__traces_completeness') }}
+        {{ ref('silver_observability__receipts_completeness') }}
     WHERE
         test_timestamp > DATEADD('day', -5, CURRENT_TIMESTAMP())
     ORDER BY
