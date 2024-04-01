@@ -6,7 +6,7 @@
   tags = ['reorg','curated']
 ) }}
 
-WITH repayments AS (
+WITH kinza AS (
 
   SELECT
     tx_hash,
@@ -31,7 +31,7 @@ WITH repayments AS (
   FROM
     {{ ref('silver__kinza_repayments') }}
 
-{% if is_incremental() %}
+{% if is_incremental() and 'kinza' not in var('HEAL_CURATED_MODEL') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
@@ -40,31 +40,32 @@ WHERE
       {{ this }}
   )
 {% endif %}
-UNION ALL
-SELECT
-  tx_hash,
-  block_number,
-  block_timestamp,
-  event_index,
-  origin_from_address,
-  origin_to_address,
-  origin_function_signature,
-  contract_address,
-  radiant_market AS token_address,
-  radiant_token AS protocol_market,
-  amount_unadj,
-  amount,
-  symbol AS token_symbol,
-  payer AS payer_address,
-  borrower,
-  platform,
-  'bsc' AS blockchain,
-  _LOG_ID,
-  _INSERTED_TIMESTAMP
-FROM
-  {{ ref('silver__radiant_repayments') }}
+),
+radiant as (
+  SELECT
+    tx_hash,
+    block_number,
+    block_timestamp,
+    event_index,
+    origin_from_address,
+    origin_to_address,
+    origin_function_signature,
+    contract_address,
+    radiant_market AS token_address,
+    radiant_token AS protocol_market,
+    amount_unadj,
+    amount,
+    symbol AS token_symbol,
+    payer AS payer_address,
+    borrower,
+    platform,
+    'bsc' AS blockchain,
+    _LOG_ID,
+    _INSERTED_TIMESTAMP
+  FROM
+    {{ ref('silver__radiant_repayments') }}
 
-{% if is_incremental() %}
+{% if is_incremental() and 'radiant' not in var('HEAL_CURATED_MODEL') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
@@ -73,31 +74,32 @@ WHERE
       {{ this }}
   )
 {% endif %}
-UNION ALL
-SELECT
-  tx_hash,
-  block_number,
-  block_timestamp,
-  event_index,
-  origin_from_address,
-  origin_to_address,
-  origin_function_signature,
-  contract_address,
-  repay_contract_address AS token_address,
-  itoken AS protocol_market,
-  amount_unadj,
-  amount,
-  repay_contract_symbol AS token_symbol,
-  payer AS payer_address,
-  borrower,
-  platform,
-  'bsc' AS blockchain,
-  _LOG_ID,
-  _INSERTED_TIMESTAMP
-FROM
-  {{ ref('silver__venus_repayments') }}
+),
+venus as (
+  SELECT
+    tx_hash,
+    block_number,
+    block_timestamp,
+    event_index,
+    origin_from_address,
+    origin_to_address,
+    origin_function_signature,
+    contract_address,
+    repay_contract_address AS token_address,
+    itoken AS protocol_market,
+    amount_unadj,
+    amount,
+    repay_contract_symbol AS token_symbol,
+    payer AS payer_address,
+    borrower,
+    platform,
+    'bsc' AS blockchain,
+    _LOG_ID,
+    _INSERTED_TIMESTAMP
+  FROM
+    {{ ref('silver__venus_repayments') }}
 
-{% if is_incremental() %}
+{% if is_incremental() and 'venus' not in var('HEAL_CURATED_MODEL') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
@@ -106,31 +108,32 @@ WHERE
       {{ this }}
   )
 {% endif %}
-UNION ALL
-SELECT
-  tx_hash,
-  block_number,
-  block_timestamp,
-  event_index,
-  origin_from_address,
-  origin_to_address,
-  origin_function_signature,
-  contract_address,
-  repay_contract_address AS token_address,
-  token_address AS protocol_market,
-  amount_unadj,
-  amount,
-  repay_contract_symbol AS token_symbol,
-  payer AS payer_address,
-  borrower,
-  platform,
-  'bsc' AS blockchain,
-  _LOG_ID,
-  _INSERTED_TIMESTAMP
-FROM
-  {{ ref('silver__dforce_repayments') }}
+),
+dforce as (
+  SELECT
+    tx_hash,
+    block_number,
+    block_timestamp,
+    event_index,
+    origin_from_address,
+    origin_to_address,
+    origin_function_signature,
+    contract_address,
+    repay_contract_address AS token_address,
+    token_address AS protocol_market,
+    amount_unadj,
+    amount,
+    repay_contract_symbol AS token_symbol,
+    payer AS payer_address,
+    borrower,
+    platform,
+    'bsc' AS blockchain,
+    _LOG_ID,
+    _INSERTED_TIMESTAMP
+  FROM
+    {{ ref('silver__dforce_repayments') }}
 
-{% if is_incremental() %}
+{% if is_incremental() and 'dforce' not in var('HEAL_CURATED_MODEL') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
@@ -139,31 +142,32 @@ WHERE
       {{ this }}
   )
 {% endif %}
-UNION ALL
-SELECT
-  tx_hash,
-  block_number,
-  block_timestamp,
-  event_index,
-  origin_from_address,
-  origin_to_address,
-  origin_function_signature,
-  contract_address,
-  repay_contract_address AS token_address,
-  itoken AS protocol_market,
-  amount_unadj,
-  amount,
-  repay_contract_symbol AS token_symbol,
-  payer AS payer_address,
-  borrower,
-  platform,
-  'bsc' AS blockchain,
-  _LOG_ID,
-  _INSERTED_TIMESTAMP
-FROM
-  {{ ref('silver__liqee_repayments') }}
+),
+liqee as (
+  SELECT
+    tx_hash,
+    block_number,
+    block_timestamp,
+    event_index,
+    origin_from_address,
+    origin_to_address,
+    origin_function_signature,
+    contract_address,
+    repay_contract_address AS token_address,
+    itoken AS protocol_market,
+    amount_unadj,
+    amount,
+    repay_contract_symbol AS token_symbol,
+    payer AS payer_address,
+    borrower,
+    platform,
+    'bsc' AS blockchain,
+    _LOG_ID,
+    _INSERTED_TIMESTAMP
+  FROM
+    {{ ref('silver__liqee_repayments') }}
 
-{% if is_incremental() %}
+{% if is_incremental() and 'liqee' not in var('HEAL_CURATED_MODEL') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
@@ -172,6 +176,32 @@ WHERE
       {{ this }}
   )
 {% endif %}
+),
+repayments as (
+    SELECT
+        *
+    FROM
+        venus
+    UNION ALL
+    SELECT
+        *
+    FROM
+        liqee
+    UNION ALL
+    SELECT
+        *
+    FROM
+        kinza
+    UNION ALL
+    SELECT
+        *
+    FROM
+        dforce
+    UNION ALL
+    SELECT
+        *
+    FROM
+        radiant
 ),
 FINAL AS (
   SELECT

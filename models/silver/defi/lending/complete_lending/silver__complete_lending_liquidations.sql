@@ -6,7 +6,7 @@
   tags = ['reorg','curated']
 ) }}
 
-WITH liquidation_union AS (
+WITH venus AS (
 
   SELECT
     tx_hash,
@@ -34,7 +34,7 @@ WITH liquidation_union AS (
     {{ ref('silver__venus_liquidations') }}
     l
 
-{% if is_incremental() %}
+{% if is_incremental() and 'venus' not in var('HEAL_CURATED_MODEL') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
@@ -43,34 +43,35 @@ WHERE
       {{ this }}
   )
 {% endif %}
-UNION ALL
-SELECT
-  tx_hash,
-  block_number,
-  block_timestamp,
-  event_index,
-  origin_from_address,
-  origin_to_address,
-  origin_function_signature,
-  contract_address,
-  liquidator,
-  borrower,
-  amount_unadj,
-  amount,
-  token AS protocol_collateral_asset,
-  liquidation_contract_address AS debt_asset,
-  liquidation_contract_symbol AS debt_asset_symbol,
-  collateral_token AS collateral_asset,
-  collateral_symbol AS collateral_asset_symbol,
-  platform,
-  'bsc' AS blockchain,
-  _LOG_ID,
-  _INSERTED_TIMESTAMP
-FROM
-  {{ ref('silver__dforce_liquidations') }}
-  l
+),
+dforce as (
+  SELECT
+    tx_hash,
+    block_number,
+    block_timestamp,
+    event_index,
+    origin_from_address,
+    origin_to_address,
+    origin_function_signature,
+    contract_address,
+    liquidator,
+    borrower,
+    amount_unadj,
+    amount,
+    token AS protocol_collateral_asset,
+    liquidation_contract_address AS debt_asset,
+    liquidation_contract_symbol AS debt_asset_symbol,
+    collateral_token AS collateral_asset,
+    collateral_symbol AS collateral_asset_symbol,
+    platform,
+    'bsc' AS blockchain,
+    _LOG_ID,
+    _INSERTED_TIMESTAMP
+  FROM
+    {{ ref('silver__dforce_liquidations') }}
+    l
 
-{% if is_incremental() %}
+{% if is_incremental() and 'dforce' not in var('HEAL_CURATED_MODEL') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
@@ -79,33 +80,34 @@ WHERE
       {{ this }}
   )
 {% endif %}
-UNION ALL
-SELECT
-  tx_hash,
-  block_number,
-  block_timestamp,
-  event_index,
-  origin_from_address,
-  origin_to_address,
-  origin_function_signature,
-  contract_address,
-  liquidator,
-  borrower,
-  amount_unadj,
-  amount,
-  collateral_kinza_token AS protocol_collateral_asset,
-  collateral_asset,
-  collateral_token_symbol AS collateral_asset_symbol,
-  debt_asset,
-  debt_token_symbol AS debt_asset_symbol,
-  platform,
-  'bsc' AS blockchain,
-  _LOG_ID,
-  _INSERTED_TIMESTAMP
-FROM
-  {{ ref('silver__kinza_liquidations') }}
+),
+kinza as (
+  SELECT
+    tx_hash,
+    block_number,
+    block_timestamp,
+    event_index,
+    origin_from_address,
+    origin_to_address,
+    origin_function_signature,
+    contract_address,
+    liquidator,
+    borrower,
+    amount_unadj,
+    amount,
+    collateral_kinza_token AS protocol_collateral_asset,
+    collateral_asset,
+    collateral_token_symbol AS collateral_asset_symbol,
+    debt_asset,
+    debt_token_symbol AS debt_asset_symbol,
+    platform,
+    'bsc' AS blockchain,
+    _LOG_ID,
+    _INSERTED_TIMESTAMP
+  FROM
+    {{ ref('silver__kinza_liquidations') }}
 
-{% if is_incremental() %}
+{% if is_incremental() and 'kinza' not in var('HEAL_CURATED_MODEL') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
@@ -114,33 +116,34 @@ WHERE
       {{ this }}
   )
 {% endif %}
-UNION ALL
-SELECT
-  tx_hash,
-  block_number,
-  block_timestamp,
-  event_index,
-  origin_from_address,
-  origin_to_address,
-  origin_function_signature,
-  contract_address,
-  liquidator,
-  borrower,
-  amount_unadj,
-  amount,
-  collateral_radiant_token AS protocol_collateral_asset,
-  collateral_asset,
-  collateral_token_symbol AS collateral_asset_symbol,
-  debt_asset,
-  debt_token_symbol AS debt_asset_symbol,
-  platform,
-  'bsc' AS blockchain,
-  _LOG_ID,
-  _INSERTED_TIMESTAMP
-FROM
-  {{ ref('silver__radiant_liquidations') }}
+),
+radiant as (
+  SELECT
+    tx_hash,
+    block_number,
+    block_timestamp,
+    event_index,
+    origin_from_address,
+    origin_to_address,
+    origin_function_signature,
+    contract_address,
+    liquidator,
+    borrower,
+    amount_unadj,
+    amount,
+    collateral_radiant_token AS protocol_collateral_asset,
+    collateral_asset,
+    collateral_token_symbol AS collateral_asset_symbol,
+    debt_asset,
+    debt_token_symbol AS debt_asset_symbol,
+    platform,
+    'bsc' AS blockchain,
+    _LOG_ID,
+    _INSERTED_TIMESTAMP
+  FROM
+    {{ ref('silver__radiant_liquidations') }}
 
-{% if is_incremental() %}
+{% if is_incremental() and 'radaint' not in var('HEAL_CURATED_MODEL') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
@@ -149,34 +152,35 @@ WHERE
       {{ this }}
   )
 {% endif %}
-UNION ALL
-SELECT
-  tx_hash,
-  block_number,
-  block_timestamp,
-  event_index,
-  origin_from_address,
-  origin_to_address,
-  origin_function_signature,
-  contract_address,
-  liquidator,
-  borrower,
-  amount_unadj,
-  amount,
-  itoken AS protocol_collateral_asset,
-  liquidation_contract_address AS debt_asset,
-  liquidation_contract_symbol AS debt_asset_symbol,
-  collateral_token AS collateral_asset,
-  collateral_symbol AS collateral_asset_symbol,
-  platform,
-  'bsc' AS blockchain,
-  _LOG_ID,
-  _INSERTED_TIMESTAMP
-FROM
-  {{ ref('silver__venus_liquidations') }}
-  l
+),
+venus as (
+  SELECT
+    tx_hash,
+    block_number,
+    block_timestamp,
+    event_index,
+    origin_from_address,
+    origin_to_address,
+    origin_function_signature,
+    contract_address,
+    liquidator,
+    borrower,
+    amount_unadj,
+    amount,
+    itoken AS protocol_collateral_asset,
+    liquidation_contract_address AS debt_asset,
+    liquidation_contract_symbol AS debt_asset_symbol,
+    collateral_token AS collateral_asset,
+    collateral_symbol AS collateral_asset_symbol,
+    platform,
+    'bsc' AS blockchain,
+    _LOG_ID,
+    _INSERTED_TIMESTAMP
+  FROM
+    {{ ref('silver__venus_liquidations') }}
+    l
 
-{% if is_incremental() %}
+{% if is_incremental() and 'venus' not in var('HEAL_CURATED_MODEL') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
@@ -185,34 +189,35 @@ WHERE
       {{ this }}
   )
 {% endif %}
-UNION ALL
-SELECT
-  tx_hash,
-  block_number,
-  block_timestamp,
-  event_index,
-  origin_from_address,
-  origin_to_address,
-  origin_function_signature,
-  contract_address,
-  liquidator,
-  borrower,
-  amount_unadj,
-  amount,
-  itoken AS protocol_collateral_asset,
-  liquidation_contract_address AS collateral_asset,
-  liquidation_contract_symbol AS collateral_asset_symbol,
-  collateral_token AS debt_asset,
-  collateral_symbol AS debt_asset_symbol,
-  platform,
-  'bsc' AS blockchain,
-  _LOG_ID,
-  _INSERTED_TIMESTAMP
-FROM
-  {{ ref('silver__liqee_liquidations') }}
-  
+),
+liqee as (
+  SELECT
+    tx_hash,
+    block_number,
+    block_timestamp,
+    event_index,
+    origin_from_address,
+    origin_to_address,
+    origin_function_signature,
+    contract_address,
+    liquidator,
+    borrower,
+    amount_unadj,
+    amount,
+    itoken AS protocol_collateral_asset,
+    liquidation_contract_address AS collateral_asset,
+    liquidation_contract_symbol AS collateral_asset_symbol,
+    collateral_token AS debt_asset,
+    collateral_symbol AS debt_asset_symbol,
+    platform,
+    'bsc' AS blockchain,
+    _LOG_ID,
+    _INSERTED_TIMESTAMP
+  FROM
+    {{ ref('silver__liqee_liquidations') }}
+    
 
-{% if is_incremental() %}
+{% if is_incremental() and 'liqee' not in var('HEAL_CURATED_MODEL') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
@@ -221,6 +226,32 @@ WHERE
       {{ this }}
   )
 {% endif %}
+),
+liquidation_union as (
+    SELECT
+        *
+    FROM
+        venus
+    UNION ALL
+    SELECT
+        *
+    FROM
+        liqee
+    UNION ALL
+    SELECT
+        *
+    FROM
+        kinza
+    UNION ALL
+    SELECT
+        *
+    FROM
+        dforce
+    UNION ALL
+    SELECT
+        *
+    FROM
+        radiant
 ),
 FINAL AS (
   SELECT
