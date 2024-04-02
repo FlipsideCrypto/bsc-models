@@ -41,34 +41,3 @@ SELECT
     ) AS modified_timestamp
 FROM
     {{ ref('silver__traces') }}
-UNION ALL
-SELECT
-    tx_hash,
-    block_number,
-    block_timestamp,
-    from_address,
-    to_address,
-    bnb_value AS VALUE,
-    bnb_value_precise_raw AS value_precise_raw,
-    bnb_value_precise AS value_precise,
-    gas,
-    gas_used,
-    input,
-    output,
-    TYPE,
-    identifier,
-    DATA,
-    tx_status,
-    sub_traces,
-    trace_status,
-    error_reason,
-    trace_index,
-    traces_id AS fact_traces_id,
-    inserted_timestamp,
-    modified_timestamp
-FROM
-    {{ source(
-        'bsc_silver',
-        'overflowed_traces'
-    ) }}
-    -- source works around circular dependency

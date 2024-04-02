@@ -1,5 +1,6 @@
 {{ config (
-    materialized = "view"
+    materialized = "view",
+    tags = ['overflowed_traces']
 ) }}
 
 WITH impacted_blocks AS (
@@ -28,7 +29,11 @@ all_txs AS (
     FROM
         {{ ref("silver__transactions") }}
         t
-        JOIN impacted_blocks USING (block_number)
+        JOIN -- impacted_blocks USING (block_number) removing logic temporarily in order to not need to re-run the full observability model
+        silver.temp_overflowed_traces ot USING (
+            block_number,
+            POSITION
+        ) -- temp logic to avoid re-running observability model
 ),
 missing_txs AS (
     SELECT
@@ -37,7 +42,7 @@ missing_txs AS (
         file_name
     FROM
         all_txs
-        LEFT JOIN {{ ref("core__fact_traces") }}
+        LEFT JOIN {{ ref("silver__traces") }}
         tr USING (
             block_number,
             tx_hash

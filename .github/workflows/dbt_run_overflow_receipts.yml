@@ -1,5 +1,5 @@
-name: dbt_run_overflow_models
-run-name: dbt_run_overflow_models
+name: dbt_run_overflow_receipts
+run-name: dbt_run_overflow_receipts
 
 on:
   workflow_dispatch:
@@ -41,4 +41,4 @@ jobs:
           dbt deps
       - name: Run DBT Jobs
         run: |
-          dbt run -m "bsc_models,tag:overflow"
+          dbt run -m "bsc_models,tag:overflowed_receipts" --vars '{"OVERFLOWED_RECEIPTS":True}'
