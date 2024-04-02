@@ -9,6 +9,9 @@ models:
           partition_by:
             - BLOCK_NUMBER
           column_name: POSITION
+          config:
+            severity: error
+            error_if: ">10"
     columns:
       - name: BLOCK_NUMBER
         tests:
