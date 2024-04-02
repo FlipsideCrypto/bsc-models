@@ -21,7 +21,7 @@ WITH base AS (
                 github_actions.workflow_dispatches(
                     'FlipsideCrypto',
                     'bsc-models',
-                    'dbt_run_overflow_receipts.yml',
+                    'dbt_run_overflowed_receipts.yml',
                     NULL
                 ) AS run_overflow_models
             FROM
