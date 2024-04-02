@@ -4,6 +4,7 @@
 ) }}
 
 WITH impacted_blocks AS (
+    {#
 
     SELECT
         VALUE :: INT AS block_number
@@ -19,7 +20,11 @@ WITH impacted_blocks AS (
                 1
         ), LATERAL FLATTEN (
             input => blocks_impacted_array
-        )
+        ) #} -- add this back after initial backfill
+    SELECT
+        DISTINCT block_number AS block_number
+    FROM
+        silver.overflowed_traces -- make this a source table and remove after backfill
 ),
 all_txs AS (
     SELECT
@@ -29,11 +34,7 @@ all_txs AS (
     FROM
         {{ ref("silver__transactions") }}
         t
-        JOIN -- impacted_blocks USING (block_number) removing logic temporarily in order to not need to re-run the full observability model
-        silver.temp_overflowed_traces ot USING (
-            block_number,
-            POSITION
-        ) -- temp logic to avoid re-running observability model
+        JOIN impacted_blocks USING (block_number)
 ),
 missing_txs AS (
     SELECT
