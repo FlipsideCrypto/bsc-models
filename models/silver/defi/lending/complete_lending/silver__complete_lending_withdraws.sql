@@ -6,7 +6,7 @@
     tags = ['reorg','curated']
 ) }}
 
-WITH withdraws AS (
+WITH kinza AS (
 
     SELECT
         tx_hash,
@@ -30,7 +30,7 @@ WITH withdraws AS (
     FROM
         {{ ref('silver__kinza_withdraws') }}
 
-{% if is_incremental() %}
+{% if is_incremental() and 'kinza' not in var('HEAL_CURATED_MODEL') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -41,30 +41,31 @@ WHERE
             {{ this }}
     )
 {% endif %}
-UNION ALL
-SELECT
-    tx_hash,
-    block_number,
-    block_timestamp,
-    event_index,
-    origin_from_address,
-    origin_to_address,
-    origin_function_signature,
-    contract_address,
-    radiant_token AS protocol_market,
-    radiant_market AS token_address,
-    symbol AS token_symbol,
-    amount_unadj,
-    amount,
-    depositor_address,
-    platform,
-    'bsc' AS blockchain,
-    _LOG_ID,
-    _INSERTED_TIMESTAMP
-FROM
-    {{ ref('silver__radiant_withdraws') }}
+),
+radiant as (
+    SELECT
+        tx_hash,
+        block_number,
+        block_timestamp,
+        event_index,
+        origin_from_address,
+        origin_to_address,
+        origin_function_signature,
+        contract_address,
+        radiant_token AS protocol_market,
+        radiant_market AS token_address,
+        symbol AS token_symbol,
+        amount_unadj,
+        amount,
+        depositor_address,
+        platform,
+        'bsc' AS blockchain,
+        _LOG_ID,
+        _INSERTED_TIMESTAMP
+    FROM
+        {{ ref('silver__radiant_withdraws') }}
 
-{% if is_incremental() %}
+{% if is_incremental() and 'radiant' not in var('HEAL_CURATED_MODEL') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -72,33 +73,34 @@ WHERE
                 _inserted_timestamp
             ) - INTERVAL '36 hours'
         FROM
-            {{ this }}
-    )
+        {{ this }}
+)
 {% endif %}
-UNION ALL
-SELECT
-    tx_hash,
-    block_number,
-    block_timestamp,
-    event_index,
-    origin_from_address,
-    origin_to_address,
-    origin_function_signature,
-    contract_address,
-    itoken AS protocol_market,
-    received_contract_address AS token_address,
-    received_contract_symbol token_symbol,
-    amount_unadj,
-    amount,
-    redeemer AS depositor_address,
-    platform,
-    'bsc' AS blockchain,
-    _LOG_ID,
-    _INSERTED_TIMESTAMP
-FROM
-    {{ ref('silver__liqee_withdraws') }}
+),
+liqee as (
+    SELECT
+        tx_hash,
+        block_number,
+        block_timestamp,
+        event_index,
+        origin_from_address,
+        origin_to_address,
+        origin_function_signature,
+        contract_address,
+        itoken AS protocol_market,
+        received_contract_address AS token_address,
+        received_contract_symbol token_symbol,
+        amount_unadj,
+        amount,
+        redeemer AS depositor_address,
+        platform,
+        'bsc' AS blockchain,
+        _LOG_ID,
+        _INSERTED_TIMESTAMP
+    FROM
+        {{ ref('silver__liqee_withdraws') }}
 
-{% if is_incremental() %}
+{% if is_incremental() and 'liqee' not in var('HEAL_CURATED_MODEL') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -109,30 +111,31 @@ WHERE
             {{ this }}
     )
 {% endif %}
-UNION ALL
-SELECT
-    tx_hash,
-    block_number,
-    block_timestamp,
-    event_index,
-    origin_from_address,
-    origin_to_address,
-    origin_function_signature,
-    contract_address,
-    itoken AS protocol_market,
-    received_contract_address AS token_address,
-    received_contract_symbol token_symbol,
-    amount_unadj,
-    amount,
-    redeemer AS depositor_address,
-    platform,
-    'bsc' AS blockchain,
-    _LOG_ID,
-    _INSERTED_TIMESTAMP
-FROM
-    {{ ref('silver__venus_withdraws') }}
+),
+venus as (
+    SELECT
+        tx_hash,
+        block_number,
+        block_timestamp,
+        event_index,
+        origin_from_address,
+        origin_to_address,
+        origin_function_signature,
+        contract_address,
+        itoken AS protocol_market,
+        received_contract_address AS token_address,
+        received_contract_symbol token_symbol,
+        amount_unadj,
+        amount,
+        redeemer AS depositor_address,
+        platform,
+        'bsc' AS blockchain,
+        _LOG_ID,
+        _INSERTED_TIMESTAMP
+    FROM
+        {{ ref('silver__venus_withdraws') }}
 
-{% if is_incremental() %}
+{% if is_incremental() and 'venus' not in var('HEAL_CURATED_MODEL') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -143,30 +146,31 @@ WHERE
             {{ this }}
     )
 {% endif %}
-UNION ALL
-SELECT
-    tx_hash,
-    block_number,
-    block_timestamp,
-    event_index,
-    origin_from_address,
-    origin_to_address,
-    origin_function_signature,
-    contract_address,
-    token AS protocol_market,
-    received_contract_address AS token_address,
-    received_contract_symbol token_symbol,
-    amount_unadj,
-    amount,
-    redeemer AS depositor_address,
-    platform,
-    'bsc' AS blockchain,
-    _LOG_ID,
-    _INSERTED_TIMESTAMP
-FROM
-    {{ ref('silver__dforce_withdraws') }}
+),
+dforce as (
+    SELECT
+        tx_hash,
+        block_number,
+        block_timestamp,
+        event_index,
+        origin_from_address,
+        origin_to_address,
+        origin_function_signature,
+        contract_address,
+        token AS protocol_market,
+        received_contract_address AS token_address,
+        received_contract_symbol token_symbol,
+        amount_unadj,
+        amount,
+        redeemer AS depositor_address,
+        platform,
+        'bsc' AS blockchain,
+        _LOG_ID,
+        _INSERTED_TIMESTAMP
+    FROM
+        {{ ref('silver__dforce_withdraws') }}
 
-{% if is_incremental() %}
+{% if is_incremental() and 'dforce' not in var('HEAL_CURATED_MODEL') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -177,6 +181,32 @@ WHERE
             {{ this }}
     )
 {% endif %}
+),
+withdraws as (
+    SELECT
+        *
+    FROM
+        venus
+    UNION ALL
+    SELECT
+        *
+    FROM
+        liqee
+    UNION ALL
+    SELECT
+        *
+    FROM
+        kinza
+    UNION ALL
+    SELECT
+        *
+    FROM
+        dforce
+    UNION ALL
+    SELECT
+        *
+    FROM
+        radiant
 ),
 FINAL AS (
     SELECT
