@@ -1,4 +1,7 @@
 -- depends_on: {{ ref('bronze__streamline_traces') }}
+{% set warehouse = 'DBT_SNOWPARK' if var('OVERFLOWED_TRACES') else (
+    'DBT' if target.name == 'dev' else 'DBT_CLOUD'
+) %}
 {{ config (
     materialized = "incremental",
     incremental_strategy = 'delete+insert',
@@ -6,7 +9,8 @@
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
     tags = ['core','non_realtime','overflowed_traces'],
-    full_refresh = false
+    full_refresh = false,
+    snowflake_warehouse = warehouse
 ) }}
 
 WITH bronze_traces AS (
@@ -371,8 +375,9 @@ overflowed_traces AS (
         txs
         ON t.tx_position = txs.position
         AND t.block_number = txs.block_number
-)
-{% endif %},
+),
+{% endif %}
+
 FINAL AS (
     SELECT
         block_number,
