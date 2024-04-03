@@ -1,7 +1,5 @@
 -- depends_on: {{ ref('bronze__streamline_traces') }}
-{% set warehouse = 'DBT_SNOWPARK' if var('OVERFLOWED_TRACES') else (
-    'DBT' if target.name == 'dev' else 'DBT_CLOUD'
-) %}
+{% set warehouse = 'DBT_SNOWPARK' if var('OVERFLOWED_TRACES') else target.warehouse %}
 {{ config (
     materialized = "incremental",
     incremental_strategy = 'delete+insert',
