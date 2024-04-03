@@ -368,7 +368,11 @@ overflowed_traces AS (
         t._call_id,
         txs._inserted_timestamp AS _inserted_timestamp
     FROM
-        silver.overflowed_traces_v2 t --  update to source
+        {{ source(
+            'bsc_silver',
+            'overflowed_traces_v2'
+        ) }}
+        t --  update to source
         LEFT JOIN {{ ref('silver__transactions') }}
         txs
         ON t.tx_position = txs.position
