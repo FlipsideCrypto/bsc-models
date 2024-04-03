@@ -1,6 +1,6 @@
 version: 2
 models:
-  - name: silver__complete_nft_sales 
+  - name: silver__seaport_1_6_sales
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -28,9 +28,6 @@ models:
           - not_null
           - dbt_expectations.expect_column_values_to_match_regex:
               regex: 0[xX][0-9a-fA-F]+
-      - name: EVENT_INDEX
-        tests:
-          - not_null
       - name: PLATFORM_ADDRESS
         tests:
           - not_null
@@ -39,6 +36,8 @@ models:
       - name: PLATFORM_NAME
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: ['opensea']
       - name: SELLER_ADDRESS
         tests:
           - not_null
@@ -59,56 +58,32 @@ models:
           - not_null
       - name: CURRENCY_ADDRESS
         tests:
-          - not_null: 
-              where: platform_exchange_version not in ('seaport_1_1', 'seaport_1_4', 'seaport_1_5', 'seaport_1_6') 
-      - name: PRICE
+          - not_null:
+              where: "total_price_raw > 0"
+      - name: TOTAL_PRICE_RAW
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER    
                 - FLOAT 
-      - name: PRICE_USD
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER    
-                - FLOAT  
-      - name: TOTAL_FEES
+      - name: TOTAL_FEES_RAW
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER    
                 - FLOAT 
-      - name: PLATFORM_FEE
+      - name: PLATFORM_FEE_RAW
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER    
                 - FLOAT
-      - name: CREATOR_FEE
+      - name: CREATOR_FEE_RAW
         tests:
           - not_null
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER    
-                - FLOAT
-      - name: TOTAL_FEES_USD
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER    
-                - FLOAT 
-      - name: PLATFORM_FEE_USD
-        tests:
-          - dbt_expectations.expect_column_values_to_be_in_type_list:
-              column_type_list:
-                - NUMBER    
-                - FLOAT
-      - name: CREATOR_FEE_USD
-        tests:
           - dbt_expectations.expect_column_values_to_be_in_type_list:
               column_type_list:
                 - NUMBER    
@@ -120,12 +95,19 @@ models:
               column_type_list:
                 - NUMBER    
                 - FLOAT 
-      - name: NFT_LOG_ID
+      - name: NFT_LOG_ID 
         tests:
-          - not_null 
-      - name: _LOG_ID
+          - not_null
+      - name: _INSERTED_TIMESTAMP
         tests:
-          - not_null 
+          - not_null
+          - dbt_expectations.expect_row_values_to_have_recent_data:
+              datepart: day
+              interval: 1
+          - dbt_expectations.expect_column_values_to_be_in_type_list:
+              column_type_list:
+                - TIMESTAMP_LTZ
+                - TIMESTAMP_NTZ
       - name: ORIGIN_FROM_ADDRESS
         tests:
           - not_null
@@ -133,8 +115,7 @@ models:
               regex: 0[xX][0-9a-fA-F]+
       - name: ORIGIN_TO_ADDRESS
         tests:
-          - not_null:
-              where: platform_exchange_version != 'nftx'
+          - not_null
           - dbt_expectations.expect_column_values_to_match_regex:
               regex: 0[xX][0-9a-fA-F]+
       - name: ORIGIN_FUNCTION_SIGNATURE
@@ -145,6 +126,8 @@ models:
       - name: EVENT_TYPE
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: ['bid_won', 'sale']
       - name: INPUT_DATA
         tests:
           - not_null
