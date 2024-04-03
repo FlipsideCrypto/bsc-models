@@ -5,7 +5,7 @@
 
 {% for item in range(
         1,
-        6
+        11
     ) %}
 
     SELECT
