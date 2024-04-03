@@ -24,7 +24,11 @@ WITH impacted_blocks AS (
     SELECT
         DISTINCT block_number AS block_number
     FROM
-        silver.overflowed_traces -- make this a source table and remove after backfill
+        {{ source(
+            'bsc_silver',
+            'overflowed_traces'
+        ) }}
+        -- remove after backfill
 ),
 all_txs AS (
     SELECT
