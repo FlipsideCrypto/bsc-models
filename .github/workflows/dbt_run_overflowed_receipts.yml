@@ -1,5 +1,5 @@
-name: dbt_run_overflow_models_v2
-run-name: dbt_run_overflow_models_v2
+name: dbt_run_overflowed_receipts
+run-name: dbt_run_overflowed_receipts
 
 on:
   workflow_dispatch:

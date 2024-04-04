@@ -1,3 +1,4 @@
+{% set warehouse = 'DBT_SNOWPARK' if var('OVERFLOWED_RECEIPTS') else target.warehouse %}
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
@@ -5,7 +6,8 @@
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
     tags = ['core','non_realtime','overflowed_receipts'],
-    full_refresh = false
+    full_refresh = false,
+    snowflake_warehouse = warehouse
 ) }}
 
 WITH base AS (

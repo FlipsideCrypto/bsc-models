@@ -1,12 +1,14 @@
 -- depends_on: {{ ref('bronze__streamline_traces') }}
+{% set warehouse = 'DBT_SNOWPARK' if var('OVERFLOWED_TRACES') else target.warehouse %}
 {{ config (
     materialized = "incremental",
     incremental_strategy = 'delete+insert',
     unique_key = "block_number",
     cluster_by = "block_timestamp::date, _inserted_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
-    tags = ['core','non_realtime'],
-    full_refresh = false
+    tags = ['core','non_realtime','overflowed_traces'],
+    full_refresh = false,
+    snowflake_warehouse = warehouse
 ) }}
 
 WITH bronze_traces AS (
@@ -325,6 +327,59 @@ missing_data AS (
         t.is_pending
 )
 {% endif %},
+
+{% if is_incremental() and var(
+    'OVERFLOWED_TRACES',
+) %}
+overflowed_traces AS (
+    SELECT
+        t.block_number,
+        txs.tx_hash,
+        txs.block_timestamp,
+        txs.tx_status,
+        t.tx_position,
+        t.trace_index,
+        t.from_address,
+        t.to_address,
+        t.bnb_value_precise_raw,
+        t.bnb_value_precise,
+        t.bnb_value,
+        t.gas,
+        t.gas_used,
+        t.input,
+        t.output,
+        t.type,
+        t.identifier,
+        t.sub_traces,
+        t.error_reason,
+        IFF(
+            t.error_reason IS NULL,
+            'SUCCESS',
+            'FAIL'
+        ) AS trace_status,
+        t.data,
+        IFF(
+            txs.tx_hash IS NULL
+            OR txs.block_timestamp IS NULL
+            OR txs.tx_status IS NULL,
+            TRUE,
+            FALSE
+        ) AS is_pending,
+        t._call_id,
+        txs._inserted_timestamp AS _inserted_timestamp
+    FROM
+        {{ source(
+            'bsc_silver',
+            'overflowed_traces_v2'
+        ) }}
+        t --  update to source
+        LEFT JOIN {{ ref('silver__transactions') }}
+        txs
+        ON t.tx_position = txs.position
+        AND t.block_number = txs.block_number
+),
+{% endif %}
+
 FINAL AS (
     SELECT
         block_number,
@@ -416,7 +471,50 @@ FROM
             DISTINCT block_number
         FROM
             missing_data
-    ) USING (block_number)
+
+{% if is_incremental() and var(
+    'OVERFLOWED_TRACES',
+) %}
+UNION
+SELECT
+    DISTINCT block_number
+FROM
+    overflowed_traces
+{% endif %}
+) USING (block_number)
+{% endif %}
+
+{% if is_incremental() and var(
+    'OVERFLOWED_TRACES',
+) %}
+UNION ALL
+SELECT
+    block_number,
+    tx_hash,
+    block_timestamp,
+    tx_status,
+    tx_position,
+    trace_index,
+    from_address,
+    to_address,
+    bnb_value_precise_raw,
+    bnb_value_precise,
+    bnb_value,
+    gas,
+    gas_used,
+    input,
+    output,
+    TYPE,
+    identifier,
+    sub_traces,
+    error_reason,
+    trace_status,
+    DATA,
+    is_pending,
+    _call_id,
+    _inserted_timestamp
+FROM
+    overflowed_traces
 {% endif %}
 )
 SELECT

@@ -1,4 +1,5 @@
 -- depends_on: {{ ref('bronze__streamline_receipts') }}
+{% set warehouse = 'DBT_SNOWPARK' if var('OVERFLOWED_RECEIPTS') else target.warehouse %}
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
@@ -6,7 +7,8 @@
     cluster_by = "ROUND(block_number, -3)",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION on equality(tx_hash)",
     tags = ['core','non_realtime','overflowed_receipts'],
-    full_refresh = false
+    full_refresh = false,
+    snowflake_warehouse = warehouse
 ) }}
 
 WITH base AS (

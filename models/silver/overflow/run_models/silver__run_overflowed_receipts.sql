@@ -9,7 +9,7 @@ WITH base AS (
     SELECT
         blocks_impacted_count
     FROM
-        {{ ref('silver_observability__traces_completeness') }}
+        {{ ref('silver_observability__receipts_completeness') }}
     WHERE
         test_timestamp > DATEADD('day', -5, CURRENT_TIMESTAMP())
     ORDER BY
@@ -21,7 +21,7 @@ WITH base AS (
                 github_actions.workflow_dispatches(
                     'FlipsideCrypto',
                     'bsc-models',
-                    'dbt_run_overflow_models.yml',
+                    'dbt_run_overflowed_receipts.yml',
                     NULL
                 ) AS run_overflow_models
             FROM
