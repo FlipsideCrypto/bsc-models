@@ -1,7 +1,7 @@
 version: 2
 models:
   - name: nft__ez_nft_sales
-    description: 'This table contains NFT sale events on the BSC blockchain'
+    description: 'This table contains NFT sale events on the BSC blockchain which includes Pancakeswap, Opensea, and TofuNFT'
       
     columns:
       - name: BLOCK_NUMBER
