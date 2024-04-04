@@ -48,7 +48,6 @@ sources:
     tables:
       - name: verified_abis
       - name: overflowed_traces
-      - name: overflowed_traces_v2
       - name: overflowed_receipts
       - name: overflowed_logs
   - name: bsc_bronze_api
