@@ -4,7 +4,6 @@
 ) }}
 
 WITH impacted_blocks AS (
-    {#
 
     SELECT
         VALUE :: INT AS block_number
@@ -20,15 +19,7 @@ WITH impacted_blocks AS (
                 1
         ), LATERAL FLATTEN (
             input => blocks_impacted_array
-        ) #} -- add this back after initial backfill
-    SELECT
-        DISTINCT block_number AS block_number
-    FROM
-        {{ source(
-            'bsc_silver',
-            'overflowed_traces'
-        ) }}
-        -- remove after backfill
+        )
 ),
 all_txs AS (
     SELECT

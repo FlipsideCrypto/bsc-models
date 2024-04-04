@@ -370,9 +370,9 @@ overflowed_traces AS (
     FROM
         {{ source(
             'bsc_silver',
-            'overflowed_traces_v2'
+            'overflowed_traces'
         ) }}
-        t --  update to source
+        t
         LEFT JOIN {{ ref('silver__transactions') }}
         txs
         ON t.tx_position = txs.position
