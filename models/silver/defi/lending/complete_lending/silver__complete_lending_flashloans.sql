@@ -120,12 +120,12 @@ FINAL AS (
       2
     ) AS premium_amount_usd,
     platform,
-    blockchain,
+    f.blockchain,
     f._LOG_ID,
     f._INSERTED_TIMESTAMP
   FROM
     flashloans f
-    LEFT JOIN {{ ref('price__ez_hourly_token_prices') }}
+    LEFT JOIN {{ ref('price__ez_prices_hourly') }}
     p
     ON f.token_address = p.token_address
     AND DATE_TRUNC(
