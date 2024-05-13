@@ -1,8 +1,8 @@
 version: 2
 models:
-  - name: github_actions__wf_in_progress
+  - name: github_actions__current_workflows
     columns:
-      - name: DELTA_MINUTES
+      - name: RUN_MINUTES
         tests:
           - dbt_expectations.expect_column_values_to_be_between:
               max_value: 59
