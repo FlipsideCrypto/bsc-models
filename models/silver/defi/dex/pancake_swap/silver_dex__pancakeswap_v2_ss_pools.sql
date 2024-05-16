@@ -44,6 +44,7 @@ WITH pools AS (
             '0xa9551fb056fc743efe2a0a34e39f9769ad10166520df7843c09a66f82e148b97',
             '0x48dc7a1b156fe3e70ed5ed0afcb307661905edf536f15bb5786e327ea1933532'
         ) -- swap
+        AND tx_status = 'SUCCESS'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

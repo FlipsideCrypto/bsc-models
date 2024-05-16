@@ -80,6 +80,7 @@ swaps_base AS (
     WHERE
         topics [0] :: STRING = '0xc528cda9e500228b16ce84fadae290d9a49aecb17483110004c5af0a07f6fd73' --Swap
         AND version = 'v2'
+        AND tx_status = 'SUCCESS'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

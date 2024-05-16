@@ -52,6 +52,7 @@ venus_deposits AS (
         asset_details
     )
     AND topics [0] :: STRING = '0xb4c03061fb5b7fed76389d5af8f2e0ddb09f8c70d1333abbb62582835e10accb'
+    AND tx_status = 'SUCCESS'
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
