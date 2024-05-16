@@ -1,9 +1,10 @@
+-- depends_on: {{ ref('silver__complete_token_prices') }}
 {{ config(
     materialized = 'incremental',
     incremental_strategy = 'delete+insert',
     unique_key = ['block_number','platform','version'],
     cluster_by = ['block_timestamp::DATE'],
-    tags = ['curated','reorg']
+    tags = ['curated','reorg','heal']
 ) }}
 
 WITH allbridge AS (
@@ -32,11 +33,11 @@ WITH allbridge AS (
     FROM
         {{ ref('silver_bridge__allbridge_sent') }}
 
-{% if is_incremental() and 'allbridge' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'allbridge' not in var('HEAL_MODELS') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) - INTERVAL '36 hours'
+            MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
         FROM
             {{ this }}
     )
@@ -68,11 +69,11 @@ axelar AS (
     FROM
         {{ ref('silver_bridge__axelar_contractcallwithtoken') }}
 
-{% if is_incremental() and 'axelar' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'axelar' not in var('HEAL_MODELS') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) - INTERVAL '36 hours'
+            MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
         FROM
             {{ this }}
     )
@@ -104,11 +105,11 @@ celer_cbridge AS (
     FROM
         {{ ref('silver_bridge__celer_cbridge_send') }}
 
-{% if is_incremental() and 'celer_cbridge' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'celer_cbridge' not in var('HEAL_MODELS') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) - INTERVAL '36 hours'
+            MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
         FROM
             {{ this }}
     )
@@ -140,11 +141,11 @@ dln_debridge AS (
     FROM
         {{ ref('silver_bridge__dln_debridge_createdorder') }}
 
-{% if is_incremental() and 'dln_debridge' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'dln_debridge' not in var('HEAL_MODELS') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) - INTERVAL '36 hours'
+            MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
         FROM
             {{ this }}
     )
@@ -176,11 +177,11 @@ eywa AS (
     FROM
         {{ ref('silver_bridge__eywa_requestsent') }}
 
-{% if is_incremental() and 'eywa' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'eywa' not in var('HEAL_MODELS') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) - INTERVAL '36 hours'
+            MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
         FROM
             {{ this }}
     )
@@ -212,11 +213,11 @@ meson AS (
     FROM
         {{ ref('silver_bridge__meson_transfers') }}
 
-{% if is_incremental() and 'meson' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'meson' not in var('HEAL_MODELS') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) - INTERVAL '36 hours'
+            MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
         FROM
             {{ this }}
     )
@@ -248,11 +249,11 @@ stargate AS (
     FROM
         {{ ref('silver_bridge__stargate_swap') }}
 
-{% if is_incremental() and 'stargate' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'stargate' not in var('HEAL_MODELS') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) - INTERVAL '36 hours'
+            MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
         FROM
             {{ this }}
     )
@@ -284,11 +285,11 @@ symbiosis AS (
     FROM
         {{ ref('silver_bridge__symbiosis_synthesizerequest') }}
 
-{% if is_incremental() and 'symbiosis' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'symbiosis' not in var('HEAL_MODELS') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) - INTERVAL '36 hours'
+            MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
         FROM
             {{ this }}
     )
@@ -320,11 +321,11 @@ synapse_tb AS (
     FROM
         {{ ref('silver_bridge__synapse_token_bridge') }}
 
-{% if is_incremental() and 'synapse_tb' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'synapse_tb' not in var('HEAL_MODELS') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) - INTERVAL '36 hours'
+            MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
         FROM
             {{ this }}
     )
@@ -356,11 +357,11 @@ synapse_tbs AS (
     FROM
         {{ ref('silver_bridge__synapse_tokenbridgeandswap') }}
 
-{% if is_incremental() and 'synapse_tbs' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'synapse_tbs' not in var('HEAL_MODELS') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) - INTERVAL '36 hours'
+            MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
         FROM
             {{ this }}
     )
@@ -392,11 +393,11 @@ wormhole AS (
     FROM
         {{ ref('silver_bridge__wormhole_transfers') }}
 
-{% if is_incremental() and 'wormhole' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'wormhole' not in var('HEAL_MODELS') %}
 WHERE
     _inserted_timestamp >= (
         SELECT
-            MAX(_inserted_timestamp) - INTERVAL '36 hours'
+            MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
         FROM
             {{ this }}
     )

@@ -1,9 +1,10 @@
+-- depends_on: {{ ref('silver__complete_token_prices') }}
 {{ config(
-  materialized = 'incremental',
-  incremental_strategy = 'delete+insert',
-  unique_key = ['block_number','platform'],
-  cluster_by = ['block_timestamp::DATE'],
-  tags = ['reorg','curated']
+    materialized = 'incremental',
+    incremental_strategy = 'delete+insert',
+    unique_key = ['block_number','platform'],
+    cluster_by = ['block_timestamp::DATE'],
+    tags = ['reorg','curated','heal']
 ) }}
 
 WITH venus AS (
@@ -34,11 +35,11 @@ WITH venus AS (
     {{ ref('silver__venus_liquidations') }}
     l
 
-{% if is_incremental() and 'venus' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'venus' not in var('HEAL_MODELS') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '36 hours'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
     FROM
       {{ this }}
   )
@@ -71,11 +72,11 @@ dforce as (
     {{ ref('silver__dforce_liquidations') }}
     l
 
-{% if is_incremental() and 'dforce' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'dforce' not in var('HEAL_MODELS') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '36 hours'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
     FROM
       {{ this }}
   )
@@ -107,11 +108,11 @@ kinza as (
   FROM
     {{ ref('silver__kinza_liquidations') }}
 
-{% if is_incremental() and 'kinza' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'kinza' not in var('HEAL_MODELS') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '36 hours'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
     FROM
       {{ this }}
   )
@@ -143,11 +144,11 @@ radiant as (
   FROM
     {{ ref('silver__radiant_liquidations') }}
 
-{% if is_incremental() and 'radaint' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'radaint' not in var('HEAL_MODELS') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '36 hours'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
     FROM
       {{ this }}
   )
@@ -180,11 +181,11 @@ venus as (
     {{ ref('silver__venus_liquidations') }}
     l
 
-{% if is_incremental() and 'venus' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'venus' not in var('HEAL_MODELS') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '36 hours'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
     FROM
       {{ this }}
   )
@@ -217,11 +218,11 @@ liqee as (
     {{ ref('silver__liqee_liquidations') }}
     
 
-{% if is_incremental() and 'liqee' not in var('HEAL_CURATED_MODEL') %}
+{% if is_incremental() and 'liqee' not in var('HEAL_MODELS') %}
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '36 hours'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
     FROM
       {{ this }}
   )
