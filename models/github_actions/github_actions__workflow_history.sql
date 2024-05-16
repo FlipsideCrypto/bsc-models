@@ -13,7 +13,7 @@ WITH
 workflow_runs AS (
 
     SELECT
-        id,
+        id AS run_id,
         NAME,
         node_id,
         check_suite_id,
@@ -67,7 +67,7 @@ workflow_runs AS (
 workflow_runs AS ({% for item in range(100) %}
     (
     SELECT
-        id,
+        id AS run_id,
         NAME,
         node_id,
         check_suite_id,
@@ -122,11 +122,11 @@ workflow_runs AS ({% for item in range(100) %}
 SELECT
     *,
     {{ dbt_utils.generate_surrogate_key(
-        ['id']
+        ['run_id']
     ) }} AS workflow_history_id,
     SYSDATE() AS inserted_timestamp,
     SYSDATE() AS modified_timestamp
 FROM
-    workflow_runs qualify (ROW_NUMBER() over (PARTITION BY id
+    workflow_runs qualify (ROW_NUMBER() over (PARTITION BY run_id
 ORDER BY
     created_at DESC)) = 1
