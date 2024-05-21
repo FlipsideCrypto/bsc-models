@@ -745,23 +745,23 @@ pancakeswap_v3 AS (
     pool_address AS contract_address,
     'Swap' AS event_name,
     CASE
-      WHEN amount0_unadj > 0 THEN ABS(amount0_unadj)
-      ELSE ABS(amount1_unadj)
+      WHEN amount0 > 0 THEN ABS(amount0)
+      ELSE ABS(amount1)
     END AS amount_in_unadj,
     CASE
-      WHEN amount0_unadj < 0 THEN ABS(amount0_unadj)
-      ELSE ABS(amount1_unadj)
+      WHEN amount0 < 0 THEN ABS(amount0)
+      ELSE ABS(amount1)
     END AS amount_out_unadj,
     CASE
-      WHEN amount0_unadj > 0 THEN token0_address
+      WHEN amount0 > 0 THEN token0_address
       ELSE token1_address
     END AS token_in,
     CASE
-      WHEN amount0_unadj < 0 THEN token0_address
+      WHEN amount0 < 0 THEN token0_address
       ELSE token1_address
     END AS token_out,
-    sender,
-    recipient AS tx_to,
+    sender_address AS sender,
+    recipient_address AS tx_to,
     event_index,
     'pancakeswap-v3' AS platform,
     'v3' AS version,
@@ -784,22 +784,22 @@ all_dex AS (
   SELECT
     *
   FROM
-    sushi_swaps
+    sushi
   UNION ALL
   SELECT
     *
   FROM
-    univ2_swaps
+    univ2
   UNION ALL
   SELECT
     *
   FROM
-    fraxswap_swaps
+    fraxswap
   UNION ALL
   SELECT
     *
   FROM
-    woofi_swaps
+    woofi
   UNION ALL
   SELECT
     *
@@ -819,77 +819,77 @@ all_dex AS (
   SELECT
     *
   FROM
-    dodo_v1_swaps
+    dodo_v1
   UNION ALL
   SELECT
     *
   FROM
-    dodo_v2_swaps
+    dodo_v2
   UNION ALL
   SELECT
     *
   FROM
-    hashflow_swaps
+    hashflow
   UNION ALL
   SELECT
     *
   FROM
-    hashflow_v3_swaps
+    hashflow_v3
   UNION ALL
   SELECT
     *
   FROM
-    trader_joe_v1_swaps
+    trader_joe_v1
   UNION ALL
   SELECT
     *
   FROM
-    trader_joe_v2_swaps
+    trader_joe_v2
   UNION ALL
   SELECT
     *
   FROM
-    trader_joe_v2_1_swaps
+    trader_joe_v2_1
   UNION ALL
   SELECT
     *
   FROM
-    biswap_swaps
+    biswap
   UNION ALL
   SELECT
     *
   FROM
-    levelfi_swaps
+    levelfi
   UNION ALL
   SELECT
     *
   FROM
-    pancakeswap_v1_swaps
+    pancakeswap_v1
   UNION ALL
   SELECT
     *
   FROM
-    pancakeswap_v2_amm_swaps
+    pancakeswap_v2_amm
   UNION ALL
   SELECT
     *
   FROM
-    pancakeswap_v2_mm_swaps
+    pancakeswap_v2_mm
   UNION ALL
   SELECT
     *
   FROM
-    pancakeswap_v2_ss_swaps
+    pancakeswap_v2_ss
   UNION ALL
   SELECT
     *
   FROM
-    univ3_swaps
+    univ3
   UNION ALL
   SELECT
     *
   FROM
-    pancakeswap_v3_swaps
+    pancakeswap_v3
 ),
 complete_dex_swaps AS (
   SELECT

@@ -577,7 +577,7 @@ WHERE
   )
 {% endif %}
 ),
-all_pools_standard AS (
+all_pools AS (
   SELECT
     *
   FROM
@@ -854,7 +854,6 @@ heal_model AS (
           WHEN platform = 'pancakeswap-v3' THEN ' PCS-V3 LP'
         END
       )
-      WHEN pool_name IS NULL
       WHEN pool_name IS NULL
       AND platform = 'pancakeswap-v2'
       AND version = 'v2-ss' THEN CONCAT(
