@@ -45,7 +45,7 @@ biswap AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -80,7 +80,7 @@ dodo_v1 AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -116,7 +116,7 @@ dodo_v2 AS (
 {% if is_incremental() and 'dodo_v2' not in var('HEAL_MODELS') %}
 AND _inserted_timestamp >= (
   SELECT
-    MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+    MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
   FROM
     {{ this }}
 )
@@ -151,7 +151,7 @@ frax AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -186,7 +186,7 @@ kyberswap_v1_dynamic AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -221,7 +221,7 @@ kyberswap_v1_static AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -256,7 +256,7 @@ kyberswap_v2_elastic AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -291,7 +291,7 @@ pancakeswap_v1 AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -326,7 +326,7 @@ pancakeswap_v2_amm AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -361,7 +361,7 @@ pancakeswap_v2_ss AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -396,7 +396,7 @@ pancakeswap_v3 AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -431,7 +431,7 @@ sushi AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -466,7 +466,7 @@ trader_joe_v1 AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -501,7 +501,7 @@ trader_joe_v2 AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -536,7 +536,7 @@ uni_v3 AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -571,7 +571,7 @@ uni_v2 AS (
 WHERE
   _inserted_timestamp >= (
     SELECT
-      MAX(_inserted_timestamp) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+      MAX(_inserted_timestamp) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
     FROM
       {{ this }}
   )
@@ -992,7 +992,7 @@ heal_model AS (
           SELECT
             MAX(
               _inserted_timestamp
-            ) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+            ) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
           FROM
             {{ this }}
         )
@@ -1032,7 +1032,7 @@ heal_model AS (
               SELECT
                 MAX(
                   _inserted_timestamp
-                ) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+                ) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
               FROM
                 {{ this }}
             )
@@ -1072,7 +1072,7 @@ heal_model AS (
                   SELECT
                     MAX(
                       _inserted_timestamp
-                    ) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+                    ) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
                   FROM
                     {{ this }}
                 )
@@ -1112,7 +1112,7 @@ heal_model AS (
                       SELECT
                         MAX(
                           _inserted_timestamp
-                        ) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+                        ) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
                       FROM
                         {{ this }}
                     )
@@ -1152,7 +1152,7 @@ heal_model AS (
                           SELECT
                             MAX(
                               _inserted_timestamp
-                            ) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+                            ) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
                           FROM
                             {{ this }}
                         )
@@ -1192,7 +1192,7 @@ heal_model AS (
                               SELECT
                                 MAX(
                                   _inserted_timestamp
-                                ) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+                                ) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
                               FROM
                                 {{ this }}
                             )
@@ -1232,7 +1232,7 @@ heal_model AS (
                                   SELECT
                                     MAX(
                                       _inserted_timestamp
-                                    ) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+                                    ) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
                                   FROM
                                     {{ this }}
                                 )
@@ -1272,7 +1272,7 @@ heal_model AS (
                                       SELECT
                                         MAX(
                                           _inserted_timestamp
-                                        ) - INTERVAL '{{ var(' lookback ', ' 4 hours ') }}'
+                                        ) - INTERVAL '{{ var("LOOKBACK", "4 hours") }}'
                                       FROM
                                         {{ this }}
                                     )
