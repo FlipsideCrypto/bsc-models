@@ -98,7 +98,7 @@ SELECT
     '{{ invocation_id }}' AS _invocation_id
 FROM
     bnb_base A
-    LEFT JOIN {{ ref('silver__hourly_prices_all_providers') }}
+    LEFT JOIN {{ ref('silver__complete_token_prices') }}
     ON DATE_TRUNC(
         'hour',
         A.block_timestamp
