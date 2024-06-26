@@ -3,7 +3,7 @@
 {{ config (
     materialized = "incremental",
     incremental_strategy = 'delete+insert',
-    unique_key = "block_number",
+    unique_key = ['block_number','tx_position'],
     cluster_by = ['modified_timestamp::DATE','partition_key'],
     tags = ['overflowed_traces2'],
     full_refresh = false,
