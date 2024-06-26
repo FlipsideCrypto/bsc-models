@@ -6,6 +6,7 @@
     unique_key = "block_number",
     cluster_by = ['modified_timestamp::DATE','partition_key'],
     tags = ['overflowed_traces2'],
+    full_refresh = false,
     snowflake_warehouse = warehouse
 ) }}
 
