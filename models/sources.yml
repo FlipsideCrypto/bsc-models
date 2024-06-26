@@ -43,6 +43,7 @@ sources:
     tables:
       - name: verified_abis
       - name: overflowed_traces
+      - name: overflowed_traces2
       - name: overflowed_receipts
       - name: overflowed_logs
   - name: bsc_bronze_api
@@ -60,3 +61,8 @@ sources:
     schema: defillama
     tables:
       - name: dim_chains
+  - name: bsc_silver_dev
+    database: bsc_dev
+    schema: silver
+    tables:
+      - name: overflowed_traces2
