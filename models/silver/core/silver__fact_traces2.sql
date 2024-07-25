@@ -3,7 +3,8 @@
     incremental_strategy = 'delete+insert',
     unique_key = ['block_number'],
     cluster_by = "block_timestamp::date",
-    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION"
+    post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
+    tags = ['reload_traces']
 ) }}
 
 WITH silver_traces AS (
@@ -168,6 +169,17 @@ trace_index_sub_traces AS (
         AND b.tx_position = n.tx_position
         AND b.trace_address = n.trace_address
 ),
+errored_traces AS (
+    SELECT
+        block_number,
+        tx_position,
+        trace_address,
+        trace_json
+    FROM
+        trace_index_sub_traces
+    WHERE
+        trace_json :error :: STRING IS NOT NULL
+),
 error_logic AS (
     SELECT
         b0.block_number,
@@ -178,18 +190,17 @@ error_logic AS (
         b2.trace_json :error :: STRING AS origin_error
     FROM
         trace_index_sub_traces b0
-        LEFT JOIN trace_index_sub_traces b1
+        LEFT JOIN errored_traces b1
         ON b0.block_number = b1.block_number
         AND b0.tx_position = b1.tx_position
         AND b0.trace_address LIKE CONCAT(
             b1.trace_address,
             '_%'
         )
-        LEFT JOIN trace_index_sub_traces b2
+        LEFT JOIN errored_traces b2
         ON b0.block_number = b2.block_number
         AND b0.tx_position = b2.tx_position
         AND b2.trace_address = 'ORIGIN'
-        AND b2.trace_json :error :: STRING IS NOT NULL
 ),
 aggregated_errors AS (
     SELECT
