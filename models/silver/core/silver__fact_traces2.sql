@@ -230,6 +230,7 @@ aggregated_errors AS (
                 trace_json AS DATA,
                 trace_succeeded,
                 trace_json :error :: STRING AS error_reason,
+                trace_json :revertReason :: STRING AS revert_reason,
                 trace_json :from :: STRING AS from_address,
                 trace_json :to :: STRING AS to_address,
                 IFNULL(
@@ -292,6 +293,7 @@ aggregated_errors AS (
                 f.identifier,
                 f.sub_traces,
                 f.error_reason,
+                f.revert_reason,
                 f.trace_status,
                 IFF(
                     t.tx_hash IS NULL
@@ -302,7 +304,8 @@ aggregated_errors AS (
                 ) AS _is_pending,
                 f.data,
                 traces_id,
-                f.trace_succeeded
+                f.trace_succeeded,
+                f.trace_address
             FROM
                 json_traces f
                 LEFT OUTER JOIN {{ ref('silver__transactions') }}
@@ -343,6 +346,7 @@ heal_missing_data AS (
         t.identifier,
         t.sub_traces,
         t.error_reason,
+        t.revert_reason,
         t.trace_status,
         IFF(
             txs.tx_hash IS NULL
@@ -353,7 +357,8 @@ heal_missing_data AS (
         ) AS _is_pending,
         t.data,
         t.fact_traces_id AS traces_id,
-        t.trace_succeeded
+        t.trace_succeeded,
+        t.trace_address
     FROM
         {{ this }}
         t
@@ -394,11 +399,13 @@ all_traces AS (
         identifier,
         sub_traces,
         error_reason,
+        revert_reason,
         trace_status,
         DATA,
         _is_pending,
         traces_id,
-        trace_succeeded
+        trace_succeeded,
+        trace_address
     FROM
         incremental_traces
 
@@ -424,11 +431,13 @@ SELECT
     identifier,
     sub_traces,
     error_reason,
+    revert_reason,
     trace_status,
     DATA,
     _is_pending,
     traces_id,
-    trace_succeeded
+    trace_succeeded,
+    trace_address
 FROM
     heal_missing_data
 {% endif %}
@@ -437,6 +446,8 @@ SELECT
     tx_hash,
     block_number,
     block_timestamp,
+    tx_position,
+    trace_index,
     from_address,
     to_address,
     VALUE,
@@ -447,20 +458,20 @@ SELECT
     input,
     output,
     TYPE,
+    trace_address,
     identifier,
     DATA,
-    tx_status,
     sub_traces,
+    tx_status,
     trace_status,
-    error_reason,
-    trace_index,
-    tx_position,
     IFF(
         tx_status = 'SUCCESS',
         TRUE,
         FALSE
     ) AS tx_succeeded,
     trace_succeeded,
+    error_reason,
+    revert_reason,
     {{ dbt_utils.generate_surrogate_key(
         ['tx_hash', 'trace_index']
     ) }} AS fact_traces_id,
