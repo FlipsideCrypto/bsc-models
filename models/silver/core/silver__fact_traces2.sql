@@ -466,4 +466,4 @@ SELECT
 FROM
     all_traces qualify(ROW_NUMBER() over(PARTITION BY block_number, tx_position, trace_index
 ORDER BY
-    modified_timestamp DESC, block_timestamp ASC)) = 1
+    modified_timestamp DESC, block_timestamp DESC nulls last)) = 1
