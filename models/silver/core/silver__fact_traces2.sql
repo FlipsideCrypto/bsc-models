@@ -295,15 +295,8 @@ aggregated_errors AS (
                 f.error_reason,
                 f.revert_reason,
                 f.trace_status,
-                IFF(
-                    t.tx_hash IS NULL
-                    OR t.block_timestamp IS NULL
-                    OR t.tx_status IS NULL,
-                    TRUE,
-                    FALSE
-                ) AS _is_pending,
                 f.data,
-                traces_id,
+                f.traces_id,
                 f.trace_succeeded,
                 f.trace_address
             FROM
@@ -316,7 +309,7 @@ aggregated_errors AS (
 {% if is_incremental() and not var(
     'RELOAD_TRACES',
 ) %}
-AND t._INSERTED_TIMESTAMP >= (
+AND t.modified_timestamp >= (
     SELECT
         DATEADD('hour', -24, MAX(modified_timestamp))
     FROM
@@ -348,13 +341,6 @@ heal_missing_data AS (
         t.error_reason,
         t.revert_reason,
         t.trace_status,
-        IFF(
-            txs.tx_hash IS NULL
-            OR txs.block_timestamp IS NULL
-            OR txs.tx_status IS NULL,
-            TRUE,
-            FALSE
-        ) AS _is_pending,
         t.data,
         t.fact_traces_id AS traces_id,
         t.trace_succeeded,
@@ -367,7 +353,9 @@ heal_missing_data AS (
         ON t.tx_position = txs.position
         AND t.block_number = txs.block_number
     WHERE
-        t._is_pending
+        t.tx_hash IS NULL
+        OR t.block_timestamp IS NULL
+        OR t.tx_status IS NULL
         OR t.block_number IN (
             SELECT
                 DISTINCT block_number
@@ -402,7 +390,6 @@ all_traces AS (
         revert_reason,
         trace_status,
         DATA,
-        _is_pending,
         traces_id,
         trace_succeeded,
         trace_address
@@ -434,7 +421,6 @@ SELECT
     revert_reason,
     trace_status,
     DATA,
-    _is_pending,
     traces_id,
     trace_succeeded,
     trace_address
@@ -476,9 +462,8 @@ SELECT
         ['tx_hash', 'trace_index']
     ) }} AS fact_traces_id,
     SYSDATE() AS inserted_timestamp,
-    SYSDATE() AS modified_timestamp,
-    _is_pending
+    SYSDATE() AS modified_timestamp
 FROM
     all_traces qualify(ROW_NUMBER() over(PARTITION BY block_number, tx_position, trace_index
 ORDER BY
-    _is_pending ASC)) = 1
+    modified_timestamp DESC, block_timestamp ASC)) = 1
