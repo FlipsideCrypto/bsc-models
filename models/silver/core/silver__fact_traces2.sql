@@ -4,7 +4,8 @@
     unique_key = ['block_number'],
     cluster_by = "block_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
-    tags = ['reload_traces']
+    tags = ['core','non_realtime'],
+    full_refresh = false
 ) }}
 
 WITH silver_traces AS (

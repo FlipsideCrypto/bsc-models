@@ -5,7 +5,8 @@
     unique_key = "block_number",
     cluster_by = ['modified_timestamp::DATE','partition_key'],
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
-    tags = ['core','non_realtime']
+    tags = ['core','non_realtime'],
+    full_refresh = false
 ) }}
 
 WITH bronze_traces AS (
