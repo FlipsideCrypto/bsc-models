@@ -4,6 +4,7 @@
     unique_key = ['block_number'],
     cluster_by = "block_timestamp::date",
     post_hook = "ALTER TABLE {{ this }} ADD SEARCH OPTIMIZATION",
+    tags = ['core','non_realtime'],
     full_refresh = false
 ) }}
 
@@ -318,6 +319,14 @@ AND t.modified_timestamp >= (
 )
 
 {% if is_incremental() %},
+overflow_blocks AS (
+    SELECT
+        DISTINCT block_number
+    FROM
+        silver_traces
+    WHERE
+        source = 'overflow'
+),
 heal_missing_data AS (
     SELECT
         t.block_number,
@@ -348,7 +357,7 @@ heal_missing_data AS (
     FROM
         {{ this }}
         t
-        INNER JOIN {{ ref('silver__transactions') }}
+        JOIN {{ ref('silver__transactions') }}
         txs
         ON t.tx_position = txs.position
         AND t.block_number = txs.block_number
@@ -356,14 +365,6 @@ heal_missing_data AS (
         t.tx_hash IS NULL
         OR t.block_timestamp IS NULL
         OR t.tx_status IS NULL
-        OR t.block_number IN (
-            SELECT
-                DISTINCT block_number
-            FROM
-                silver_traces
-            WHERE
-                source = 'overflow'
-        )
 )
 {% endif %},
 all_traces AS (
@@ -390,7 +391,6 @@ all_traces AS (
         revert_reason,
         trace_status,
         DATA,
-        traces_id,
         trace_succeeded,
         trace_address
     FROM
@@ -421,11 +421,39 @@ SELECT
     revert_reason,
     trace_status,
     DATA,
-    traces_id,
     trace_succeeded,
     trace_address
 FROM
     heal_missing_data
+UNION ALL
+SELECT
+    block_number,
+    tx_hash,
+    block_timestamp,
+    tx_status,
+    tx_position,
+    trace_index,
+    from_address,
+    to_address,
+    value_precise_raw,
+    value_precise,
+    VALUE,
+    gas,
+    gas_used,
+    input,
+    output,
+    TYPE,
+    identifier,
+    sub_traces,
+    error_reason,
+    revert_reason,
+    trace_status,
+    DATA,
+    trace_succeeded,
+    trace_address
+FROM
+    {{ this }}
+    JOIN overflow_blocks USING (block_number)
 {% endif %}
 )
 SELECT
