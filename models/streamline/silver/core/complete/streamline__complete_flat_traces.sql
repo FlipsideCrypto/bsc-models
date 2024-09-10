@@ -22,7 +22,7 @@ WHERE
             {{ this }}
     )
 {% else %}
-    {{ ref('bronze__streamline_FR_flat_traces') }}
+    {{ ref('bronze__streamline_fr_flat_traces') }}
 {% endif %}
 
 qualify(ROW_NUMBER() over (PARTITION BY id
