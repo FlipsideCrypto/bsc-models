@@ -24,7 +24,10 @@ WITH repay AS(
         utils.udf_hex_to_int(
             segmented_data [0] :: STRING
         ) :: INTEGER AS repayed_amount,
-        origin_to_address AS lending_pool_contract,
+        COALESCE(
+            origin_to_address,
+            contract_address
+        ) AS lending_pool_contract,
         origin_from_address AS repayer_address,
         _log_id,
         _inserted_timestamp
