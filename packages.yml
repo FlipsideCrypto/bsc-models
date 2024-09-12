@@ -10,4 +10,4 @@ packages:
   - package: get-select/dbt_snowflake_query_tags
     version: [">=2.0.0", "<3.0.0"]
   - git: https://github.com/FlipsideCrypto/fsc-evm.git
-    revision: v1.1.0
+    revision: v1.3.0
