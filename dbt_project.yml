@@ -25,7 +25,10 @@ clean-targets: # directories to be removed by `dbt clean`
   - "dbt_packages"
 
 models:
-  +copy_grants: true  
+  +copy_grants: true
+  +persist_docs:
+    relation: true
+    columns: true
   +on_schema_change: "append_new_columns"
 
 tests:
