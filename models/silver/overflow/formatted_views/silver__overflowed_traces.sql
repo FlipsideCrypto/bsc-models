@@ -21,6 +21,7 @@ WITH bronze_overflowed_traces AS (
                 'result.output',
                 'result.error',
                 'result.revertReason',
+                'result.txHash',
                 'gasUsed',
                 'gas',
                 'type',
@@ -30,7 +31,8 @@ WITH bronze_overflowed_traces AS (
                 'input',
                 'error',
                 'output',
-                'revertReason'
+                'revertReason',
+                'txHash'
             ),
             'ORIGIN',
             REGEXP_REPLACE(REGEXP_REPLACE(path, '[^0-9]+', '_'), '^_|_$', '')
