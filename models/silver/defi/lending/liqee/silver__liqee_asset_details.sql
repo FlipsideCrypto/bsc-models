@@ -26,6 +26,16 @@ WITH log_pull AS (
     WHERE
         topics [0] :: STRING = '0x70aea8d848e8a90fb7661b227dc522eb6395c3dac71b63cb59edd5c9899b2364'
         AND origin_from_address = LOWER('0x2929F07fF145a21b6784fE923b24F3ED38C3a5c3')
+
+{% if is_incremental() %}
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(_inserted_timestamp) - INTERVAL '12 hours'
+    FROM
+        {{ this }}
+)
+AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+{% endif %}
 )
 SELECT
     l.tx_hash,

@@ -42,6 +42,15 @@ WITH vtoken_pulls AS (
             '0xb248a295732e0225acd3337607cc01068e3b9c10',
             '0x151b1e2635a717bcdc836ecd6fbb62b674fe3e1d'
         )
+{% if is_incremental() %}
+AND _inserted_timestamp >= (
+    SELECT
+        MAX(_inserted_timestamp) - INTERVAL '12 hours'
+    FROM
+        {{ this }}
+)
+AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+{% endif %}
 ),
 underlying_add AS (
     SELECT
