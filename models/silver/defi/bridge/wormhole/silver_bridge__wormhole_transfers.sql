@@ -222,7 +222,7 @@ SELECT
         WHEN destination_chain IN ('cosmoshub','kujira') 
             THEN utils.udf_hex_to_bech32(destination_recipient_address,SUBSTR(destination_chain,1,6))
         WHEN destination_chain IN ('near')
-            THEN near_address
+            THEN COALESCE(near_address,destination_recipient_address)
         WHEN destination_chain IN ('algorand')
             THEN utils.udf_hex_to_algorand(destination_recipient_address)
         WHEN destination_chain IN ('polygon')
