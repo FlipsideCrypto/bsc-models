@@ -377,35 +377,32 @@ heal_model AS (
                         AND C.contract_address = t1.contract_address)
                 )
         )
-    {% endif %}
-    SELECT
-        block_number,
-        block_timestamp,
-        tx_hash,
-        event_index,
-        intra_event_index,
-        contract_address,
-        project_name,
-        from_address,
-        to_address,
-        tokenId,
-        erc1155_value,
-        event_type,
-        token_transfer_type,
-        _log_id,
-        _inserted_timestamp,
-        {{ dbt_utils.generate_surrogate_key(
-            ['tx_hash','event_index','intra_event_index']
-        ) }} AS nft_transfers_id,
-        SYSDATE() AS inserted_timestamp,
-        SYSDATE() AS modified_timestamp,
-        '{{ invocation_id }}' AS _invocation_id
-    FROM
-        transfer_base qualify ROW_NUMBER() over (
-            PARTITION BY _log_id
-            ORDER BY
-                _inserted_timestamp DESC
-        ) = 1
+    {% endif %},
+    FINAL AS (
+        SELECT
+            block_number,
+            block_timestamp,
+            tx_hash,
+            event_index,
+            intra_event_index,
+            contract_address,
+            project_name,
+            from_address,
+            to_address,
+            tokenId,
+            erc1155_value,
+            event_type,
+            token_transfer_type,
+            _log_id,
+            _inserted_timestamp,
+            {{ dbt_utils.generate_surrogate_key(
+                ['tx_hash','event_index','intra_event_index']
+            ) }} AS nft_transfers_id,
+            SYSDATE() AS inserted_timestamp,
+            SYSDATE() AS modified_timestamp,
+            '{{ invocation_id }}' AS _invocation_id
+        FROM
+            transfer_base
 
 {% if is_incremental() and var(
     'HEAL_MODEL'
@@ -436,3 +433,12 @@ SELECT
 FROM
     heal_model
 {% endif %}
+)
+SELECT
+    *
+FROM
+    FINAL qualify ROW_NUMBER() over (
+        PARTITION BY _log_id
+        ORDER BY
+            modified_timestamp DESC
+    ) = 1
