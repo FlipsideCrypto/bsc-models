@@ -4,8 +4,8 @@ run-name: dbt_run_traces_fix
 on:
   workflow_dispatch:
     inputs:
-      use_xl_env:
-        description: "Use the 2xl environment"
+      use_backfill_env:
+        description: "Use the backfill environment"
         type: boolean
   schedule:
     # every 15 minutes (see https://crontab.guru)
@@ -30,7 +30,7 @@ jobs:
   run_dbt_jobs:
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.event_name == 'workflow_dispatch' && inputs.use_xl_env && 'workflow_prod_backfill' || 'workflow_prod_2xl' }}
+      name: ${{ github.event_name == 'workflow_dispatch' && inputs.use_backfill_env && 'workflow_prod_backfill' || 'workflow_prod_2xl' }}
 
     steps:
       - uses: actions/checkout@v3
