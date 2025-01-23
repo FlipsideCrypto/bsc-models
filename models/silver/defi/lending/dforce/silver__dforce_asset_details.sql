@@ -18,8 +18,10 @@ WITH log_pull AS (
     FROM
         {{ ref('silver__logs') }}
     WHERE
-        (topics [0] :: STRING = '0x70aea8d848e8a90fb7661b227dc522eb6395c3dac71b63cb59edd5c9899b2364'
-        AND origin_from_address = LOWER('0x4375c89AF5b4aF46791b05810C4B795A0470207F'))
+        (
+            topics [0] :: STRING = '0x70aea8d848e8a90fb7661b227dc522eb6395c3dac71b63cb59edd5c9899b2364'
+            AND origin_from_address = LOWER('0x4375c89AF5b4aF46791b05810C4B795A0470207F')
+        )
         OR tx_hash = '0xcf0ea37207cc7f54c90b6dcb8208cdcb247768836ad1d33ccbb6cbe5d13dee80' --edge case where Liqee token is token collateral in liquidations table
 
 {% if is_incremental() %}
@@ -37,7 +39,7 @@ traces_pull AS (
         from_address AS token_address,
         to_address AS underlying_asset
     FROM
-        {{ ref('silver__traces') }}
+        {{ ref('core__fact_traces') }}
     WHERE
         tx_hash IN (
             SELECT
@@ -46,14 +48,15 @@ traces_pull AS (
                 log_pull
         )
         AND TYPE = 'STATICCALL'
+
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
-AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND modified_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 ),
 contracts AS (
@@ -108,16 +111,16 @@ WHERE
     underlying_asset IS NOT NULL
     AND l.token_name IS NOT NULL
 UNION ALL
---manually adding iBNB, no token creation log 
+    --manually adding iBNB, no token creation log
 SELECT
     '0x593fd69bcd788afd9a19adae0783f5c429f821d6c46d20c742e5443b8a067d73' AS tx_hash,
     6580133 AS block_number,
-    '2021-04-15 06:36:40.000' as block_timestamp,
-    lower('0xd57e1425837567f74a35d07669b23bfb67aa4a93') AS token_address,
+    '2021-04-15 06:36:40.000' AS block_timestamp,
+    LOWER('0xd57e1425837567f74a35d07669b23bfb67aa4a93') AS token_address,
     'dForce BNB' AS token_name,
     'iBNB' AS token_symbol,
     18 AS token_decimals,
-    lower('0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c') AS underlying_asset_address,
+    LOWER('0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c') AS underlying_asset_address,
     'Wrapped BNB' AS underlying_name,
     'WBNB' AS underlying_symbol,
     18 AS underlying_decimals,

@@ -24,9 +24,9 @@ traces AS (
         from_address,
         to_address
     FROM
-        {{ ref('silver__traces') }}
+        {{ ref('core__fact_traces') }}
     WHERE
-        bnb_value > 0
+        VALUE > 0
         AND trace_status = 'SUCCESS'
         AND tx_status = 'SUCCESS'
         AND block_number >= (

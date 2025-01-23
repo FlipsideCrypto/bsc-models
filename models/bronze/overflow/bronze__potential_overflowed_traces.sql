@@ -38,7 +38,10 @@ missing_txs AS (
         file_name
     FROM
         all_txs
-        LEFT JOIN {{ ref("silver__traces") }}
+        LEFT JOIN {{ source(
+            "bsc_gold",
+            "fact_traces"
+        ) }}
         tr USING (
             block_number,
             tx_hash
