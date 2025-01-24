@@ -26,7 +26,7 @@ WITH silver_traces AS (
         traces_id,
         'regular' AS source
     FROM
-        {{ ref('silver__traces2') }}
+        {{ ref('silver__traces') }}
     WHERE
         1 = 1
 
