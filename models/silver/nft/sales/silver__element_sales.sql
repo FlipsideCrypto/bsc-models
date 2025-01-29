@@ -184,7 +184,7 @@ old_native_transfers AS (
         trace_index,
         from_address,
         to_address,
-        bnb_value,
+        VALUE AS bnb_value,
         bnb_value * pow(
             10,
             18
@@ -200,7 +200,7 @@ old_native_transfers AS (
             0
         ) AS intra_grouping
     FROM
-        {{ ref('silver__traces') }}
+        {{ ref('core__fact_traces') }}
     WHERE
         block_timestamp :: DATE >= (
             SELECT
@@ -250,13 +250,13 @@ old_native_transfers AS (
         AND trace_status = 'SUCCESS'
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
-AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND modified_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 ),
 old_native_labels AS (

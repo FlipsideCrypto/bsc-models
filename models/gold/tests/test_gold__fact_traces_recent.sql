@@ -8,7 +8,11 @@ WITH last_3_days AS (
     SELECT
         block_number
     FROM
-        {{ ref("_block_lookback") }}
+        {{ ref("_max_block_by_date") }}
+        qualify ROW_NUMBER() over (
+            ORDER BY
+                block_number DESC
+        ) = 3
 )
 SELECT
     *

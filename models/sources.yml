@@ -66,3 +66,8 @@ sources:
     schema: silver
     tables:
       - name: overflowed_traces2
+  - name: bsc_gold
+    database: "{{ 'bsc' if target.database == 'BSC' else 'bsc_dev' }}"
+    schema: core
+    tables:
+      - name: fact_traces
