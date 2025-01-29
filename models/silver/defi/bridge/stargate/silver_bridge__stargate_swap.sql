@@ -57,8 +57,12 @@ base_evt AS (
         token_address,
         event_removed,
         tx_status,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref('silver__decoded_logs') }}
         d
@@ -105,7 +109,7 @@ SELECT
     protocolFee AS protocol_fee,
     token_address,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     base_evt b
     LEFT JOIN {{ ref('silver_bridge__stargate_chain_id_seed') }}

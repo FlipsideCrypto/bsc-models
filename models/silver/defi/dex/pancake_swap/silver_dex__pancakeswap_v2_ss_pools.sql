@@ -31,8 +31,12 @@ WITH pools AS (
             WHEN contract_address = '0x36bbb126e75351c0dfb651e39b38fe0bc436ffd2' THEN NULL
             WHEN contract_address = '0x25a55f9f2279a54951133d503490342b50e5cd15' THEN CONCAT('0x', SUBSTR(segmented_data [3] :: STRING, 25, 40))
         END AS lp,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref ('silver__logs') }}
     WHERE
@@ -68,7 +72,7 @@ SELECT
     tokenC,
     lp,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     pools qualify(ROW_NUMBER() over (PARTITION BY pool_address
 ORDER BY

@@ -24,8 +24,12 @@ WITH DECODE AS (
         utils.udf_hex_to_string (
             segmented_data [9] :: STRING
         ) :: STRING AS atoken_symbol,
-        l._inserted_timestamp,
-        l._log_id
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref('silver__logs') }}
         l
@@ -78,8 +82,12 @@ debt_tokens AS (
         CONCAT('0x', SUBSTR(topics [2] :: STRING, 27, 40)) AS atoken_address,
         CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 27, 40)) :: STRING AS atoken_stable_debt_address,
         CONCAT('0x', SUBSTR(segmented_data [1] :: STRING, 27, 40)) :: STRING AS atoken_variable_debt_address,
-        _inserted_timestamp,
-        _log_id
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref('silver__logs') }}
     WHERE

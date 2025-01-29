@@ -27,8 +27,12 @@ WITH pool_creation AS (
             WHEN contract_address = '0x43646a8e839b2f2766392c1bf8f60f6e587b6960' THEN 'v2'
             WHEN contract_address = '0x8e42f2f4101563bf679975178e880fd87d3efd4e' THEN 'v2.1'
         END AS version,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref('silver__logs') }}
     WHERE
@@ -62,7 +66,7 @@ SELECT
     pool_id,
     version,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     pool_creation qualify(ROW_NUMBER() over (PARTITION BY lb_pair
 ORDER BY

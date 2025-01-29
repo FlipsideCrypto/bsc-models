@@ -13,8 +13,12 @@ WITH log_pull AS (
         block_number,
         block_timestamp,
         contract_address,
-        _inserted_timestamp,
-        _log_id
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref('silver__logs') }}
     WHERE
@@ -75,8 +79,8 @@ contract_pull AS (
             WHEN l.contract_address = '0x390bf37355e9df6ea2e16eed5686886da6f47669' THEN '0x2170ed0880ac9a755fd29b2688956bd959f933f8' --WETH
             ELSE t.underlying_asset
         END AS underlying_asset,
-        l._inserted_timestamp,
-        l._log_id
+        l._log_id,
+        l.modified_timestamp
     FROM
         log_pull l
         LEFT JOIN traces_pull t

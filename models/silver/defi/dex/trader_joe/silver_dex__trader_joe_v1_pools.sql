@@ -50,7 +50,7 @@ SELECT
     pool_address,
     pool_id,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     pool_creation qualify(ROW_NUMBER() over (PARTITION BY pool_address
 ORDER BY

@@ -93,8 +93,12 @@ base_swaps AS (
         END AS token_out,
         fee,
         tick_spacing,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            l.tx_hash :: STRING,
+            '-',
+            l.event_index :: STRING
+        ) AS _log_id,
+        l.modified_timestamp
     FROM
         {{ ref('silver__logs') }}
         l
@@ -143,6 +147,6 @@ SELECT
     token_in,
     token_out,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     base_swaps

@@ -63,8 +63,12 @@ WITH base_evt AS (
         DATA,
         regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         CONCAT('0x', SUBSTR(segmented_data [24] :: STRING, 1, 40)) AS token_address,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref('silver__decoded_logs') }}
     WHERE
@@ -112,6 +116,6 @@ SELECT
     decoded_flat,
     order_obj,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     base_evt

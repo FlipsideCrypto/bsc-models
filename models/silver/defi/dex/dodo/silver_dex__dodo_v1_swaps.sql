@@ -56,8 +56,12 @@ sell_base_token AS (
         base_token AS tokenOut,
         receiveQuote AS amountIn,
         payBase AS amountOut,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            l.tx_hash :: STRING,
+            '-',
+            l.event_index :: STRING
+        ) AS _log_id,
+        l.modified_timestamp
     FROM
         {{ ref('silver__logs') }}
         l
@@ -111,8 +115,12 @@ buy_base_token AS (
         base_token AS tokenOut,
         payQuote AS amountIn,
         receiveBase AS amountOut,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            l.tx_hash :: STRING,
+            '-',
+            l.event_index :: STRING
+        ) AS _log_id,
+        l.modified_timestamp
     FROM
         {{ ref('silver__logs') }}
         l
@@ -156,7 +164,7 @@ SELECT
     'SellBaseToken' AS event_name,
     'dodo-v1' AS platform,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     sell_base_token
 UNION ALL
@@ -178,6 +186,6 @@ SELECT
     'BuyBaseToken' AS event_name,
     'dodo-v1' AS platform,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     buy_base_token

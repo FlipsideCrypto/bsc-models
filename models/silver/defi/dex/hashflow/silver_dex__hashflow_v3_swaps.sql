@@ -42,8 +42,12 @@ swaps AS (
                 segmented_data [6] :: STRING
             )
         ) AS amountOut,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref('silver__logs') }}
         l
@@ -88,6 +92,6 @@ SELECT
     'Trade' AS event_name,
     'hashflow-v3' AS platform,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     swaps

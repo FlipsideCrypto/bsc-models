@@ -37,8 +37,12 @@ router_swaps_base AS (
                 segmented_data [6] :: STRING
             )
         ) AS amountOut,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            l.tx_hash :: STRING,
+            '-',
+            l.event_index :: STRING
+        ) AS _log_id,
+        l.modified_timestamp
     FROM
         {{ ref('silver__logs') }}
         l
@@ -82,8 +86,12 @@ swaps_base AS (
                 segmented_data [5] :: STRING
             )
         ) AS amountOut,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            l.tx_hash :: STRING,
+            '-',
+            l.event_index :: STRING
+        ) AS _log_id,
+        l.modified_timestamp
     FROM
         {{ ref('silver__logs') }}
         l
@@ -122,7 +130,7 @@ FINAL AS (
         'Swap' AS event_name,
         'hashflow' AS platform,
         _log_id,
-        _inserted_timestamp
+        modified_timestamp
     FROM
         router_swaps_base
     UNION ALL
@@ -144,7 +152,7 @@ FINAL AS (
         'Swap' AS event_name,
         'hashflow' AS platform,
         _log_id,
-        _inserted_timestamp
+        modified_timestamp
     FROM
         swaps_base
 )
@@ -172,6 +180,6 @@ SELECT
     event_name,
     platform,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     FINAL

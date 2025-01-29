@@ -28,7 +28,7 @@ WITH pool_creation AS (
             )
         ) AS totalPool,
         _log_id,
-        _inserted_timestamp
+        modified_timestamp
     FROM
         {{ ref ('silver__logs') }}
     WHERE
@@ -58,7 +58,7 @@ SELECT
     ampBps AS amp_bps,
     totalPool AS total_pool,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     pool_creation qualify(ROW_NUMBER() over (PARTITION BY pool_address
 ORDER BY

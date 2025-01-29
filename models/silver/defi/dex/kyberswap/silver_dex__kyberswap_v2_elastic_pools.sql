@@ -23,8 +23,12 @@ WITH pool_creation AS (
             )
         ) AS tickDistance,
         CONCAT('0x', SUBSTR(segmented_data [1] :: STRING, 25, 40)) AS pool_address,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref ('silver__logs') }}
     WHERE
@@ -54,7 +58,7 @@ SELECT
     tickDistance AS tick_distance,
     pool_address,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     pool_creation qualify(ROW_NUMBER() over (PARTITION BY pool_address
 ORDER BY

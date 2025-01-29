@@ -52,8 +52,12 @@ WITH router_swaps_base AS (
                 40
             )
         ) AS rebateTo,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            l.tx_hash :: STRING,
+            '-',
+            l.event_index :: STRING
+        ) AS _log_id,
+        l.modified_timestamp
     FROM
         {{ ref('silver__logs') }}
         l
@@ -117,8 +121,12 @@ swaps_base AS (
                 40
             )
         ) AS rebateTo,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            l.tx_hash :: STRING,
+            '-',
+            l.event_index :: STRING
+        ) AS _log_id,
+        l.modified_timestamp
     FROM
         {{ ref('silver__logs') }}
         l
@@ -178,7 +186,7 @@ SELECT
     'WooRouterSwap' AS event_name,
     'woofi' AS platform,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     router_swaps_base
 UNION ALL
@@ -208,6 +216,6 @@ SELECT
     'WooSwap' AS event_name,
     'woofi' AS platform,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     swaps_base

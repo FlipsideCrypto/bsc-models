@@ -40,8 +40,12 @@ liqee_redemptions AS (
         ) :: INTEGER AS redeemed_token_raw,
         CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 25, 40)) AS redeemer,
         'Liqee'AS platform,
-        _inserted_timestamp,
-        _log_id
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref('silver__logs') }}
     WHERE

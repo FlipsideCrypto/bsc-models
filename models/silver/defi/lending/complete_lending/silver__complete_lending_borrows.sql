@@ -167,8 +167,12 @@ venus AS (
         amount,
         platform,
         'bsc' AS blockchain,
-        l._LOG_ID,
-        l._INSERTED_TIMESTAMP
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref('silver__venus_borrows') }}
         l

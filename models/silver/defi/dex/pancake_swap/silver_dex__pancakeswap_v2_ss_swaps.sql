@@ -57,8 +57,12 @@ swaps_base AS (
             WHEN bought_id = 0 THEN tokenB
             ELSE tokenA
         END AS tokenIn,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref('silver__logs') }}
         INNER JOIN pools p
@@ -99,6 +103,6 @@ SELECT
     'TokenExchange' AS event_name,
     'pancakeswap-v2' AS platform,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     swaps_base

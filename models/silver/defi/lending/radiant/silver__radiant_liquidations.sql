@@ -32,8 +32,12 @@ WITH liquidation AS(
             origin_to_address,
             contract_address
         ) AS lending_pool_contract,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref('silver__logs') }}
     WHERE
@@ -93,7 +97,7 @@ SELECT
     amd.underlying_symbol AS debt_token_symbol,
     'bsc' AS blockchain,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     liquidation
     LEFT JOIN atoken_meta amc

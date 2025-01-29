@@ -32,8 +32,12 @@ WITH pool_creation AS (
                 segmented_data [3] :: STRING
             )
         ) AS totalPool,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp
     FROM
         {{ ref ('silver__logs') }}
     WHERE
@@ -64,7 +68,7 @@ SELECT
     feeUnits AS fee_units,
     totalPool AS total_pool,
     _log_id,
-    _inserted_timestamp
+    modified_timestamp
 FROM
     pool_creation qualify(ROW_NUMBER() over (PARTITION BY pool_address
 ORDER BY
