@@ -20,7 +20,7 @@ WITH log_pull AS (
             event_index :: STRING
         ) AS _log_id
     FROM
-        {{ ref('core__fact_ee_ntact_event_logs') }}
+        {{ ref('core__fact_event_logs') }}
     WHERE
         (
             topics [0] :: STRING = '0x70aea8d848e8a90fb7661b227dc522eb6395c3dac71b63cb59edd5c9899b2364'

@@ -35,7 +35,7 @@ WITH withdraw AS(
             event_index :: STRING
         ) AS _log_id
     FROM
-        {{ ref('core__fact_ee_ntact_event_logs') }}
+        {{ ref('core__fact_event_logs') }}
     WHERE
         topics [0] :: STRING = '0x3115d1449a7b732c986cba18244e897a450f61e1bb8d589cd2e69e6c8924f9f7'
         AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')

@@ -39,7 +39,7 @@ WITH deposits AS(
         ) AS _log_id,
         modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('core__fact_ee_ntact_event_logs') }}
+        {{ ref('core__fact_event_logs') }}
     WHERE
         topics [0] :: STRING = '0xde6857219544bb5b7746f48ed30be6386fefc61b2f864cacf559893bf50fd951'
 

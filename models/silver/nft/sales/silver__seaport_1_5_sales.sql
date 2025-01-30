@@ -22,9 +22,11 @@ raw_decoded_logs AS (
     SELECT
         *,
         decoded_log :orderHash :: STRING AS orderhash,
-        tx_hash || '-' || decoded_log :orderHash AS tx_hash_orderhash
+        tx_hash || '-' || decoded_log :orderHash AS tx_hash_orderhash,
+        CONCAT(tx_hash :: STRING, '-', event_index :: STRING) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__decoded_logs') }}
+        {{ ref('core__ez_decoded_event_logs') }}
     WHERE
         block_timestamp :: DATE >= '2023-05-01'
         AND block_number >= 27861265
@@ -64,7 +66,9 @@ raw_logs AS (
                 66
             ),
             NULL
-        ) AS order_hash
+        ) AS order_hash,
+        CONCAT(tx_hash :: STRING, '-', event_index :: STRING) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('core__fact_event_logs') }}
     WHERE
@@ -1852,7 +1856,8 @@ tx_data AS (
         to_address,
         origin_function_signature,
         tx_fee,
-        input_data
+        input_data,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('silver__transactions') }}
     WHERE
@@ -1890,7 +1895,9 @@ nft_transfer_operator AS (
             utils.udf_hex_to_int(
                 segmented_data [1] :: STRING
             )
-        ) AS erc1155_value
+        ) AS erc1155_value,
+        CONCAT(tx_hash :: STRING, '-', event_index :: STRING) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('core__fact_event_logs') }}
     WHERE

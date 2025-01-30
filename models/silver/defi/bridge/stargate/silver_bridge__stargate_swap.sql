@@ -64,7 +64,7 @@ base_evt AS (
         ) AS _log_id,
         modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__decoded_logs') }}
+        {{ ref('core__ez_decoded_event_logs') }}
         d
         INNER JOIN pools p
         ON d.contract_address = p.pool_address

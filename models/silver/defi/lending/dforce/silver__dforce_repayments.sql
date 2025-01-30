@@ -45,7 +45,7 @@ dforce_repayments AS (
       event_index :: STRING
     ) AS _log_id
   FROM
-    {{ ref('core__fact_ee_ntact_event_logs') }}
+    {{ ref('core__fact_event_logs') }}
   WHERE
     contract_address IN (
       SELECT

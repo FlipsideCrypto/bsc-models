@@ -30,7 +30,7 @@ WITH base_evt AS (
         ) AS _log_id,
         modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__decoded_logs') }}
+        {{ ref('core__ez_decoded_event_logs') }}
     WHERE
         topics [0] :: STRING IN (
             '0x5566d73d091d945ab32ea023cd1930c0d43aa43bef9aee4cb029775cfc94bdae',

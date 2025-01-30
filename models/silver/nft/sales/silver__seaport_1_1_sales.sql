@@ -21,7 +21,8 @@ WITH seaport_fees_wallet AS (
 seaport_tx_table AS (
     SELECT
         block_timestamp,
-        tx_hash
+        tx_hash,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('core__fact_event_logs') }}
     WHERE
@@ -64,7 +65,7 @@ decoded AS (
             ELSE NULL
         END AS trade_type
     FROM
-        {{ ref('silver__decoded_logs') }}
+        {{ ref('core__ez_decoded_event_logs') }}
     WHERE
         block_number >= 19974464
         AND contract_address = '0x00000000006c3852cbef3e08e8df289169ede581'
@@ -1077,7 +1078,8 @@ nft_transfer_operator AS (
             utils.udf_hex_to_int(
                 segmented_data [1] :: STRING
             )
-        ) AS erc1155_value
+        ) AS erc1155_value,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('core__fact_event_logs') }}
     WHERE

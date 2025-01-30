@@ -30,7 +30,7 @@ WITH logs_raw AS (
         ) AS _log_id,
         modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__decoded_logs') }}
+        {{ ref('core__ez_decoded_event_logs') }}
     WHERE
         contract_address = '0x449d05c544601631785a7c062dcdff530330317e'
         AND block_timestamp :: DATE >= '2021-10-01'

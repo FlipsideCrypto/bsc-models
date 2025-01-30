@@ -77,7 +77,7 @@ swaps_base AS (
         ) AS _log_id,
         modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('core__fact_event_logsvent_logs') }}
+        {{ ref('core__fact_event_logs') }}
         l
         INNER JOIN pools p
         ON lb_pair = l.contract_address

@@ -34,7 +34,7 @@ WITH trade_details AS (
         ) AS _log_id,
         modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__decoded_logs') }}
+        {{ ref('core__ez_decoded_event_logs') }}
     WHERE
         contract_address = '0x17539cca21c7933df5c980172d22659b8c345c5a'
         AND block_timestamp >= '2021-09-30'

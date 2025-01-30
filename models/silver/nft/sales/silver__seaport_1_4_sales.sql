@@ -20,9 +20,11 @@ WITH seaport_fees_wallet AS (
 ),
 raw_decoded_logs AS (
     SELECT
-        *
+        *,
+        CONCAT(tx_hash :: STRING, '-', event_index :: STRING) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__decoded_logs') }}
+        {{ ref('core__ez_decoded_event_logs') }}
     WHERE
         block_number >= 25881410
         AND contract_address = '0x00000000000001ad428e4906ae43d8f9852d0dd6'
@@ -80,7 +82,9 @@ mao_offer_accepted_tx AS (
 ),
 raw_logs AS (
     SELECT
-        *
+        *,
+        CONCAT(tx_hash :: STRING, '-', event_index :: STRING) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('core__fact_event_logs') }}
     WHERE
@@ -1640,7 +1644,8 @@ mao_orderhash AS (
                 to_address,
                 origin_function_signature,
                 tx_fee,
-                input_data
+                input_data,
+                modified_timestamp AS _inserted_timestamp
             FROM
                 {{ ref('silver__transactions') }}
             WHERE
@@ -1678,7 +1683,9 @@ nft_transfer_operator AS (
             utils.udf_hex_to_int(
                 segmented_data [1] :: STRING
             )
-        ) AS erc1155_value
+        ) AS erc1155_value,
+        CONCAT(tx_hash :: STRING, '-', event_index :: STRING) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('core__fact_event_logs') }}
     WHERE
