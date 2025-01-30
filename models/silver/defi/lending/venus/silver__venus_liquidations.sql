@@ -43,8 +43,12 @@ venus_liquidations AS (
     ) :: INTEGER AS repayAmount_raw,
     CONCAT('0x', SUBSTR(segmented_data [3] :: STRING, 25, 40)) AS tokenCollateral,
     'Venus' AS platform,
-    _inserted_timestamp,
-    _log_id
+    modified_timestamp AS _inserted_timestamp,
+    CONCAT(
+      tx_hash :: STRING,
+      '-',
+      event_index :: STRING
+    ) AS _log_id
   FROM
     {{ ref('silver__logs') }}
   WHERE
@@ -59,10 +63,10 @@ venus_liquidations AS (
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp) - INTERVAL '12 hours'
-    FROM
-        {{ this }}
+  SELECT
+    MAX(_inserted_timestamp) - INTERVAL '12 hours'
+  FROM
+    {{ this }}
 )
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}

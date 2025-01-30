@@ -22,7 +22,7 @@ WITH base_swaps AS (
             segmented_data [1] :: STRING
         ) :: FLOAT AS amount1_unadj,
         utils.udf_hex_to_int(
-            's2c', 
+            's2c',
             segmented_data [2] :: STRING
         ) :: FLOAT AS sqrtPriceX96,
         utils.udf_hex_to_int(

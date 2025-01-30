@@ -211,23 +211,64 @@ SELECT
     token_address,
     destination_recipient_address,
     --hex address on the destination chain, requires decoding for non-EVM - more info: https://docs.wormhole.com/wormhole/blockchain-environments/environments
-    CASE 
+    CASE
         WHEN destination_chain = 'solana' THEN utils.udf_hex_to_base58(destination_recipient_address)
-        WHEN destination_chain IN ('injective','sei') 
-            THEN utils.udf_hex_to_bech32(destination_recipient_address,SUBSTR(destination_chain,1,3))
-        WHEN destination_chain IN ('osmosis','xpla') 
-            THEN utils.udf_hex_to_bech32(destination_recipient_address,SUBSTR(destination_chain,1,4))
-        WHEN destination_chain IN ('terra','terra2','evmos') 
-            THEN utils.udf_hex_to_bech32(destination_recipient_address,SUBSTR(destination_chain,1,5))
-        WHEN destination_chain IN ('cosmoshub','kujira') 
-            THEN utils.udf_hex_to_bech32(destination_recipient_address,SUBSTR(destination_chain,1,6))
-        WHEN destination_chain IN ('near')
-            THEN COALESCE(near_address,destination_recipient_address)
-        WHEN destination_chain IN ('algorand')
-            THEN utils.udf_hex_to_algorand(destination_recipient_address)
-        WHEN destination_chain IN ('polygon')
-            THEN SUBSTR(destination_recipient_address,1,42)
-        ELSE destination_recipient_address 
+        WHEN destination_chain IN (
+            'injective',
+            'sei'
+        ) THEN utils.udf_hex_to_bech32(
+            destination_recipient_address,
+            SUBSTR(
+                destination_chain,
+                1,
+                3
+            )
+        )
+        WHEN destination_chain IN (
+            'osmosis',
+            'xpla'
+        ) THEN utils.udf_hex_to_bech32(
+            destination_recipient_address,
+            SUBSTR(
+                destination_chain,
+                1,
+                4
+            )
+        )
+        WHEN destination_chain IN (
+            'terra',
+            'terra2',
+            'evmos'
+        ) THEN utils.udf_hex_to_bech32(
+            destination_recipient_address,
+            SUBSTR(
+                destination_chain,
+                1,
+                5
+            )
+        )
+        WHEN destination_chain IN (
+            'cosmoshub',
+            'kujira'
+        ) THEN utils.udf_hex_to_bech32(
+            destination_recipient_address,
+            SUBSTR(
+                destination_chain,
+                1,
+                6
+            )
+        )
+        WHEN destination_chain IN ('near') THEN COALESCE(
+            near_address,
+            destination_recipient_address
+        )
+        WHEN destination_chain IN ('algorand') THEN utils.udf_hex_to_algorand(destination_recipient_address)
+        WHEN destination_chain IN ('polygon') THEN SUBSTR(
+            destination_recipient_address,
+            1,
+            42
+        )
+        ELSE destination_recipient_address
     END AS destination_chain_receiver,
     _id,
     _inserted_timestamp

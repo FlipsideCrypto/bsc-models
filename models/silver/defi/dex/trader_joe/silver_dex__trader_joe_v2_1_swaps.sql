@@ -71,8 +71,12 @@ swaps_base AS (
         ) AS protocolFee1,
         tokenX,
         tokenY,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('silver__logs') }}
         l
@@ -118,8 +122,8 @@ SELECT
     tokenY,
     CASE
         WHEN amount0In <> 0
-            AND amount1In <> 0
-            AND amount0Out <> 0 THEN amount1In
+        AND amount1In <> 0
+        AND amount0Out <> 0 THEN amount1In
         WHEN amount0In <> 0 THEN amount0In
         WHEN amount1In <> 0 THEN amount1In
     END AS amount_in_unadj,
@@ -129,8 +133,8 @@ SELECT
     END AS amount_out_unadj,
     CASE
         WHEN amount0In <> 0
-            AND amount1In <> 0
-            AND amount0Out <> 0 THEN tokenX
+        AND amount1In <> 0
+        AND amount0Out <> 0 THEN tokenX
         WHEN amount0In <> 0 THEN tokenY
         WHEN amount1In <> 0 THEN tokenX
     END AS token_in,
@@ -144,4 +148,5 @@ SELECT
     _inserted_timestamp
 FROM
     swaps_base
-WHERE token_in <> token_out
+WHERE
+    token_in <> token_out

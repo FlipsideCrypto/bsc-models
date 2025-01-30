@@ -39,18 +39,22 @@ borrow AS (
             origin_to_address,
             contract_address
         ) AS lending_pool_contract,
-        _inserted_timestamp,
-        _log_id
+        modified_timestamp AS _inserted_timestamp,
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id
     FROM
         {{ ref('silver__logs') }}
     WHERE
         topics [0] :: STRING = '0xb3d084820fb1a9decffb176436bd02558d15fac9b0ddfed8c465bc7359d7dce0'
         AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
         AND tx_status = 'SUCCESS' --excludes failed txs
-        AND kinza_market not in (
-        '0x2dd73dcc565761b684c56908fa01ac270a03f70f',
-        '0xf0daf89f387d9d4ac5e3326eadb20e7bec0ffc7c',
-        '0x45b817b36cadba2c3b6c2427db5b22e2e65400dd'
+        AND kinza_market NOT IN (
+            '0x2dd73dcc565761b684c56908fa01ac270a03f70f',
+            '0xf0daf89f387d9d4ac5e3326eadb20e7bec0ffc7c',
+            '0x45b817b36cadba2c3b6c2427db5b22e2e65400dd'
         ) --labeled as protected tokens, markets not relevent
 
 {% if is_incremental() %}

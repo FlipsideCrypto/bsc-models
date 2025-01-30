@@ -20,8 +20,12 @@ WITH pool_creation AS (
         utils.udf_hex_to_int(
             segmented_data [1] :: STRING
         ) :: INT AS pool_id,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref ('silver__logs') }}
     WHERE

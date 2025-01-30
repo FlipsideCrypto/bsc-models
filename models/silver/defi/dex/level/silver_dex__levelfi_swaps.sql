@@ -66,8 +66,12 @@ WITH swaps_base AS (
                 )
             )
         END AS fee,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('silver__logs') }}
         l
@@ -95,7 +99,10 @@ SELECT
     origin_to_address,
     event_index,
     contract_address,
-    COALESCE(sender_address,origin_from_address) AS sender,
+    COALESCE(
+        sender_address,
+        origin_from_address
+    ) AS sender,
     origin_from_address AS tx_to,
     tokenIn AS token_in,
     tokenOut AS token_out,

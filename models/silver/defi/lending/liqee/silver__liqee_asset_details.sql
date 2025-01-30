@@ -41,7 +41,7 @@ SELECT
     l.tx_hash,
     l.block_number,
     l.block_timestamp,
-    l.contract_address as itoken_address,
+    l.contract_address AS itoken_address,
     CASE
         WHEN l.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 'Liqee StaFi'
         ELSE c1.token_name

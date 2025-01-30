@@ -35,8 +35,12 @@ WITH base_evt AS (
         decoded_flat,
         event_removed,
         tx_status,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('silver__decoded_logs') }}
     WHERE
@@ -84,8 +88,12 @@ native_gas_paid AS (
         decoded_flat,
         event_removed,
         tx_status,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('silver__decoded_logs') }}
     WHERE

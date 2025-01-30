@@ -32,8 +32,12 @@ WITH liquidation AS(
             origin_to_address,
             contract_address
         ) AS lending_pool_contract,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('silver__logs') }}
     WHERE
@@ -88,7 +92,7 @@ SELECT
     amd.atoken_address AS debt_radiant_token,
     liquidator_address AS liquidator,
     borrower_address AS borrower,
-'Radiant V2' AS platform,
+    'Radiant V2' AS platform,
     amc.underlying_symbol AS collateral_token_symbol,
     amd.underlying_symbol AS debt_token_symbol,
     'bsc' AS blockchain,

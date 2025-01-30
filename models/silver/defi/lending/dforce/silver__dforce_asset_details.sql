@@ -13,8 +13,12 @@ WITH log_pull AS (
         block_number,
         block_timestamp,
         contract_address,
-        _inserted_timestamp,
-        _log_id
+        modified_timestamp AS _inserted_timestamp,
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id
     FROM
         {{ ref('silver__logs') }}
     WHERE

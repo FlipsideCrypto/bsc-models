@@ -50,8 +50,12 @@ swaps_base AS (
         ) AS amount1Out,
         token0,
         token1,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('silver__logs') }}
         l
@@ -116,4 +120,5 @@ SELECT
     _inserted_timestamp
 FROM
     swaps_base
-WHERE token_in <> token_out
+WHERE
+    token_in <> token_out

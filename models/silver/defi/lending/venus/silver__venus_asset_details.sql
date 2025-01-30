@@ -42,6 +42,7 @@ WITH vtoken_pulls AS (
             '0xb248a295732e0225acd3337607cc01068e3b9c10',
             '0x151b1e2635a717bcdc836ecd6fbb62b674fe3e1d'
         )
+
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
     SELECT
@@ -92,10 +93,10 @@ underlying_add AS (
         vtoken_pulls
 )
 SELECT
-    l.contract_address as itoken_address,
-    l.token_name as itoken_name,
-    l.token_symbol as itoken_symbol,
-    l.token_decimals as itoken_decimals,
+    l.contract_address AS itoken_address,
+    l.token_name AS itoken_name,
+    l.token_symbol AS itoken_symbol,
+    l.token_decimals AS itoken_decimals,
     l.underlying_address AS underlying_asset_address,
     C.token_name AS underlying_name,
     C.token_decimals AS underlying_decimals,

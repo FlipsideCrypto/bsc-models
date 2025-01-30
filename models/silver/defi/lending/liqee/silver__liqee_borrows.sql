@@ -42,9 +42,13 @@ liqee_borrows AS (
       segmented_data [3] :: STRING
     ) :: INTEGER AS totalBorrows,
     contract_address AS itoken,
-    'Liqee'AS platform,
-    _inserted_timestamp,
-    _log_id
+    'Liqee' AS platform,
+    modified_timestamp AS _inserted_timestamp,
+    CONCAT(
+      tx_hash :: STRING,
+      '-',
+      event_index :: STRING
+    ) AS _log_id
   FROM
     {{ ref('silver__logs') }}
   WHERE
@@ -59,10 +63,10 @@ liqee_borrows AS (
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp) - INTERVAL '12 hours'
-    FROM
-        {{ this }}
+  SELECT
+    MAX(_inserted_timestamp) - INTERVAL '12 hours'
+  FROM
+    {{ this }}
 )
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}

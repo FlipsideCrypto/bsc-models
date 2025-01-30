@@ -29,19 +29,23 @@ WITH repay AS(
             contract_address
         ) AS lending_pool_contract,
         origin_from_address AS repayer_address,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('silver__logs') }}
     WHERE
         topics [0] :: STRING = '0xa534c8dbe71f871f9f3530e97a74601fea17b426cae02e1c5aee42c96c784051'
-    AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
-    AND tx_status = 'SUCCESS' --excludes failed txs
-    AND kinza_market not in (
+        AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
+        AND tx_status = 'SUCCESS' --excludes failed txs
+        AND kinza_market NOT IN (
             '0x2dd73dcc565761b684c56908fa01ac270a03f70f',
             '0xf0daf89f387d9d4ac5e3326eadb20e7bec0ffc7c',
             '0x45b817b36cadba2c3b6c2427db5b22e2e65400dd'
-            ) --labeled as protected tokens, markets not relevent
+        ) --labeled as protected tokens, markets not relevent
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -89,7 +93,7 @@ SELECT
     repayer_address AS payer,
     borrower_address AS borrower,
     lending_pool_contract,
-'Kinza' AS platform,
+    'Kinza' AS platform,
     atoken_meta.underlying_symbol AS symbol,
     'bsc' AS blockchain,
     _log_id,

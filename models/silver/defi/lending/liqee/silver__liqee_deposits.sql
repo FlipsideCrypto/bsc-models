@@ -39,9 +39,13 @@ liqee_deposits AS (
       segmented_data [3] :: STRING
     ) :: INTEGER AS mintAmount_raw,
     CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 25, 40)) AS supplier,
-    'Liqee'AS platform,
-    _inserted_timestamp,
-    _log_id
+    'Liqee' AS platform,
+    modified_timestamp AS _inserted_timestamp,
+    CONCAT(
+      tx_hash :: STRING,
+      '-',
+      event_index :: STRING
+    ) AS _log_id
   FROM
     {{ ref('silver__logs') }}
   WHERE
@@ -56,10 +60,10 @@ liqee_deposits AS (
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp) - INTERVAL '12 hours'
-    FROM
-        {{ this }}
+  SELECT
+    MAX(_inserted_timestamp) - INTERVAL '12 hours'
+  FROM
+    {{ this }}
 )
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
@@ -100,7 +104,7 @@ SELECT
   origin_to_address,
   origin_function_signature,
   contract_address,
-  itoken_address as itoken,
+  itoken_address AS itoken,
   itoken_symbol,
   minttokens_raw / pow(
     10,
