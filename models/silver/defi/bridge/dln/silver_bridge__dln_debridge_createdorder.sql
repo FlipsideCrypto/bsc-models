@@ -23,44 +23,44 @@ WITH base_evt AS (
         DATA,
         regexp_substr_all(SUBSTR(DATA, 3, len(DATA)), '.{64}') AS segmented_data,
         CONCAT('0x', SUBSTR(segmented_data [24] :: STRING, 1, 40)) AS token_address,
-        decoded_flat :"affiliateFee" :: STRING AS affiliateFee,
-        decoded_flat :"metadata" :: STRING AS metadata,
+        decoded_log :"affiliateFee" :: STRING AS affiliateFee,
+        decoded_log :"metadata" :: STRING AS metadata,
         TRY_TO_NUMBER(
-            decoded_flat :"nativeFixFee" :: STRING
+            decoded_log :"nativeFixFee" :: STRING
         ) AS nativeFixFee,
-        decoded_flat :"order" AS order_obj,
-        decoded_flat :"order" :"allowedCancelBeneficiarySrc" :: STRING AS allowedCancelBeneficiarySrc,
-        decoded_flat :"order" :"allowedTakerDst" :: STRING AS allowedTakerDst,
-        decoded_flat :"order" :"externalCall" :: STRING AS externalCall,
+        decoded_log :"order" AS order_obj,
+        decoded_log :"order" :"allowedCancelBeneficiarySrc" :: STRING AS allowedCancelBeneficiarySrc,
+        decoded_log :"order" :"allowedTakerDst" :: STRING AS allowedTakerDst,
+        decoded_log :"order" :"externalCall" :: STRING AS externalCall,
         TRY_TO_NUMBER(
-            decoded_flat :"order" :"giveAmount" :: STRING
+            decoded_log :"order" :"giveAmount" :: STRING
         ) AS giveAmount,
         TRY_TO_NUMBER(
-            decoded_flat :"order" :"giveChainId" :: STRING
+            decoded_log :"order" :"giveChainId" :: STRING
         ) AS giveChainId,
-        decoded_flat :"order" :"givePatchAuthoritySrc" :: STRING AS givePatchAuthoritySrc,
-        decoded_flat :"order" :"giveTokenAddress" :: STRING AS giveTokenAddress,
+        decoded_log :"order" :"givePatchAuthoritySrc" :: STRING AS givePatchAuthoritySrc,
+        decoded_log :"order" :"giveTokenAddress" :: STRING AS giveTokenAddress,
         TRY_TO_NUMBER(
-            decoded_flat :"order" :"makerOrderNonce" :: STRING
+            decoded_log :"order" :"makerOrderNonce" :: STRING
         ) AS makerOrderNonce,
-        decoded_flat :"order" :"makerSrc" :: STRING AS makerSrc,
-        decoded_flat :"order" :"orderAuthorityAddressDst" :: STRING AS orderAuthorityAddressDst,
+        decoded_log :"order" :"makerSrc" :: STRING AS makerSrc,
+        decoded_log :"order" :"orderAuthorityAddressDst" :: STRING AS orderAuthorityAddressDst,
         CONCAT('0x', LEFT(segmented_data [28] :: STRING, 40)) AS receiverDst,
         TRY_TO_NUMBER(
-            decoded_flat :"order" :"takeAmount" :: STRING
+            decoded_log :"order" :"takeAmount" :: STRING
         ) AS takeAmount,
         TRY_TO_NUMBER(
-            decoded_flat :"order" :"takeChainId" :: STRING
+            decoded_log :"order" :"takeChainId" :: STRING
         ) AS takeChainId,
-        decoded_flat :"order" :"takeTokenAddress" :: STRING AS takeTokenAddress,
-        decoded_flat :"orderId" :: STRING AS orderId,
+        decoded_log :"order" :"takeTokenAddress" :: STRING AS takeTokenAddress,
+        decoded_log :"orderId" :: STRING AS orderId,
         TRY_TO_NUMBER(
-            decoded_flat :"percentFee" :: STRING
+            decoded_log :"percentFee" :: STRING
         ) AS percentFee,
         TRY_TO_NUMBER(
-            decoded_flat :"referralCode" :: STRING
+            decoded_log :"referralCode" :: STRING
         ) AS referralCode,
-        decoded_flat,
+        decoded_log,
         event_removed,
         tx_status,
         CONCAT(
@@ -116,7 +116,7 @@ SELECT
         WHEN token_address = '0x0000000000000000000000000000000000000000' THEN LOWER('0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c')
         ELSE token_address
     END AS token_address,
-    decoded_flat,
+    decoded_log,
     order_obj,
     _log_id,
     _inserted_timestamp

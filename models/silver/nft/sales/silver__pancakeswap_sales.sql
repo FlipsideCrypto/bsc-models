@@ -15,20 +15,24 @@ WITH trade_details AS (
         event_index,
         event_name,
         contract_address,
-        decoded_flat,
-        decoded_flat :askPrice :: INT AS total_price_raw,
-        decoded_flat :netPrice :: INT AS net_price_raw,
-        decoded_flat :buyer :: STRING AS buyer_address,
-        decoded_flat :seller :: STRING AS seller_address,
-        decoded_flat :collection :: STRING AS nft_address,
-        decoded_flat :tokenId :: STRING AS tokenId,
+        decoded_log,
+        decoded_log :askPrice :: INT AS total_price_raw,
+        decoded_log :netPrice :: INT AS net_price_raw,
+        decoded_log :buyer :: STRING AS buyer_address,
+        decoded_log :seller :: STRING AS seller_address,
+        decoded_log :collection :: STRING AS nft_address,
+        decoded_log :tokenId :: STRING AS tokenId,
         IFF(
-            decoded_flat :withBNB = TRUE,
+            decoded_log :withBNB = TRUE,
             'BNB',
             '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
         ) AS currency_address,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('silver__decoded_logs') }}
     WHERE
@@ -74,7 +78,7 @@ base AS (
         t.contract_address AS platform_address,
         'pancakeswap' AS platform_name,
         'pancakeswap v1' AS platform_exchange_version,
-        t.decoded_flat,
+        t.decoded_log,
         buyer_address,
         seller_address,
         t.nft_address,

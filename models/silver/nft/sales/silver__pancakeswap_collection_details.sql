@@ -12,14 +12,14 @@ SELECT
     event_index,
     tx_hash,
     event_name,
-    decoded_flat,
-    decoded_flat :collection :: STRING AS nft_address,
-    decoded_flat :creator :: STRING AS nft_creator_address,
-    decoded_flat :creatorFee / pow(
+    decoded_log
+    decoded_log:collection :: STRING AS nft_address,
+    decoded_log:creator :: STRING AS nft_creator_address,
+    decoded_log:creatorFee / pow(
         10,
         4
     ) AS creator_fee,
-    decoded_flat :tradingFee / pow(
+    decoded_log:tradingFee / pow(
         10,
         4
     ) AS trading_fee,

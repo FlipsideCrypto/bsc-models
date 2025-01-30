@@ -34,7 +34,7 @@ WITH base_swaps AS (
             segmented_data [4] :: STRING
         ) :: FLOAT AS tick
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logsvent_logs') }}
     WHERE
         block_timestamp :: DATE > '2023-01-01'
         AND topics [0] :: STRING = '0xc42079f94a6350d7e6235f29174924f928cc2ac818eb64fed8004e115fbcca67'

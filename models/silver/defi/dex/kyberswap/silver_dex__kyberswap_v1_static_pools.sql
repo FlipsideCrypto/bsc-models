@@ -39,7 +39,7 @@ WITH pool_creation AS (
         ) AS _log_id,
         modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref ('silver__logs') }}
+        {{ ref ('core__fact_event_logs') }}
     WHERE
         contract_address = LOWER('0x1c758aF0688502e49140230F6b0EBd376d429be5') --static pool factory
         AND topics [0] :: STRING = '0xb6bce363b712c921bead4bcc977289440eb6172eb89e258e3a25bd49ca806de6' --create pool

@@ -28,32 +28,32 @@ base_evt AS (
         topics [0] :: STRING AS topic_0,
         event_name,
         TRY_TO_NUMBER(
-            decoded_flat :"amountSD" :: STRING
+            decoded_log :"amountSD" :: STRING
         ) AS amountSD,
         TRY_TO_NUMBER(
-            decoded_flat :"chainId" :: STRING
+            decoded_log :"chainId" :: STRING
         ) AS chainId,
         CASE
             WHEN chainId < 100 THEN chainId + 100
             ELSE chainId
         END AS destination_chain_id,
         TRY_TO_NUMBER(
-            decoded_flat :"dstPoolId" :: STRING
+            decoded_log :"dstPoolId" :: STRING
         ) AS dstPoolId,
         TRY_TO_NUMBER(
-            decoded_flat :"eqFee" :: STRING
+            decoded_log :"eqFee" :: STRING
         ) AS eqFee,
         TRY_TO_NUMBER(
-            decoded_flat :"eqReward" :: STRING
+            decoded_log :"eqReward" :: STRING
         ) AS eqReward,
         TRY_TO_NUMBER(
-            decoded_flat :"amountSD" :: STRING
+            decoded_log :"amountSD" :: STRING
         ) AS lpFee,
         TRY_TO_NUMBER(
-            decoded_flat :"amountSD" :: STRING
+            decoded_log :"amountSD" :: STRING
         ) AS protocolFee,
-        decoded_flat :"from" :: STRING AS from_address,
-        decoded_flat,
+        decoded_log :"from" :: STRING AS from_address,
+        decoded_log,
         token_address,
         event_removed,
         tx_status,

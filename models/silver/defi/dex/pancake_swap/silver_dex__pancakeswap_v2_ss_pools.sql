@@ -38,7 +38,7 @@ WITH pools AS (
         ) AS _log_id,
         modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref ('silver__logs') }}
+        {{ ref ('core__fact_event_logs') }}
     WHERE
         contract_address IN (
             '0x25a55f9f2279a54951133d503490342b50e5cd15',

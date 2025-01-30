@@ -21,8 +21,8 @@ WITH seaport_fees_wallet AS (
 raw_decoded_logs AS (
     SELECT
         *,
-        decoded_flat :orderHash :: STRING AS orderhash,
-        tx_hash || '-' || decoded_flat :orderHash AS tx_hash_orderhash
+        decoded_log :orderHash :: STRING AS orderhash,
+        tx_hash || '-' || decoded_log :orderHash AS tx_hash_orderhash
     FROM
         {{ ref('silver__decoded_logs') }}
     WHERE
@@ -66,7 +66,7 @@ raw_logs AS (
             NULL
         ) AS order_hash
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
     WHERE
         block_timestamp :: DATE >= '2023-05-01'
         AND block_number >= 27861265
@@ -136,26 +136,26 @@ mao_orderhash AS (
 decoded AS (
     SELECT
         tx_hash,
-        decoded_flat,
+        decoded_log,
         event_index,
-        decoded_data,
+        full_decoded_log,
         CONCAT(
             tx_hash,
             '-',
-            decoded_flat :orderHash :: STRING
+            decoded_log :orderHash :: STRING
         ) AS tx_hash_orderhash,
         _log_id,
         _inserted_timestamp,
         LOWER(
-            decoded_data :address :: STRING
+            full_decoded_log :address :: STRING
         ) AS contract_address,
-        decoded_data :name :: STRING AS event_name,
+        full_decoded_log :name :: STRING AS event_name,
         CASE
-            WHEN decoded_data :data [4] :value [0] [0] IN (
+            WHEN full_decoded_log :data [4] :value [0] [0] IN (
                 2,
                 3
             ) THEN 'buy'
-            WHEN decoded_data :data [4] :value [0] [0] IN (1) THEN 'offer_accepted'
+            WHEN full_decoded_log :data [4] :value [0] [0] IN (1) THEN 'offer_accepted'
             ELSE NULL
         END AS trade_type
     FROM
@@ -179,7 +179,7 @@ offer_length_count_buy AS (
         ) AS offer_length_raw --> this is the number of nfts in a batch buy. If n = 1, then price is known. If n > 1 then price is estimated
     FROM
         decoded,
-        TABLE(FLATTEN(input => decoded_data :data [4] :value))
+        TABLE(FLATTEN(input => full_decoded_log :data [4] :value))
     WHERE
         trade_type = 'buy'
         AND VALUE [0] IN (
@@ -201,7 +201,7 @@ offer_length_count_offer AS (
         ) AS offer_length_raw --> this is the number of nfts in a batch buy. If n = 1, then price is known. If n > 1 then price is estimated
     FROM
         decoded,
-        TABLE(FLATTEN(input => decoded_data :data [5] :value))
+        TABLE(FLATTEN(input => full_decoded_log :data [5] :value))
     WHERE
         trade_type = 'offer_accepted'
         AND VALUE [0] IN (
@@ -220,7 +220,7 @@ flat_raw AS (
         contract_address,
         event_name,
         trade_type,
-        decoded_data :data AS full_data,
+        full_decoded_log :data AS full_data,
         _log_id,
         _inserted_timestamp,
         OBJECT_AGG(
@@ -230,7 +230,7 @@ flat_raw AS (
     FROM
         decoded,
         LATERAL FLATTEN(
-            input => decoded_data :data
+            input => full_decoded_log :data
         ) f
     WHERE
         event_name IN (
@@ -1100,22 +1100,22 @@ mao_consideration_all AS (
     SELECT
         tx_hash,
         event_index,
-        decoded_flat,
+        decoded_log,
         INDEX,
         orderhash,
         tx_hash_orderhash,
-        decoded_flat :offerer :: STRING AS offerer,
-        decoded_flat :recipient :: STRING AS recipient,
+        decoded_log :offerer :: STRING AS offerer,
+        decoded_log :recipient :: STRING AS recipient,
         VALUE,
         VALUE :amount :: INT AS amount,
         VALUE :identifier :: STRING AS identifier,
         VALUE :itemType :: INT AS item_type,
         VALUE :recipient :: STRING AS item_recipient,
         VALUE :token :: STRING AS item_token_address,
-        decoded_flat :offer [0] :amount :: INT AS offer_amount,
-        decoded_flat :offer [0] :identifier :: STRING AS offer_identifier,
-        decoded_flat :offer [0] :itemType :: INT AS offer_item_type,
-        decoded_flat :offer [0] :token :: STRING AS offer_item_token_address,
+        decoded_log :offer [0] :amount :: INT AS offer_amount,
+        decoded_log :offer [0] :identifier :: STRING AS offer_identifier,
+        decoded_log :offer [0] :itemType :: INT AS offer_item_type,
+        decoded_log :offer [0] :token :: STRING AS offer_item_token_address,
         IFF(item_type NOT IN (0, 1), CONCAT(item_token_address, '-', identifier, '-', amount), CONCAT(offer_item_token_address, '-', offer_identifier, '-', offer_amount)) AS nft_address_identifier,
         IFF(item_type NOT IN (0, 1), nft_address_identifier, NULL) AS nft_address_identifier_null,
         CASE
@@ -1157,7 +1157,7 @@ mao_consideration_all AS (
     FROM
         raw_decoded_logs,
         LATERAL FLATTEN (
-            input => decoded_flat :consideration
+            input => decoded_log :consideration
         )
     WHERE
         event_name = 'OrderFulfilled'
@@ -1184,7 +1184,7 @@ mao_consideration_all_joined AS (
         END AS nft_address_identifier_fill,
         IFF(item_type NOT IN (0, 1)
         AND offer_item_type NOT IN (0, 1)
-        AND decoded_flat :consideration [0] :itemType :: INT NOT IN (0, 1), CONCAT(tx_hash_orderhash, '-', event_index), NULL) AS deals_tag,
+        AND decoded_log :consideration [0] :itemType :: INT NOT IN (0, 1), CONCAT(tx_hash_orderhash, '-', event_index), NULL) AS deals_tag,
         CONCAT(
             tx_hash_orderhash,
             '-',
@@ -1418,7 +1418,7 @@ mao_deals_nft_transfers_sales AS (
             0
         ) AS creator_fee_raw,
         currency_address,
-        decoded_flat,
+        decoded_log,
         offerer,
         recipient,
         _log_id,
@@ -1473,7 +1473,7 @@ mao_nondeals_nft_transfers_sales AS (
         ) AS seller_address,
         offerer,
         recipient,
-        decoded_flat,
+        decoded_log,
         currency_address,
         sale_amount_raw,
         platform_fee_raw,
@@ -1604,7 +1604,7 @@ mao_nondeals_nft_transfers_sales_fill_offer_length AS (
         seller_address,
         offerer,
         recipient,
-        decoded_flat,
+        decoded_log,
         currency_address_fill AS currency_address,
         offer_length,
         sale_amount_raw_fill / offer_length AS sale_amount_raw,
@@ -1626,7 +1626,7 @@ mao_combined_base AS (
         tx_hash,
         om_event_index_fill,
         IFF(
-            decoded_flat :consideration [0] :itemType :: INT IN (
+            decoded_log :consideration [0] :itemType :: INT IN (
                 0,
                 1
             ),
@@ -1663,7 +1663,7 @@ mao_combined_base AS (
         sale_amount_raw + total_fees_raw AS total_price_raw,
         offerer,
         recipient,
-        decoded_flat,
+        decoded_log,
         _log_id,
         _inserted_timestamp
     FROM
@@ -1674,7 +1674,7 @@ mao_combined_base AS (
         om_event_index_fill,
         -- the event index for the ordermatched
         IFF(
-            decoded_flat :consideration [0] :itemType :: INT IN (
+            decoded_log :consideration [0] :itemType :: INT IN (
                 0,
                 1
             ),
@@ -1710,7 +1710,7 @@ mao_combined_base AS (
         sale_amount_raw + total_fees_raw AS total_price_raw,
         offerer,
         recipient,
-        decoded_flat,
+        decoded_log,
         _log_id,
         _inserted_timestamp
     FROM
@@ -1818,7 +1818,7 @@ base_sales_buy_and_offer AS (
             'true',
             'false'
         ) AS is_price_estimated,
-        decoded_flat :zone :: STRING AS ZONE,
+        decoded_log :zone :: STRING AS ZONE,
         item_type AS tx_type,
         item_type AS token_type,
         nft_address AS nft_address_temp,
@@ -1833,9 +1833,9 @@ base_sales_buy_and_offer AS (
         total_fees_raw,
         platform_fee_raw,
         creator_fee_raw,
-        decoded_flat,
-        decoded_flat :consideration AS consideration,
-        decoded_flat :offer AS offer,
+        decoded_log,
+        decoded_log :consideration AS consideration,
+        decoded_log :offer AS offer,
         seller_address AS seller_address_temp,
         buyer_address AS buyer_address_temp,
         _log_id,
@@ -1892,7 +1892,7 @@ nft_transfer_operator AS (
             )
         ) AS erc1155_value
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
     WHERE
         block_timestamp :: DATE >= '2023-05-01'
         AND tx_hash IN (

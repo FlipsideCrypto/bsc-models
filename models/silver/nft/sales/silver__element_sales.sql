@@ -20,33 +20,33 @@ raw AS (
         tx_hash,
         event_index,
         event_name,
-        decoded_flat,
+        decoded_log,
         IFF(
             event_name LIKE '%Buy%',
             'bid_won',
             'sale'
         ) AS event_type,
-        decoded_flat :erc20Token :: STRING AS currency_address_raw,
+        decoded_log :erc20Token :: STRING AS currency_address_raw,
         COALESCE(
-            decoded_flat :erc20TokenAmount,
-            decoded_flat :erc20FillAmount
+            decoded_log :erc20TokenAmount,
+            decoded_log :erc20FillAmount
         ) :: INT AS amount_raw,
         COALESCE(
-            decoded_flat :erc721Token,
-            decoded_flat :erc1155Token
+            decoded_log :erc721Token,
+            decoded_log :erc1155Token
         ) :: STRING AS nft_address,
         COALESCE(
-            decoded_flat :erc721TokenId,
-            decoded_flat :erc1155TokenId
+            decoded_log :erc721TokenId,
+            decoded_log :erc1155TokenId
         ) :: STRING AS tokenid,
-        decoded_flat :erc1155FillAmount :: STRING AS erc1155_value,
+        decoded_log :erc1155FillAmount :: STRING AS erc1155_value,
         IFF(
             erc1155_value IS NULL,
             'erc721',
             'erc1155'
         ) AS nft_type,
-        decoded_flat :maker :: STRING AS maker,
-        decoded_flat :taker :: STRING AS taker,
+        decoded_log :maker :: STRING AS maker,
+        decoded_log :taker :: STRING AS taker,
         IFF(
             event_name LIKE '%Buy%',
             taker,
@@ -57,8 +57,8 @@ raw AS (
             maker,
             taker
         ) AS buyer_address,
-        decoded_flat :fees AS fees_array,
-        decoded_flat :orderHash :: STRING AS orderhash,
+        decoded_log :fees AS fees_array,
+        decoded_log :orderHash :: STRING AS orderhash,
         ROW_NUMBER() over (
             PARTITION BY tx_hash
             ORDER BY
@@ -66,8 +66,12 @@ raw AS (
         ) AS intra_grouping_seller_fill,
         block_timestamp,
         block_number,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('silver__decoded_logs') }}
     WHERE
@@ -184,8 +188,8 @@ old_native_transfers AS (
         trace_index,
         from_address,
         to_address,
-        VALUE AS bnb_value,
-        bnb_value * pow(
+        VALUE,
+        value * pow(
             10,
             18
         ) AS amount_raw,
@@ -245,7 +249,7 @@ old_native_transfers AS (
                 currency_address_raw = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
         )
         AND TYPE = 'CALL'
-        AND bnb_value > 0
+        AND value > 0
         AND tx_status = 'SUCCESS'
         AND trace_status = 'SUCCESS'
 
@@ -338,7 +342,7 @@ old_native_base AS (
         intra_grouping_seller_fill,
         event_index,
         event_name,
-        decoded_flat,
+        decoded_log,
         event_type,
         currency_address_raw,
         amount_raw,
@@ -381,7 +385,7 @@ old_token_base AS (
         intra_grouping_seller_fill,
         event_index,
         event_name,
-        decoded_flat,
+        decoded_log,
         event_type,
         currency_address_raw,
         amount_raw,
@@ -473,7 +477,7 @@ new_base AS (
         intra_grouping_seller_fill,
         event_index,
         event_name,
-        decoded_flat,
+        decoded_log,
         event_type,
         currency_address_raw,
         amount_raw,
@@ -577,7 +581,7 @@ SELECT
     tx_hash,
     event_index,
     event_name,
-    decoded_flat,
+    decoded_log,
     event_type,
     (
         SELECT

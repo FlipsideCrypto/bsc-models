@@ -57,7 +57,7 @@ WITH swaps_base AS (
         ) AS _log_id,
         modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
         l
     WHERE
         contract_address = '0xfeacb05b373f1a08e68235ba7fc92636b92ced01' --router

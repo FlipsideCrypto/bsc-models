@@ -21,17 +21,17 @@ WITH base_evt AS (
         topics [0] :: STRING AS topic_0,
         event_name,
         TRY_TO_NUMBER(
-            decoded_flat :"amount" :: STRING
+            decoded_log :"amount" :: STRING
         ) AS amount,
         TRY_TO_NUMBER(
-            decoded_flat :"chainID" :: STRING
+            decoded_log :"chainID" :: STRING
         ) AS chainID,
-        decoded_flat :"from" :: STRING AS from_address,
-        decoded_flat :"id" :: STRING AS id,
-        decoded_flat :"revertableAddress" :: STRING AS revertableAddress,
-        decoded_flat :"to" :: STRING AS to_address,
-        decoded_flat :"token" :: STRING AS token,
-        decoded_flat,
+        decoded_log :"from" :: STRING AS from_address,
+        decoded_log :"id" :: STRING AS id,
+        decoded_log :"revertableAddress" :: STRING AS revertableAddress,
+        decoded_log :"to" :: STRING AS to_address,
+        decoded_log :"token" :: STRING AS token,
+        decoded_log,
         event_removed,
         tx_status,
         CONCAT(

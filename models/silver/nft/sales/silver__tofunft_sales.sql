@@ -15,16 +15,20 @@ WITH logs_raw AS (
         event_index,
         event_name,
         contract_address,
-        decoded_flat,
-        decoded_flat :inventory :kind :: INT AS kind,
-        decoded_flat :inventory :status :: INT AS status,
-        decoded_flat :inventory :buyer :: STRING AS buyer_address,
-        decoded_flat :inventory :seller :: STRING AS seller_address,
-        decoded_flat :inventory :currency :: STRING AS currency_address,
-        decoded_flat :inventory :netPrice :: INT AS net_price_raw,
-        decoded_flat :inventory :price :: INT AS price_raw,
-        _log_id,
-        _inserted_timestamp
+        decoded_log,
+        decoded_log :inventory :kind :: INT AS kind,
+        decoded_log :inventory :status :: INT AS status,
+        decoded_log :inventory :buyer :: STRING AS buyer_address,
+        decoded_log :inventory :seller :: STRING AS seller_address,
+        decoded_log :inventory :currency :: STRING AS currency_address,
+        decoded_log :inventory :netPrice :: INT AS net_price_raw,
+        decoded_log :inventory :price :: INT AS price_raw,
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('silver__decoded_logs') }}
     WHERE

@@ -21,18 +21,18 @@ WITH base_evt AS (
         topics [0] :: STRING AS topic_0,
         event_name,
         TRY_TO_NUMBER(
-            decoded_flat :"amount" :: STRING
+            decoded_log :"amount" :: STRING
         ) AS amount,
-        decoded_flat :"destinationChain" :: STRING AS destinationChain,
+        decoded_log :"destinationChain" :: STRING AS destinationChain,
         LOWER(
-            decoded_flat :"destinationContractAddress" :: STRING
+            decoded_log :"destinationContractAddress" :: STRING
         ) AS destinationContractAddress,
-        decoded_flat :"payload" :: STRING AS payload,
+        decoded_log :"payload" :: STRING AS payload,
         origin_from_address AS recipient,
-        decoded_flat :"payloadHash" :: STRING AS payloadHash,
-        decoded_flat :"sender" :: STRING AS sender,
-        decoded_flat :"symbol" :: STRING AS symbol,
-        decoded_flat,
+        decoded_log :"payloadHash" :: STRING AS payloadHash,
+        decoded_log :"sender" :: STRING AS sender,
+        decoded_log :"symbol" :: STRING AS symbol,
+        decoded_log,
         event_removed,
         tx_status,
         CONCAT(
@@ -72,20 +72,20 @@ native_gas_paid AS (
         topics [0] :: STRING AS topic_0,
         event_name,
         TRY_TO_NUMBER(
-            decoded_flat :"amount" :: STRING
+            decoded_log :"amount" :: STRING
         ) AS amount,
-        decoded_flat :"destinationChain" :: STRING AS destinationChain,
+        decoded_log :"destinationChain" :: STRING AS destinationChain,
         LOWER(
-            decoded_flat :"destinationAddress" :: STRING
+            decoded_log :"destinationAddress" :: STRING
         ) AS destinationAddress,
         TRY_TO_NUMBER(
-            decoded_flat :"gasFeeAmount" :: STRING
+            decoded_log :"gasFeeAmount" :: STRING
         ) AS gasFeeAmount,
-        decoded_flat :"payloadHash" :: STRING AS payloadHash,
-        decoded_flat :"refundAddress" :: STRING AS refundAddress,
-        decoded_flat :"sourceAddress" :: STRING AS sourceAddress,
-        decoded_flat :"symbol" :: STRING AS symbol,
-        decoded_flat,
+        decoded_log :"payloadHash" :: STRING AS payloadHash,
+        decoded_log :"refundAddress" :: STRING AS refundAddress,
+        decoded_log :"sourceAddress" :: STRING AS sourceAddress,
+        decoded_log :"symbol" :: STRING AS symbol,
+        decoded_log,
         event_removed,
         tx_status,
         CONCAT(

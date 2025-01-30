@@ -16,7 +16,7 @@ WITH bnb_base AS (
         identifier,
         from_address,
         to_address,
-        VALUE AS bnb_value,
+        VALUE,
         concat_ws(
             '-',
             block_number,
@@ -28,14 +28,14 @@ WITH bnb_base AS (
             )
         ) AS _call_id,
         modified_timestamp AS _inserted_timestamp,
-        value_precise_raw AS bnb_value_precise_raw,
-        value_precise AS bnb_value_precise,
+        value_precise_raw,
+        value_precise,
         tx_position,
         trace_index
     FROM
         {{ ref('core__fact_traces') }}
     WHERE
-        bnb_value > 0
+        value > 0
         AND tx_status = 'SUCCESS'
         AND trace_status = 'SUCCESS'
         AND TYPE NOT IN (
@@ -88,11 +88,11 @@ SELECT
     origin_function_signature,
     from_address,
     to_address,
-    bnb_value AS amount,
-    bnb_value_precise_raw AS amount_precise_raw,
-    bnb_value_precise AS amount_precise,
+    value AS amount,
+    value_precise_raw AS amount_precise_raw,
+    value_precise AS amount_precise,
     ROUND(
-        bnb_value * price,
+        value * price,
         2
     ) AS amount_usd,
     _call_id,

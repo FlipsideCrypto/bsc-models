@@ -21,26 +21,26 @@ WITH base_evt AS (
         topics [0] :: STRING AS topic_0,
         event_name,
         TRY_TO_NUMBER(
-            decoded_flat :"amount" :: STRING
+            decoded_log :"amount" :: STRING
         ) AS amount,
         TRY_TO_NUMBER(
-            decoded_flat :"chainId" :: STRING
+            decoded_log :"chainId" :: STRING
         ) AS chainId,
         TRY_TO_TIMESTAMP(
-            decoded_flat :"deadline" :: STRING
+            decoded_log :"deadline" :: STRING
         ) AS deadline,
         TRY_TO_NUMBER(
-            decoded_flat :"minDy" :: STRING
+            decoded_log :"minDy" :: STRING
         ) AS minDy,
-        decoded_flat :"to" :: STRING AS to_address,
-        decoded_flat :"token" :: STRING AS token,
+        decoded_log :"to" :: STRING AS to_address,
+        decoded_log :"token" :: STRING AS token,
         TRY_TO_NUMBER(
-            decoded_flat :"tokenIndexFrom" :: STRING
+            decoded_log :"tokenIndexFrom" :: STRING
         ) AS tokenIndexFrom,
         TRY_TO_NUMBER(
-            decoded_flat :"tokenIndexTo" :: STRING
+            decoded_log :"tokenIndexTo" :: STRING
         ) AS tokenIndexTo,
-        decoded_flat,
+        decoded_log,
         event_removed,
         tx_status,
         CONCAT(
