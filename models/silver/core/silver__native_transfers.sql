@@ -60,7 +60,7 @@ tx_table AS (
         to_address AS origin_to_address,
         origin_function_signature
     FROM
-        {{ ref('silver__transactions') }}
+        {{ ref('core__fact_transactions') }}
     WHERE
         tx_hash IN (
             SELECT

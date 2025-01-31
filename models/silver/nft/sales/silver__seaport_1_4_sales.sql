@@ -1647,7 +1647,7 @@ mao_orderhash AS (
                 input_data,
                 modified_timestamp AS _inserted_timestamp
             FROM
-                {{ ref('silver__transactions') }}
+                {{ ref('core__fact_transactions') }}
             WHERE
                 block_timestamp :: DATE >= '2023-02-01'
                 AND tx_hash IN (
