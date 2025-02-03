@@ -31,7 +31,7 @@ log_pull AS (
         ON C.contract_address = l.contract_address
     WHERE
         topics [0] :: STRING = '0x7ac369dbd14fa5ea3f473ed67cc9d598964a77501540ba6751eb0b3decf5870d'
-        AND C.token_name LIKE '%Venus%'
+        AND C.token_name LIKE 'Venus%'
         AND origin_from_address IN (
             '0x55a9f5374af30e3045fb491f1da3c2e8a74d168d',
             '0x1ca3ac3686071be692be7f1fbecd668641476d7e',
@@ -55,11 +55,11 @@ AND l._inserted_timestamp >= (
 )
 AND l.contract_address NOT IN (
     SELECT
-        token_address
+        itoken_address
     FROM
         {{ this }}
 )
-AND l._inserted_timestamp >= SYSDATE() - INTERAL '7 day'
+AND l._inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
 {% endif %}
 ),
 traces_pull AS (
