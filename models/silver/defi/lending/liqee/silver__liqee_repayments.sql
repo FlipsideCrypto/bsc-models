@@ -54,7 +54,7 @@ liqee_repayments AS (
         asset_details
     )
     AND topics [0] :: STRING = '0x6fadbf7329d21f278e724fa0d4511001a158f2a97ee35c5bc4cf8b64417399ef'
-    AND tx_status = 'SUCCESS'
+    AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

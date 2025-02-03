@@ -50,7 +50,7 @@ AND _inserted_timestamp >= (
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 AND contract_address = LOWER('0xd50Cf00b6e600Dd036Ba8eF475677d816d6c4281')
-AND tx_status = 'SUCCESS' --excludes failed txs
+AND tx_succeeded --excludes failed txs
 ),
 atoken_meta AS (
     SELECT

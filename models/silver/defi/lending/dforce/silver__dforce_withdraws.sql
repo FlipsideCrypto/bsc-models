@@ -58,7 +58,7 @@ dforce_redemptions AS (
                 token_address <> '0xf51422c47c6c3e40cfca4a7b04232aedb7f49948' --excludes qDOT edge case
         )
         AND topics [0] :: STRING = '0x3f693fff038bb8a046aa76d9516190ac7444f7d69cf952c4cbdc086fdef2d6fc'
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

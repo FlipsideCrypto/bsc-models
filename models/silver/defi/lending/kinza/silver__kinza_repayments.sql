@@ -40,7 +40,7 @@ WITH repay AS(
     WHERE
         topics [0] :: STRING = '0xa534c8dbe71f871f9f3530e97a74601fea17b426cae02e1c5aee42c96c784051'
         AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
-        AND tx_status = 'SUCCESS' --excludes failed txs
+        AND tx_succeeded --excludes failed txs
         AND kinza_market NOT IN (
             '0x2dd73dcc565761b684c56908fa01ac270a03f70f',
             '0xf0daf89f387d9d4ac5e3326eadb20e7bec0ffc7c',

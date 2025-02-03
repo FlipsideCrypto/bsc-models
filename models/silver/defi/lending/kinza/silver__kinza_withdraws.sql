@@ -39,7 +39,7 @@ WITH withdraw AS(
     WHERE
         topics [0] :: STRING = '0x3115d1449a7b732c986cba18244e897a450f61e1bb8d589cd2e69e6c8924f9f7'
         AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
-        AND tx_status = 'SUCCESS' --excludes failed txs
+        AND tx_succeeded --excludes failed txs
         AND kinza_market NOT IN (
             '0x2dd73dcc565761b684c56908fa01ac270a03f70f',
             '0xf0daf89f387d9d4ac5e3326eadb20e7bec0ffc7c',

@@ -43,7 +43,7 @@ WITH liquidation AS(
     WHERE
         topics [0] :: STRING = '0xe413a321e8681d831f4dbccbca790d2952b56f977908e45be37335533e005286'
         AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
-        AND tx_status = 'SUCCESS' --excludes failed txs
+        AND tx_succeeded --excludes failed txs
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

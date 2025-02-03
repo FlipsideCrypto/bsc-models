@@ -67,7 +67,7 @@ swaps_base AS (
         )
     WHERE
         topics [0] :: STRING = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822'
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
         AND l.block_number >= 7665803
         AND l.block_timestamp >= '2021-05-20'
 

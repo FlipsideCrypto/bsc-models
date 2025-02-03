@@ -45,7 +45,7 @@ WITH flashloan AS (
     WHERE
         topics [0] :: STRING = '0xefefaba5e921573100900a3ad9cf29f222d995fb3b6045797eaea7521bd8d6f0'
         AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
-        AND tx_status = 'SUCCESS' --excludes failed txs
+        AND tx_succeeded --excludes failed txs
         AND kinza_market NOT IN (
             '0x2dd73dcc565761b684c56908fa01ac270a03f70f',
             '0xf0daf89f387d9d4ac5e3326eadb20e7bec0ffc7c',

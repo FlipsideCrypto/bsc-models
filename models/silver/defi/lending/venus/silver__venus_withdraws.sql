@@ -56,7 +56,7 @@ venus_redemptions AS (
                 asset_details
         )
         AND topics [0] :: STRING = '0xbd5034ffbd47e4e72a94baa2cdb74c6fad73cb3bcdc13036b72ec8306f5a7646'
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

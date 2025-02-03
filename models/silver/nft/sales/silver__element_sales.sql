@@ -250,8 +250,8 @@ old_native_transfers AS (
         )
         AND TYPE = 'CALL'
         AND value > 0
-        AND tx_status = 'SUCCESS'
-        AND trace_status = 'SUCCESS'
+        AND tx_succeeded
+        AND trace_succeeded
 
 {% if is_incremental() %}
 AND modified_timestamp >= (

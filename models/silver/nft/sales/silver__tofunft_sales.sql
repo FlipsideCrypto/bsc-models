@@ -160,7 +160,7 @@ traces_raw AS (
             input,
             10
         ) = '0xba847759'
-        AND trace_status = 'SUCCESS'
+        AND trace_succeeded
 
 {% if is_incremental() %}
 AND modified_timestamp >= (
