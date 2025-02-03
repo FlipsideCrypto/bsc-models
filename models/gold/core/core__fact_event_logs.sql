@@ -20,13 +20,24 @@ SELECT
     origin_from_address,
     origin_to_address,
     origin_function_signature,
-    CASE 
-        WHEN tx_status = 'SUCCESS' THEN TRUE 
-        ELSE FALSE 
+    CASE
+        WHEN tx_status = 'SUCCESS' THEN TRUE
+        ELSE FALSE
     END AS tx_succeeded, --new column
-    logs_id AS fact_event_logs_id,
-    inserted_timestamp,
-    modified_timestamp,
+    COALESCE (
+        logs_id,
+        {{ dbt_utils.generate_surrogate_key(
+            ['tx_hash', 'event_index']
+        ) }}
+    ) AS fact_event_logs_id,
+    COALESCE(
+        inserted_timestamp,
+        '2000-01-01'
+    ) AS inserted_timestamp,
+    COALESCE(
+        modified_timestamp,
+        '2000-01-01'
+    ) AS modified_timestamp,
     tx_status, --deprecate
     _log_id --deprecate
 FROM
