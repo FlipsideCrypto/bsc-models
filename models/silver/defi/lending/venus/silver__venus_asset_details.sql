@@ -81,8 +81,14 @@ traces_pull AS (
                 log_pull
         )
         and block_number in (
-            select block_number from log_pull
+            select 
+                block_number 
+            from 
+                log_pull
         )
+{% if is_incremental() %}
+AND t.modified_timestamp >= SYSDATE() - INTERVAL '7 days'
+{% endif %}
 ),
 underlying_details AS (
     SELECT
