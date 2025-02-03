@@ -10,14 +10,14 @@ WITH emitted_events AS (
     SELECT
         contract_address,
         COUNT(*) AS event_count,
-        MAX(_inserted_timestamp) AS max_inserted_timestamp_logs,
+        MAX(modified_timestamp) AS max_inserted_timestamp_logs,
         MAX(block_number) AS latest_event_block
     FROM
         {{ ref('core__fact_event_logs') }}
 
 {% if is_incremental() %}
 WHERE
-    _inserted_timestamp > (
+    modified_timestamp > (
         SELECT
             MAX(max_inserted_timestamp_logs)
         FROM

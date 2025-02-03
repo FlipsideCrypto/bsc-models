@@ -13,7 +13,7 @@ WITH bnb_base AS (
         tx_hash,
         block_number,
         block_timestamp,
-        identifier,
+        CONCAT(TYPE, '_', trace_address) AS identifier,
         from_address,
         to_address,
         VALUE,
@@ -58,7 +58,8 @@ tx_table AS (
         tx_hash,
         from_address AS origin_from_address,
         to_address AS origin_to_address,
-        origin_function_signature
+        origin_function_signature,
+        modified_timestamp as _inserted_timestamp
     FROM
         {{ ref('core__fact_transactions') }}
     WHERE

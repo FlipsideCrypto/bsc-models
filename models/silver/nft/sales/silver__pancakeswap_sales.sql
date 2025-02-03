@@ -122,7 +122,8 @@ tx_data AS (
         to_address,
         origin_function_signature,
         tx_fee,
-        input_data
+        input_data,
+        modified_timestamp as _inserted_timestamp
     FROM
         {{ ref('core__fact_transactions') }}
     WHERE
@@ -168,8 +169,8 @@ SELECT
     platform_fee_raw,
     total_fees_raw,
     collection_update_timestamp,
-    _log_id,
-    _inserted_timestamp,
+    b._log_id,
+    b._inserted_timestamp,
     from_address AS origin_from_address,
     to_address AS origin_to_address,
     origin_function_signature,
@@ -182,8 +183,8 @@ SELECT
         '-',
         platform_exchange_version,
         '-',
-        _log_id
+        b._log_id
     ) AS nft_log_id
 FROM
-    base
+    base b
     INNER JOIN tx_data USING (tx_hash)

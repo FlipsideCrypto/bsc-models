@@ -202,7 +202,8 @@ old_native_transfers AS (
             ),
             1,
             0
-        ) AS intra_grouping
+        ) AS intra_grouping,
+        modified_timestamp as _inserted_timestamp
     FROM
         {{ ref('core__fact_traces') }}
     WHERE
@@ -254,13 +255,13 @@ old_native_transfers AS (
         AND trace_succeeded
 
 {% if is_incremental() %}
-AND modified_timestamp >= (
+AND _inserted_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
-AND modified_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 ),
 old_native_labels AS (
@@ -548,7 +549,8 @@ tx_data AS (
         to_address AS origin_to_address,
         origin_function_signature,
         tx_fee,
-        input_data
+        input_data,
+        modified_timestamp as _inserted_timestamp
     FROM
         {{ ref('core__fact_transactions') }}
     WHERE

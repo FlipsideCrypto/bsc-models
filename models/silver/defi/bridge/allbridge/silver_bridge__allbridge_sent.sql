@@ -21,29 +21,29 @@ WITH base_evt AS (
         topics [0] :: STRING AS topic_0,
         event_name,
         TRY_TO_NUMBER(
-            decoded_flat :"amount" :: STRING
+            decoded_log :"amount" :: STRING
         ) AS amount,
         utils.udf_hex_to_string(
             SUBSTRING(
-                decoded_flat :"destination" :: STRING,
+                decoded_log :"destination" :: STRING,
                 3
             )
         ) AS destination_chain_symbol,
-        decoded_flat :"lockId" :: STRING AS lockId,
-        decoded_flat :"recipient" :: STRING AS recipient,
-        decoded_flat :"sender" :: STRING AS sender,
+        decoded_log :"lockId" :: STRING AS lockId,
+        decoded_log :"recipient" :: STRING AS recipient,
+        decoded_log :"sender" :: STRING AS sender,
         utils.udf_hex_to_string(
             SUBSTRING(
-                decoded_flat :"tokenSource" :: STRING,
+                decoded_log :"tokenSource" :: STRING,
                 3
             )
         ) AS token_source,
         REGEXP_REPLACE(
-            decoded_flat :"tokenSourceAddress" :: STRING,
+            decoded_log :"tokenSourceAddress" :: STRING,
             '0+$',
             ''
         ) AS tokenSourceAddress,
-        decoded_flat,
+        decoded_log,
         event_removed,
         tx_status,
         CONCAT(
@@ -53,7 +53,7 @@ WITH base_evt AS (
         ) AS _log_id,
         modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__decoded_logs') }}
+        {{ ref('core__ez_decoded_event_logs') }}
     WHERE
         topics [0] :: STRING = '0x884a8def17f0d5bbb3fef53f3136b5320c9b39f75afb8985eeab9ea1153ee56d'
         AND contract_address = '0xbbbd1bbb4f9b936c3604906d7592a644071de884'

@@ -51,7 +51,6 @@ decoded AS (
             '-',
             event_index :: STRING
         ) AS _log_id,
-        modified_timestamp AS _inserted_timestamp,
         LOWER(
             full_decoded_log :address :: STRING
         ) AS contract_address,
@@ -63,7 +62,8 @@ decoded AS (
             ) THEN 'buy'
             WHEN full_decoded_log :data [4] :value [0] [0] IN (1) THEN 'offer_accepted'
             ELSE NULL
-        END AS trade_type
+        END AS trade_type,
+        modified_timestamp as _inserted_timestamp
     FROM
         {{ ref('core__ez_decoded_event_logs') }}
     WHERE
@@ -175,8 +175,8 @@ flat AS (
         ) AS offer_length,
         trade_type,
         full_data,
-        _log_id,
-        _inserted_timestamp,
+        r._log_id,
+        r._inserted_timestamp,
         decoded_output
     FROM
         flat_raw r
@@ -606,8 +606,8 @@ base_sales_buy_final_public AS (
         decoded_output,
         consideration,
         offer,
-        _log_id,
-        _inserted_timestamp
+        b._log_id,
+        b._inserted_timestamp
     FROM
         base_sales_buy_combined b
         INNER JOIN base_sales_buy_sale_amount_combined s
@@ -650,8 +650,8 @@ base_sales_buy_final_private AS (
         decoded_output,
         consideration,
         offer,
-        _log_id,
-        _inserted_timestamp
+        b._log_id,
+        b._inserted_timestamp
     FROM
         base_sales_buy_combined b
         INNER JOIN base_sales_buy_sale_amount_combined s
@@ -937,8 +937,8 @@ base_sales_offer_accepted_final AS (
         decoded_output,
         decoded_output :consideration AS consideration,
         decoded_output :offer AS offer,
-        _log_id,
-        _inserted_timestamp
+        b._log_id,
+        b._inserted_timestamp
     FROM
         base_sales_offer_accepted b
         INNER JOIN base_sales_offer_accepted_sale_and_no_fees s
@@ -957,7 +957,7 @@ base_sales_offer_accepted_final AS (
             tokenid,
             _log_id
             ORDER BY
-                _inserted_timestamp ASC
+                b._inserted_timestamp ASC
         ) = 1
 ),
 base_sales_buy_and_offer AS (
@@ -1040,7 +1040,8 @@ tx_data AS (
         to_address,
         origin_function_signature,
         tx_fee,
-        input_data
+        input_data,
+        modified_timestamp as _inserted_timestamp
     FROM
         {{ ref('core__fact_transactions') }}
     WHERE
@@ -1169,8 +1170,8 @@ SELECT
         '-',
         _log_id
     ) AS nft_log_id,
-    _log_id,
-    _inserted_timestamp
+    s._log_id,
+    s._inserted_timestamp
 FROM
     base_sales_buy_and_offer s
     INNER JOIN tx_data t USING (tx_hash)
@@ -1181,4 +1182,4 @@ FROM
         recipient
     ) qualify(ROW_NUMBER() over(PARTITION BY nft_log_id
 ORDER BY
-    _inserted_timestamp DESC)) = 1
+    s._inserted_timestamp DESC)) = 1
