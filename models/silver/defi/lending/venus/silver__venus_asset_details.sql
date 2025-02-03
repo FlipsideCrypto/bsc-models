@@ -59,7 +59,7 @@ AND l.contract_address NOT IN (
     FROM
         {{ this }}
 )
-AND l._inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND l._inserted_timestamp >= SYSDATE() - INTERAL '7 day'
 {% endif %}
 ),
 traces_pull AS (
@@ -79,6 +79,9 @@ traces_pull AS (
                 tx_hash
             FROM
                 log_pull
+        )
+        and block_number in (
+            select block_number from log_pull
         )
 ),
 underlying_details AS (
