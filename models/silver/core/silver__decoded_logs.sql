@@ -126,10 +126,11 @@ new_records AS (
         CASE
             WHEN block_timestamp IS NULL THEN TRUE
             ELSE FALSE
-        END AS is_pending
+        END AS is_pending,
+        concat(b.tx_hash, b.event_index) as _log_id
     FROM
         FINAL b
-        LEFT JOIN {{ ref('silver__logs') }} USING (
+        LEFT JOIN {{ ref('core__fact_event_logs') }} USING (
             block_number,
             _log_id
         )
@@ -163,11 +164,12 @@ missing_data AS (
         l.data,
         l.event_removed :: STRING AS event_removed,
         l.tx_status,
-        FALSE AS is_pending
+        FALSE AS is_pending,
+        concat(t.tx_hash, t.event_index) as _log_id
     FROM
         {{ this }}
         t
-        INNER JOIN {{ ref('silver__logs') }}
+        INNER JOIN {{ ref('core__fact_event_logs') }}
         l USING (
             block_number,
             _log_id

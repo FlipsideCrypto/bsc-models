@@ -13,7 +13,7 @@ WITH emitted_events AS (
         MAX(_inserted_timestamp) AS max_inserted_timestamp_logs,
         MAX(block_number) AS latest_event_block
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
 
 {% if is_incremental() %}
 WHERE
