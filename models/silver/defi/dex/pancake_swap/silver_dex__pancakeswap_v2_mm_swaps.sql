@@ -50,15 +50,19 @@ WITH swaps_base AS (
         quoteToken AS token_out,
         baseTokenAmount AS token_in_amount,
         quoteTokenAmount AS token_out_amount,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
         l
     WHERE
         contract_address = '0xfeacb05b373f1a08e68235ba7fc92636b92ced01' --router
         AND topics [0] :: STRING = '0xe7d6f812e1a54298ddef0b881cd08a4d452d9de35eb18b5145aa580fdda18b26' --swap
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

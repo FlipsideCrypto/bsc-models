@@ -46,7 +46,6 @@ WHERE
 {% endif %}
 ),
 allbridge_v2 AS (
-
     SELECT
         block_number,
         block_timestamp,
@@ -520,7 +519,11 @@ complete_bridge_activity AS (
         receiver,
         destination_chain_receiver,
         CASE
-            WHEN CONCAT(platform, '-', version) IN (
+            WHEN CONCAT(
+                platform,
+                '-',
+                version
+            ) IN (
                 'stargate-v1',
                 'wormhole-v1',
                 'meson-v1',
@@ -530,7 +533,11 @@ complete_bridge_activity AS (
             ELSE d.chain_id :: STRING
         END AS destination_chain_id,
         CASE
-            WHEN CONCAT(platform, '-', version) IN (
+            WHEN CONCAT(
+                platform,
+                '-',
+                version
+            ) IN (
                 'stargate-v1',
                 'wormhole-v1',
                 'meson-v1',

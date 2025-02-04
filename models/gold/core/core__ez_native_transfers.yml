@@ -15,13 +15,13 @@ models:
       - name: TRACE_INDEX
         description: '{{ doc("bsc_trace_index") }}'
       - name: IDENTIFIER
-        description: '{{ doc("bsc_traces_identifier") }}'
+        description: '{{ doc("evm_column_deprecation_notice_identifier") }}'
       - name: ORIGIN_FROM_ADDRESS
         description: '{{ doc("bsc_origin_from") }}'
       - name: ORIGIN_TO_ADDRESS
         description: '{{ doc("bsc_origin_to") }}'
       - name: ORIGIN_FUNCTION_SIGNATURE
-        description: '{{ doc("bsc_origin_sig") }}'
+        description: '{{ doc("nft_origin_sig") }}'
       - name: FROM_ADDRESS
         description: '{{ doc("bsc_transfer_from_address") }}'
       - name: TO_ADDRESS
@@ -39,4 +39,4 @@ models:
       - name: INSERTED_TIMESTAMP
         description: '{{ doc("inserted_timestamp") }}'   
       - name: MODIFIED_TIMESTAMP
-        description: '{{ doc("modified_timestamp") }}' 
+        description: '{{ doc("modified_timestamp") }}'

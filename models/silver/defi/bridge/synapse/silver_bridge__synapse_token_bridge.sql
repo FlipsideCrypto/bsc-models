@@ -21,20 +21,24 @@ WITH base_evt AS (
         topics [0] :: STRING AS topic_0,
         event_name,
         TRY_TO_NUMBER(
-            decoded_flat :"amount" :: STRING
+            decoded_log :"amount" :: STRING
         ) AS amount,
         TRY_TO_NUMBER(
-            decoded_flat :"chainId" :: STRING
+            decoded_log :"chainId" :: STRING
         ) AS chainId,
-        decoded_flat :"to" :: STRING AS to_address,
-        decoded_flat :"token" :: STRING AS token,
-        decoded_flat,
+        decoded_log :"to" :: STRING AS to_address,
+        decoded_log :"token" :: STRING AS token,
+        decoded_log,
         event_removed,
         tx_status,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__decoded_logs') }}
+        {{ ref('core__ez_decoded_event_logs') }}
     WHERE
         topics [0] :: STRING IN (
             '0xdc5bad4651c5fbe9977a696aadc65996c468cde1448dd468ec0d83bf61c4b57c',
@@ -46,7 +50,7 @@ WITH base_evt AS (
             '0xd123f70ae324d34a9e76b67a27bf77593ba8749f'
         )
         AND origin_to_address IS NOT NULL
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

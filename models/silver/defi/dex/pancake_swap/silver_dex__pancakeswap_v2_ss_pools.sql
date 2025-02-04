@@ -31,10 +31,14 @@ WITH pools AS (
             WHEN contract_address = '0x36bbb126e75351c0dfb651e39b38fe0bc436ffd2' THEN NULL
             WHEN contract_address = '0x25a55f9f2279a54951133d503490342b50e5cd15' THEN CONCAT('0x', SUBSTR(segmented_data [3] :: STRING, 25, 40))
         END AS lp,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref ('silver__logs') }}
+        {{ ref ('core__fact_event_logs') }}
     WHERE
         contract_address IN (
             '0x25a55f9f2279a54951133d503490342b50e5cd15',
@@ -44,7 +48,7 @@ WITH pools AS (
             '0xa9551fb056fc743efe2a0a34e39f9769ad10166520df7843c09a66f82e148b97',
             '0x48dc7a1b156fe3e70ed5ed0afcb307661905edf536f15bb5786e327ea1933532'
         ) -- swap
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

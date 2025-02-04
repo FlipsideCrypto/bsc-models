@@ -32,10 +32,14 @@ WITH liquidation AS(
             origin_to_address,
             contract_address
         ) AS lending_pool_contract,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
     WHERE
         topics [0] :: STRING = '0xe76026d190f8c969db64638eaf9bc7087a3758e7fe58c017135a5051b4d7c4f8'
 
@@ -49,7 +53,7 @@ AND _inserted_timestamp >= (
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 AND contract_address = LOWER('0xd50Cf00b6e600Dd036Ba8eF475677d816d6c4281')
-AND tx_status = 'SUCCESS' --excludes failed txs
+AND tx_succeeded --excludes failed txs
 ),
 atoken_meta AS (
     SELECT
@@ -88,7 +92,7 @@ SELECT
     amd.atoken_address AS debt_radiant_token,
     liquidator_address AS liquidator,
     borrower_address AS borrower,
-'Radiant V2' AS platform,
+    'Radiant V2' AS platform,
     amc.underlying_symbol AS collateral_token_symbol,
     amd.underlying_symbol AS debt_token_symbol,
     'bsc' AS blockchain,

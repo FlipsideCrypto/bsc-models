@@ -6,6 +6,7 @@
 
 SELECT
     block_number,
+    HASH AS block_hash, --new column
     block_timestamp,
     'mainnet' AS network,
     'bsc' AS blockchain,
@@ -14,6 +15,7 @@ SELECT
     total_difficulty,
     extra_data,
     gas_limit,
+    base_fee_per_gas,--new column
     gas_used,
     HASH,
     parent_hash,
@@ -60,7 +62,7 @@ SELECT
         transactions_root,
         'uncles',
         uncles
-    ) AS block_header_json,
+    ) AS block_header_json, --deprecate
     COALESCE (
         blocks_id,
         {{ dbt_utils.generate_surrogate_key(

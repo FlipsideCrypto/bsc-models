@@ -32,14 +32,18 @@ WITH deposits AS(
             origin_to_address,
             contract_address
         ) AS lending_pool_contract,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
     WHERE
         topics [0] :: STRING = '0x2b627736bca15cd5381dcf80b0bf11fd197d01a037c52b927a881a10fb73ba61'
         AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
         AND kinza_market NOT IN (
             '0x2dd73dcc565761b684c56908fa01ac270a03f70f',
             '0xf0daf89f387d9d4ac5e3326eadb20e7bec0ffc7c',

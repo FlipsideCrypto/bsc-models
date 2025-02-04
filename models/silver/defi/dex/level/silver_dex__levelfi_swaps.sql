@@ -66,15 +66,19 @@ WITH swaps_base AS (
                 )
             )
         END AS fee,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
         l
     WHERE
         contract_address = '0xa5abfb56a78d2bd4689b25b8a77fd49bb0675874' --router
         AND topics [0] :: STRING = '0xd6d34547c69c5ee3d2667625c188acf1006abb93e0ee7cf03925c67cf7760413' --swap
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -95,7 +99,10 @@ SELECT
     origin_to_address,
     event_index,
     contract_address,
-    COALESCE(sender_address,origin_from_address) AS sender,
+    COALESCE(
+        sender_address,
+        origin_from_address
+    ) AS sender,
     origin_from_address AS tx_to,
     tokenIn AS token_in,
     tokenOut AS token_out,

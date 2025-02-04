@@ -20,10 +20,14 @@ WITH pool_creation AS (
         utils.udf_hex_to_int(
             segmented_data [1] :: STRING
         ) :: INTEGER AS pool_id,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref ('silver__logs') }}
+        {{ ref ('core__fact_event_logs') }}
     WHERE
         contract_address IN (
             '0xca143ce32fe78f1f7019d7d551a6402fc5350c73',
@@ -31,7 +35,7 @@ WITH pool_creation AS (
             '0x1f830fb91094a0e87c0a80150aa0af3805456090'
         ) --factory
         AND topics [0] :: STRING = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9' --PairCreated
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

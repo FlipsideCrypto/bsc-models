@@ -84,7 +84,8 @@ lp_evt AS (
     WHERE
         topics [0] = '0xa930da1d3f27a25892307dd59cec52dd9b881661a0f20364757f83a0da2f6873' --SwappedToVUsd
         AND contract_address IN (
-            '0xf833afa46fcd100e62365a0fdb0734b7c4537811', --USDT LP
+            '0xf833afa46fcd100e62365a0fdb0734b7c4537811',
+            --USDT LP
             '0x8033d5b454ee4758e4bd1d37a49009c1a81d8b10' --USDC LP
         )
         AND tx_hash IN (

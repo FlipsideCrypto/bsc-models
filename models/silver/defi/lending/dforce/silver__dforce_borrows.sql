@@ -43,27 +43,32 @@ dforce_borrows AS (
     ) :: INTEGER AS totalBorrows,
     contract_address AS token,
     'dForce' AS platform,
-    _inserted_timestamp,
-    _log_id
+    modified_timestamp AS _inserted_timestamp,
+    CONCAT(
+      tx_hash :: STRING,
+      '-',
+      event_index :: STRING
+    ) AS _log_id
   FROM
-    {{ ref('silver__logs') }}
+    {{ ref('core__fact_event_logs') }}
   WHERE
     contract_address IN (
       SELECT
         token_address
       FROM
         asset_details
-      WHERE token_address <> '0xf51422c47c6c3e40cfca4a7b04232aedb7f49948' --excludes qDOT edge case
+      WHERE
+        token_address <> '0xf51422c47c6c3e40cfca4a7b04232aedb7f49948' --excludes qDOT edge case
     )
     AND topics [0] :: STRING = '0x2dd79f4fccfd18c360ce7f9132f3621bf05eee18f995224badb32d17f172df73'
-    AND tx_status = 'SUCCESS'
+    AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp) - INTERVAL '12 hours'
-    FROM
-        {{ this }}
+  SELECT
+    MAX(_inserted_timestamp) - INTERVAL '12 hours'
+  FROM
+    {{ this }}
 )
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
@@ -105,7 +110,7 @@ SELECT
   borrower,
   borrows_contract_address,
   borrows_contract_symbol,
-  token as token_address,
+  token AS token_address,
   token_symbol,
   loan_amount_raw AS amount_unadj,
   loan_amount_raw / pow(

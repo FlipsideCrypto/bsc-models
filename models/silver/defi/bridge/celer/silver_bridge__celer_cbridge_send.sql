@@ -21,28 +21,32 @@ WITH base_evt AS (
         topics [0] :: STRING AS topic_0,
         event_name,
         TRY_TO_NUMBER(
-            decoded_flat :"amount" :: STRING
+            decoded_log :"amount" :: STRING
         ) AS amount,
         TRY_TO_NUMBER(
-            decoded_flat :"dstChainId" :: STRING
+            decoded_log :"dstChainId" :: STRING
         ) AS dstChainId,
         TRY_TO_NUMBER(
-            decoded_flat :"maxSlippage" :: STRING
+            decoded_log :"maxSlippage" :: STRING
         ) AS maxSlippage,
         TRY_TO_NUMBER(
-            decoded_flat :"nonce" :: STRING
+            decoded_log :"nonce" :: STRING
         ) AS nonce,
-        decoded_flat :"receiver" :: STRING AS receiver,
-        decoded_flat :"sender" :: STRING AS sender,
-        decoded_flat :"token" :: STRING AS token,
-        decoded_flat :"transferId" :: STRING AS transferId,
-        decoded_flat,
+        decoded_log :"receiver" :: STRING AS receiver,
+        decoded_log :"sender" :: STRING AS sender,
+        decoded_log :"token" :: STRING AS token,
+        decoded_log :"transferId" :: STRING AS transferId,
+        decoded_log,
         event_removed,
         tx_status,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__decoded_logs') }}
+        {{ ref('core__ez_decoded_event_logs') }}
     WHERE
         topics [0] :: STRING = '0x89d8051e597ab4178a863a5190407b98abfeff406aa8db90c59af76612e58f01'
         AND contract_address IN (
@@ -51,7 +55,7 @@ WITH base_evt AS (
             '0x265b25e22bcd7f10a5bd6e6410f10537cc7567e8',
             '0xdd90e5e87a2081dcf0391920868ebc2ffb81a1af'
         )
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

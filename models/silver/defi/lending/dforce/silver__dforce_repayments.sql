@@ -38,27 +38,32 @@ dforce_repayments AS (
       segmented_data [2] :: STRING
     ) :: INTEGER AS repayed_amount_raw,
     'dForce' AS platform,
-    _inserted_timestamp,
-    _log_id
+    modified_timestamp AS _inserted_timestamp,
+    CONCAT(
+      tx_hash :: STRING,
+      '-',
+      event_index :: STRING
+    ) AS _log_id
   FROM
-    {{ ref('silver__logs') }}
+    {{ ref('core__fact_event_logs') }}
   WHERE
     contract_address IN (
       SELECT
         token_address
       FROM
         asset_details
-      WHERE token_address <> '0xf51422c47c6c3e40cfca4a7b04232aedb7f49948' --excludes qDOT edge case
+      WHERE
+        token_address <> '0xf51422c47c6c3e40cfca4a7b04232aedb7f49948' --excludes qDOT edge case
     )
     AND topics [0] :: STRING = '0x6fadbf7329d21f278e724fa0d4511001a158f2a97ee35c5bc4cf8b64417399ef'
-    AND tx_status = 'SUCCESS'
+    AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp) - INTERVAL '12 hours'
-    FROM
-        {{ this }}
+  SELECT
+    MAX(_inserted_timestamp) - INTERVAL '12 hours'
+  FROM
+    {{ this }}
 )
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
