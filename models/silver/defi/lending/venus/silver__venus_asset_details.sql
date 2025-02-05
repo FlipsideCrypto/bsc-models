@@ -110,6 +110,23 @@ underlying_details AS (
         t.asset_identifier = 1 qualify(ROW_NUMBER() over(PARTITION BY l.contract_address
     ORDER BY
         block_timestamp ASC)) = 1
+    UNION ALL
+    --add wbnb instead of native
+    SELECT
+        l.tx_hash,
+        l.block_number,
+        l.block_timestamp,
+        l.contract_address,
+        l.token_name,
+        l.token_symbol,
+        l.token_decimals,
+        '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c' AS underlying_asset,
+        l._inserted_timestamp,
+        l._log_id
+    FROM
+        log_pull l
+    WHERE
+        contract_address = '0xa07c5b74c9b40447a954e1466938b865b6bbea36'
 )
 SELECT
     l.tx_hash,
