@@ -21,8 +21,7 @@ WITH seaport_fees_wallet AS (
 seaport_tx_table AS (
     SELECT
         block_timestamp,
-        tx_hash,
-        modified_timestamp AS _inserted_timestamp
+        tx_hash
     FROM
         {{ ref('core__fact_event_logs') }}
     WHERE
@@ -31,13 +30,13 @@ seaport_tx_table AS (
         AND topics [0] = '0x9d9af8e38d66c62e2c12f0225249fd9d721c54b83f48d9352c97c6cacdcb6f31'
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
-AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND modified_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 ),
 decoded AS (
@@ -63,7 +62,7 @@ decoded AS (
             WHEN full_decoded_log :data [4] :value [0] [0] IN (1) THEN 'offer_accepted'
             ELSE NULL
         END AS trade_type,
-        modified_timestamp as _inserted_timestamp
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('core__ez_decoded_event_logs') }}
     WHERE
@@ -1040,8 +1039,7 @@ tx_data AS (
         to_address,
         origin_function_signature,
         tx_fee,
-        input_data,
-        modified_timestamp as _inserted_timestamp
+        input_data
     FROM
         {{ ref('core__fact_transactions') }}
     WHERE
@@ -1054,13 +1052,13 @@ tx_data AS (
         )
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
-AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND modified_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 ),
 nft_transfer_operator AS (
@@ -1079,8 +1077,7 @@ nft_transfer_operator AS (
             utils.udf_hex_to_int(
                 segmented_data [1] :: STRING
             )
-        ) AS erc1155_value,
-        modified_timestamp AS _inserted_timestamp
+        ) AS erc1155_value
     FROM
         {{ ref('core__fact_event_logs') }}
     WHERE
@@ -1097,13 +1094,13 @@ nft_transfer_operator AS (
         )
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
-AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND modified_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 )
 SELECT

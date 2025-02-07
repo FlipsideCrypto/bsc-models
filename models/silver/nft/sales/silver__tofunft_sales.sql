@@ -150,8 +150,7 @@ traces_raw AS (
             utils.udf_hex_to_int(
                 segmented_data [detail_start_index + bundle_index] :: STRING
             )
-        ) :: INT AS bundle_array_size,
-        modified_timestamp as _inserted_timestamp
+        ) :: INT AS bundle_array_size
     FROM
         {{ ref('core__fact_traces') }}
     WHERE
@@ -164,13 +163,13 @@ traces_raw AS (
         AND trace_succeeded
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
-AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND modified_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 ),
 traces_raw_rn AS (
@@ -293,8 +292,7 @@ base AS (
 nft_details AS (
     SELECT
         contract_address AS nft_address,
-        token_transfer_type,
-        modified_timestamp as _inserted_timestamp
+        token_transfer_type
     FROM
         {{ ref('silver__nft_transfers') }}
     WHERE
@@ -307,13 +305,13 @@ nft_details AS (
         )
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
-AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND modified_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 
 qualify ROW_NUMBER() over (
@@ -329,8 +327,7 @@ tx_data AS (
         to_address,
         origin_function_signature,
         tx_fee,
-        input_data,
-        modified_timestamp as _inserted_timestamp
+        input_data
     FROM
         {{ ref('core__fact_transactions') }}
     WHERE
@@ -343,13 +340,13 @@ tx_data AS (
         )
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
-AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND modified_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 )
 SELECT
