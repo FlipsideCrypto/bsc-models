@@ -30,10 +30,6 @@ models:
         description: '{{ doc("evm_column_deprecation_notice_hash") }}'
       - name: PARENT_HASH
         description: '{{ doc("evm_parent_hash") }}'
-      - name: MINER
-        description: '{{ doc("evm_miner") }}'
-      - name: NONCE
-        description: '{{ doc("evm_blocks_nonce") }}'
       - name: RECEIPTS_ROOT
         description: '{{ doc("evm_receipts_root") }}'
       - name: SHA3_UNCLES
@@ -42,27 +38,11 @@ models:
         description: '{{ doc("evm_size") }}' 
       - name: UNCLE_BLOCKS
         description: '{{ doc("evm_uncle_blocks") }}' 
-      - name: STATE_ROOT
-        description: '{{ doc("evm_state_root") }}'
-      - name: TRANSACTIONS_ROOT
-        description: '{{ doc("evm_transactions_root") }}'
-      - name: LOGS_BLOOM
-        description: '{{ doc("evm_logs_bloom") }}'
       - name: BLOCK_HEADER_JSON
         description: '{{ doc("evm_column_deprecation_notice_block_header_json") }}'
-      - name: BASE_FEE_PER_GAS
-        description: '{{ doc("evm_base_fee_per_gas") }}' 
-      - name: BLOB_GAS_USED
-        description: The total amount of blob gas consumed by transactions in the block.
-      - name: EXCESS_BLOB_GAS
-        description: A running total of blob gas consumed in excess of the target, prior to the block. This is used to set blob gas pricing.
       - name: FACT_BLOCKS_ID
         description: '{{ doc("evm_pk") }}'   
       - name: INSERTED_TIMESTAMP
         description: '{{ doc("evm_inserted_timestamp") }}'   
       - name: MODIFIED_TIMESTAMP
         description: '{{ doc("evm_modified_timestamp") }}'
-      - name: WITHDRAWALS
-        description: An array of withdrawals that occurred in this block.
-      - name: WITHDRAWALS_ROOT
-        description: '{{ doc("evm_withdrawals_root") }}'
