@@ -58,8 +58,7 @@ tx_table AS (
         tx_hash,
         from_address AS origin_from_address,
         to_address AS origin_to_address,
-        origin_function_signature,
-        modified_timestamp as _inserted_timestamp
+        origin_function_signature
     FROM
         {{ ref('core__fact_transactions') }}
     WHERE
@@ -71,7 +70,7 @@ tx_table AS (
         )
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '72 hours'
     FROM
