@@ -15,14 +15,10 @@ SELECT
     event_index,
     contract_address,
     topics,
-    topics [0] :: STRING AS topic_0,
-    --new column
-    topics [1] :: STRING AS topic_1,
-    --new column
-    topics [2] :: STRING AS topic_2,
-    --new column
-    topics [3] :: STRING AS topic_3,
-    --new column
+    topics [0] :: STRING AS topic_0, --new column
+    topics [1] :: STRING AS topic_1, --new column
+    topics [2] :: STRING AS topic_2, --new column
+    topics [3] :: STRING AS topic_3, --new column
     DATA,
     event_removed,
     origin_from_address,
@@ -44,11 +40,11 @@ SELECT
     ) AS ez_decoded_event_logs_id,
 
 {% if is_incremental() %}
-    SYSDATE() AS inserted_timestamp,
-    SYSDATE() AS modified_timestamp,
+SYSDATE() AS inserted_timestamp,
+SYSDATE() AS modified_timestamp,
 {% else %}
-    GREATEST(block_timestamp, dateadd('day', -10, SYSDATE())) AS inserted_timestamp,
-    GREATEST(block_timestamp, dateadd('day', -10, SYSDATE())) AS modified_timestamp,
+    GREATEST(block_timestamp, DATEADD('day', -10, SYSDATE())) AS inserted_timestamp,
+    GREATEST(block_timestamp, DATEADD('day', -10, SYSDATE())) AS modified_timestamp,
 {% endif %}
 
 tx_status --deprecate
@@ -59,14 +55,10 @@ FROM
 WHERE
     1 = 1
 
-    {% if is_incremental() %}
-    AND l.modified_timestamp > (
-        SELECT
-            COALESCE(
-                MAX(modified_timestamp),
-                '2000-01-01'::TIMESTAMP
-            )
-        FROM
-            {{ this }}
-    )
+{% if is_incremental() %}
+AND l.modified_timestamp > (
+    SELECT
+        COALESCE(MAX(modified_timestamp), '2000-01-01' :: TIMESTAMP)
+    FROM
+        {{ this }})
     {% endif %}
