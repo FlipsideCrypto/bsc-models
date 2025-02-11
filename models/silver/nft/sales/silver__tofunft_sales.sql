@@ -15,18 +15,22 @@ WITH logs_raw AS (
         event_index,
         event_name,
         contract_address,
-        decoded_flat,
-        decoded_flat :inventory :kind :: INT AS kind,
-        decoded_flat :inventory :status :: INT AS status,
-        decoded_flat :inventory :buyer :: STRING AS buyer_address,
-        decoded_flat :inventory :seller :: STRING AS seller_address,
-        decoded_flat :inventory :currency :: STRING AS currency_address,
-        decoded_flat :inventory :netPrice :: INT AS net_price_raw,
-        decoded_flat :inventory :price :: INT AS price_raw,
-        _log_id,
-        _inserted_timestamp
+        decoded_log,
+        decoded_log :inventory :kind :: INT AS kind,
+        decoded_log :inventory :status :: INT AS status,
+        decoded_log :inventory :buyer :: STRING AS buyer_address,
+        decoded_log :inventory :seller :: STRING AS seller_address,
+        decoded_log :inventory :currency :: STRING AS currency_address,
+        decoded_log :inventory :netPrice :: INT AS net_price_raw,
+        decoded_log :inventory :price :: INT AS price_raw,
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__decoded_logs') }}
+        {{ ref('core__ez_decoded_event_logs') }}
     WHERE
         contract_address = '0x449d05c544601631785a7c062dcdff530330317e'
         AND block_timestamp :: DATE >= '2021-10-01'
@@ -40,6 +44,7 @@ AND _inserted_timestamp >= (
         {{ this }}
 )
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+
 {% endif %}
 ),
 logs_raw_rn AS (
@@ -156,7 +161,7 @@ traces_raw AS (
             input,
             10
         ) = '0xba847759'
-        AND trace_status = 'SUCCESS'
+        AND trace_succeeded
 
 {% if is_incremental() %}
 AND modified_timestamp >= (
@@ -272,8 +277,8 @@ base AS (
             price_raw_logs * royalty_rate / bundle_array_size
         ) :: INT AS creator_fee_raw,
         platform_fee_raw + creator_fee_raw AS total_fees_raw,
-        _log_id,
-        _inserted_timestamp
+        l._log_id,
+        l._inserted_timestamp
     FROM
         agg_details A
         INNER JOIN traces_raw_rn t USING (
@@ -301,13 +306,13 @@ nft_details AS (
         )
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
-AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND modified_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 
 qualify ROW_NUMBER() over (
@@ -325,7 +330,7 @@ tx_data AS (
         tx_fee,
         input_data
     FROM
-        {{ ref('silver__transactions') }}
+        {{ ref('core__fact_transactions') }}
     WHERE
         block_timestamp :: DATE >= '2021-10-01'
         AND tx_hash IN (
@@ -336,13 +341,13 @@ tx_data AS (
         )
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
-AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND modified_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 )
 SELECT
@@ -387,8 +392,8 @@ SELECT
     platform_fee_raw,
     creator_fee_raw,
     total_fees_raw,
-    _log_id,
-    _inserted_timestamp,
+    b._log_id,
+    b._inserted_timestamp,
     CONCAT(
         nft_address,
         '-',
@@ -396,7 +401,7 @@ SELECT
         '-',
         platform_exchange_version,
         '-',
-        _log_id
+        b._log_id
     ) AS nft_log_id,
     from_address AS origin_from_address,
     to_address AS origin_to_address,
@@ -404,6 +409,6 @@ SELECT
     tx_fee,
     input_data
 FROM
-    base
+    base b
     INNER JOIN nft_details USING (nft_address)
     INNER JOIN tx_data USING (tx_hash)

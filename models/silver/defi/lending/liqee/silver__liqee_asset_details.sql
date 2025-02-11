@@ -21,7 +21,7 @@ WITH log_pull AS (
             ELSE NULL
         END AS underlying_asset
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
         l
     WHERE
         topics [0] :: STRING = '0x70aea8d848e8a90fb7661b227dc522eb6395c3dac71b63cb59edd5c9899b2364'
@@ -41,7 +41,7 @@ SELECT
     l.tx_hash,
     l.block_number,
     l.block_timestamp,
-    l.contract_address as itoken_address,
+    l.contract_address AS itoken_address,
     CASE
         WHEN l.contract_address = '0x4e673bed356912077c718cbab286bc135faa5fb6' THEN 'Liqee StaFi'
         ELSE c1.token_name

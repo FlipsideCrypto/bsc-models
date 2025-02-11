@@ -17,14 +17,18 @@ WITH pool_events AS (
         CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 25, 40)) AS newBorn,
         CONCAT('0x', SUBSTR(segmented_data [1] :: STRING, 25, 40)) AS baseToken,
         CONCAT('0x', SUBSTR(segmented_data [2] :: STRING, 25, 40)) AS quoteToken,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref ('silver__logs') }}
+        {{ ref ('core__fact_event_logs') }}
     WHERE
         contract_address = '0xca459456a45e300aa7ef447dbb60f87cccb42828' --DODOZoo
         AND topics [0] :: STRING = '0x5c428a2e12ecaa744a080b25b4cda8b86359c82d726575d7d747e07708071f93' --DODOBirth
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

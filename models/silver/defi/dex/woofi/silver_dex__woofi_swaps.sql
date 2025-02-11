@@ -52,10 +52,14 @@ WITH router_swaps_base AS (
                 40
             )
         ) AS rebateTo,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
         l
     WHERE
         contract_address IN (
@@ -65,7 +69,7 @@ WITH router_swaps_base AS (
             '0x4c4af8dbc524681930a27b2f1af5bcc8062e6fb7' --v2
         )
         AND topics [0] :: STRING = '0x27c98e911efdd224f4002f6cd831c3ad0d2759ee176f9ee8466d95826af22a1c' --WooRouterSwap
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -117,15 +121,20 @@ swaps_base AS (
                 40
             )
         ) AS rebateTo,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
         l
     WHERE
         contract_address IN (
             '0xbf365ce9cfcb2d5855521985e351ba3bcf77fd3f',
-            '0x2217c57c91e3c6c55a90b4ca280f532d65590559', --v1
+            '0x2217c57c91e3c6c55a90b4ca280f532d65590559',
+            --v1
             '0x59de3b49314bf5067719364a2cb43e8525ab93fa',
             '0xec054126922a9a1918435c9072c32f1b60cb2b90',
             '0xed9e3f98bbed560e66b89aac922e29d4596a9642' --v2
@@ -140,7 +149,7 @@ swaps_base AS (
             FROM
                 router_swaps_base
         )
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

@@ -12,21 +12,25 @@ SELECT
     event_index,
     tx_hash,
     event_name,
-    decoded_flat,
-    decoded_flat :collection :: STRING AS nft_address,
-    decoded_flat :creator :: STRING AS nft_creator_address,
-    decoded_flat :creatorFee / pow(
+    decoded_log,
+    decoded_log :collection :: STRING AS nft_address,
+    decoded_log :creator :: STRING AS nft_creator_address,
+    decoded_log :creatorFee / pow(
         10,
         4
     ) AS creator_fee,
-    decoded_flat :tradingFee / pow(
+    decoded_log :tradingFee / pow(
         10,
         4
     ) AS trading_fee,
-    _log_id,
-    _inserted_timestamp
+    CONCAT(
+        tx_hash :: STRING,
+        '-',
+        event_index :: STRING
+    ) AS _log_id,
+    modified_timestamp AS _inserted_timestamp
 FROM
-    {{ ref('silver__decoded_logs') }}
+    {{ ref('core__ez_decoded_event_logs') }}
 WHERE
     contract_address = '0x17539cca21c7933df5c980172d22659b8c345c5a'
     AND block_timestamp >= '2021-09-30'
@@ -43,4 +47,5 @@ AND _inserted_timestamp >= (
         {{ this }}
 )
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+
 {% endif %}

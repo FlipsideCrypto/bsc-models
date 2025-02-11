@@ -32,10 +32,14 @@ WITH deposits AS(
             origin_to_address,
             contract_address
         ) AS lending_pool_contract,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
     WHERE
         topics [0] :: STRING = '0xde6857219544bb5b7746f48ed30be6386fefc61b2f864cacf559893bf50fd951'
 
@@ -49,7 +53,7 @@ AND _inserted_timestamp >= (
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 AND contract_address = LOWER('0xd50Cf00b6e600Dd036Ba8eF475677d816d6c4281')
-AND tx_status = 'SUCCESS'
+AND tx_succeeded
 ),
 atoken_meta AS (
     SELECT
@@ -86,7 +90,7 @@ SELECT
     ) AS amount,
     depositor_address,
     lending_pool_contract,
-'Radiant V2' AS platform,
+    'Radiant V2' AS platform,
     atoken_meta.underlying_symbol AS symbol,
     'bsc' AS blockchain,
     _log_id,

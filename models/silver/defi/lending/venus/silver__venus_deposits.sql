@@ -40,10 +40,14 @@ venus_deposits AS (
     ) :: INTEGER AS mintAmount_raw,
     CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 25, 40)) AS supplier,
     'Venus' AS platform,
-    _inserted_timestamp,
-    _log_id
+    modified_timestamp AS _inserted_timestamp,
+    CONCAT(
+      tx_hash :: STRING,
+      '-',
+      event_index :: STRING
+    ) AS _log_id
   FROM
-    {{ ref('silver__logs') }}
+    {{ ref('core__fact_event_logs') }}
   WHERE
     contract_address IN (
       SELECT
@@ -52,14 +56,14 @@ venus_deposits AS (
         asset_details
     )
     AND topics [0] :: STRING = '0xb4c03061fb5b7fed76389d5af8f2e0ddb09f8c70d1333abbb62582835e10accb'
-    AND tx_status = 'SUCCESS'
+    AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
-    SELECT
-        MAX(_inserted_timestamp) - INTERVAL '12 hours'
-    FROM
-        {{ this }}
+  SELECT
+    MAX(_inserted_timestamp) - INTERVAL '12 hours'
+  FROM
+    {{ this }}
 )
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
@@ -100,7 +104,7 @@ SELECT
   origin_to_address,
   origin_function_signature,
   contract_address,
-  itoken_address as itoken,
+  itoken_address AS itoken,
   itoken_symbol,
   minttokens_raw / pow(
     10,

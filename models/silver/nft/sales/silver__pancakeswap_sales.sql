@@ -15,22 +15,26 @@ WITH trade_details AS (
         event_index,
         event_name,
         contract_address,
-        decoded_flat,
-        decoded_flat :askPrice :: INT AS total_price_raw,
-        decoded_flat :netPrice :: INT AS net_price_raw,
-        decoded_flat :buyer :: STRING AS buyer_address,
-        decoded_flat :seller :: STRING AS seller_address,
-        decoded_flat :collection :: STRING AS nft_address,
-        decoded_flat :tokenId :: STRING AS tokenId,
+        decoded_log,
+        decoded_log :askPrice :: INT AS total_price_raw,
+        decoded_log :netPrice :: INT AS net_price_raw,
+        decoded_log :buyer :: STRING AS buyer_address,
+        decoded_log :seller :: STRING AS seller_address,
+        decoded_log :collection :: STRING AS nft_address,
+        decoded_log :tokenId :: STRING AS tokenId,
         IFF(
-            decoded_flat :withBNB = TRUE,
+            decoded_log :withBNB = TRUE,
             'BNB',
             '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
         ) AS currency_address,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__decoded_logs') }}
+        {{ ref('core__ez_decoded_event_logs') }}
     WHERE
         contract_address = '0x17539cca21c7933df5c980172d22659b8c345c5a'
         AND block_timestamp >= '2021-09-30'
@@ -44,6 +48,7 @@ AND _inserted_timestamp >= (
         {{ this }}
 )
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+
 {% endif %}
 ),
 collection_details_fill AS (
@@ -74,7 +79,7 @@ base AS (
         t.contract_address AS platform_address,
         'pancakeswap' AS platform_name,
         'pancakeswap v1' AS platform_exchange_version,
-        t.decoded_flat,
+        t.decoded_log,
         buyer_address,
         seller_address,
         t.nft_address,
@@ -120,7 +125,7 @@ tx_data AS (
         tx_fee,
         input_data
     FROM
-        {{ ref('silver__transactions') }}
+        {{ ref('core__fact_transactions') }}
     WHERE
         block_timestamp :: DATE >= '2021-09-30'
         AND tx_hash IN (
@@ -131,13 +136,13 @@ tx_data AS (
         )
 
 {% if is_incremental() %}
-AND _inserted_timestamp >= (
+AND modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
         {{ this }}
 )
-AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
+AND modified_timestamp >= SYSDATE() - INTERVAL '7 day'
 {% endif %}
 )
 SELECT
@@ -164,8 +169,8 @@ SELECT
     platform_fee_raw,
     total_fees_raw,
     collection_update_timestamp,
-    _log_id,
-    _inserted_timestamp,
+    b._log_id,
+    b._inserted_timestamp,
     from_address AS origin_from_address,
     to_address AS origin_to_address,
     origin_function_signature,
@@ -178,8 +183,8 @@ SELECT
         '-',
         platform_exchange_version,
         '-',
-        _log_id
+        b._log_id
     ) AS nft_log_id
 FROM
-    base
+    base b
     INNER JOIN tx_data USING (tx_hash)

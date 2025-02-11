@@ -32,14 +32,18 @@ WITH liquidation AS(
             origin_to_address,
             contract_address
         ) AS lending_pool_contract,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
     WHERE
         topics [0] :: STRING = '0xe413a321e8681d831f4dbccbca790d2952b56f977908e45be37335533e005286'
-    AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
-    AND tx_status = 'SUCCESS' --excludes failed txs
+        AND contract_address = LOWER('0xcB0620b181140e57D1C0D8b724cde623cA963c8C')
+        AND tx_succeeded --excludes failed txs
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -88,7 +92,7 @@ SELECT
     amd.atoken_address AS debt_kinza_token,
     liquidator_address AS liquidator,
     borrower_address AS borrower,
-'Kinza' AS platform,
+    'Kinza' AS platform,
     amc.underlying_symbol AS collateral_token_symbol,
     amd.underlying_symbol AS debt_token_symbol,
     'bsc' AS blockchain,

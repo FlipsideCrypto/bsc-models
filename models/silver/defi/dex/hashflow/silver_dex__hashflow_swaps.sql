@@ -37,16 +37,20 @@ router_swaps_base AS (
                 segmented_data [6] :: STRING
             )
         ) AS amountOut,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
         l
         INNER JOIN pools p
         ON l.contract_address = p.pool_address
     WHERE
         l.topics [0] :: STRING = '0xb709ddcc6550418e9b89df1f4938071eeaa3f6376309904c77e15d46b16066f5' --swap
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -82,16 +86,20 @@ swaps_base AS (
                 segmented_data [5] :: STRING
             )
         ) AS amountOut,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
         l
         INNER JOIN pools p
         ON l.contract_address = p.pool_address
     WHERE
         l.topics [0] :: STRING = '0x8cf3dec1929508e5677d7db003124e74802bfba7250a572205a9986d86ca9f1e' --swap
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

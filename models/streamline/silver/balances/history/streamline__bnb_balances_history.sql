@@ -23,8 +23,8 @@ traces AS (
         {{ ref('core__fact_traces') }}
     WHERE
         VALUE > 0
-        AND trace_status = 'SUCCESS'
-        AND tx_status = 'SUCCESS'
+        AND trace_succeeded
+        AND tx_succeeded
         AND block_number < (
             SELECT
                 block_number

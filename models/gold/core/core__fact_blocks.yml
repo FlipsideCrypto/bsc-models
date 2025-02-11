@@ -1,48 +1,48 @@
 version: 2
 models:
   - name: core__fact_blocks
-    description: '{{ doc("bsc_blocks_table_doc") }}'   
+    description: '{{ doc("evm_blocks_table_doc") }}'   
 
     columns:
       - name: BLOCK_NUMBER
-        description: '{{ doc("bsc_block_number") }}'   
+        description: '{{ doc("evm_block_number") }}'   
       - name: BLOCK_TIMESTAMP
-        description: '{{ doc("bsc_block_timestamp") }}'
+        description: '{{ doc("evm_block_timestamp") }}'
       - name: NETWORK
-        description: '{{ doc("bsc_network") }}'
+        description: '{{ doc("evm_network") }}'
       - name: BLOCKCHAIN
-        description: '{{ doc("bsc_blockchain") }}'
+        description: '{{ doc("evm_column_deprecation_notice_blockchain") }}'
       - name: TX_COUNT
-        description: '{{ doc("bsc_tx_count") }}'
-      - name: BASE_FEE_PER_GAS
-        description: '{{ doc("bsc_base_fee_per_gas") }}'
+        description: '{{ doc("evm_tx_count") }}'
       - name: DIFFICULTY
-        description: '{{ doc("bsc_difficulty") }}'
+        description: '{{ doc("evm_difficulty") }}'
       - name: TOTAL_DIFFICULTY
-        description: '{{ doc("bsc_total_difficulty") }}'
+        description: '{{ doc("evm_total_difficulty") }}'
       - name: EXTRA_DATA
-        description: '{{ doc("bsc_extra_data") }}'
+        description: '{{ doc("evm_extra_data") }}'
       - name: GAS_LIMIT
-        description: '{{ doc("bsc_gas_limit") }}'
+        description: '{{ doc("evm_gas_limit") }}'
       - name: GAS_USED
-        description: '{{ doc("bsc_gas_used") }}'
+        description: '{{ doc("evm_gas_used") }}'
+      - name: BLOCK_HASH
+        description: '{{ doc("evm_blocks_hash") }}'
       - name: HASH
-        description: '{{ doc("bsc_blocks_hash") }}'
+        description: '{{ doc("evm_column_deprecation_notice_hash") }}'
       - name: PARENT_HASH
-        description: '{{ doc("bsc_parent_hash") }}'
+        description: '{{ doc("evm_parent_hash") }}'
       - name: RECEIPTS_ROOT
-        description: '{{ doc("bsc_receipts_root") }}'
+        description: '{{ doc("evm_receipts_root") }}'
       - name: SHA3_UNCLES
-        description: '{{ doc("bsc_sha3_uncles") }}'
+        description: '{{ doc("evm_sha3_uncles") }}'
       - name: SIZE
-        description: '{{ doc("bsc_size") }}' 
+        description: '{{ doc("evm_size") }}' 
       - name: UNCLE_BLOCKS
-        description: '{{ doc("bsc_uncle_blocks") }}' 
+        description: '{{ doc("evm_uncle_blocks") }}' 
       - name: BLOCK_HEADER_JSON
-        description: '{{ doc("bsc_block_header_json") }}'
+        description: '{{ doc("evm_column_deprecation_notice_block_header_json") }}'
       - name: FACT_BLOCKS_ID
-        description: '{{ doc("pk") }}'   
+        description: '{{ doc("evm_pk") }}'   
       - name: INSERTED_TIMESTAMP
-        description: '{{ doc("inserted_timestamp") }}'   
+        description: '{{ doc("evm_inserted_timestamp") }}'   
       - name: MODIFIED_TIMESTAMP
-        description: '{{ doc("modified_timestamp") }}'
+        description: '{{ doc("evm_modified_timestamp") }}'

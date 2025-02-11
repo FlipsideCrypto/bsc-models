@@ -9,7 +9,10 @@
 WITH contracts AS (
 
     SELECT
-        *
+        contract_address,
+        token_name,
+        token_symbol,
+        token_decimals
     FROM
         {{ ref('silver__contracts') }}
 ),
@@ -22,10 +25,14 @@ log_pull AS (
         C.token_name,
         C.token_symbol,
         C.token_decimals,
-        l._inserted_timestamp,
-        l._log_id
+        l.modified_timestamp as _inserted_timestamp,
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
         l
         LEFT JOIN contracts C
         ON C.contract_address = l.contract_address
@@ -45,7 +52,7 @@ log_pull AS (
         )
 
 {% if is_incremental() %}
-AND l._inserted_timestamp >= (
+AND _inserted_timestamp >= (
     SELECT
         MAX(
             _inserted_timestamp
@@ -59,7 +66,7 @@ AND l.contract_address NOT IN (
     FROM
         {{ this }}
 )
-AND l._inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
+AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 days'
 {% endif %}
 ),
 traces_pull AS (

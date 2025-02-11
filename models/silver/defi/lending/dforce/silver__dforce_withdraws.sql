@@ -40,20 +40,25 @@ dforce_redemptions AS (
         ) :: INTEGER AS redeemed_token_raw,
         CONCAT('0x', SUBSTR(segmented_data [0] :: STRING, 25, 40)) AS redeemer,
         'dForce' AS platform,
-        _inserted_timestamp,
-        _log_id
+        modified_timestamp AS _inserted_timestamp,
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
     WHERE
         contract_address IN (
             SELECT
                 token_address
             FROM
                 asset_details
-            WHERE token_address <> '0xf51422c47c6c3e40cfca4a7b04232aedb7f49948' --excludes qDOT edge case
+            WHERE
+                token_address <> '0xf51422c47c6c3e40cfca4a7b04232aedb7f49948' --excludes qDOT edge case
         )
         AND topics [0] :: STRING = '0x3f693fff038bb8a046aa76d9516190ac7444f7d69cf952c4cbdc086fdef2d6fc'
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (

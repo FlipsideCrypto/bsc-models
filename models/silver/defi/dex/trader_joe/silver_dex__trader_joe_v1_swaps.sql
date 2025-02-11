@@ -50,16 +50,20 @@ swaps_base AS (
         ) AS amount1Out,
         token0,
         token1,
-        l._log_id,
-        l._inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
         l
         INNER JOIN pools p
         ON p.pool_address = l.contract_address
     WHERE
         l.topics [0] :: STRING = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822' --Swap
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
@@ -90,8 +94,8 @@ SELECT
     token1,
     CASE
         WHEN amount0In <> 0
-            AND amount1In <> 0
-            AND amount0Out <> 0 THEN amount1In
+        AND amount1In <> 0
+        AND amount0Out <> 0 THEN amount1In
         WHEN amount0In <> 0 THEN amount0In
         WHEN amount1In <> 0 THEN amount1In
     END AS amount_in_unadj,
@@ -101,8 +105,8 @@ SELECT
     END AS amount_out_unadj,
     CASE
         WHEN amount0In <> 0
-            AND amount1In <> 0
-            AND amount0Out <> 0 THEN token1
+        AND amount1In <> 0
+        AND amount0Out <> 0 THEN token1
         WHEN amount0In <> 0 THEN token0
         WHEN amount1In <> 0 THEN token1
     END AS token_in,
@@ -116,4 +120,5 @@ SELECT
     _inserted_timestamp
 FROM
     swaps_base
-WHERE token_in <> token_out
+WHERE
+    token_in <> token_out

@@ -26,10 +26,11 @@ WITH base_evt AS (
         origin_from_address AS recipient,
         TRY_TO_NUMBER(utils.udf_hex_to_int(segmented_data [4] :: STRING)) AS nonce,
         TRY_TO_NUMBER(utils.udf_hex_to_int(segmented_data [5] :: STRING)) AS messenger,
-        CASE
-            WHEN tx_status = 'SUCCESS' THEN TRUE
-            ELSE FALSE
-        END AS tx_succeeded,
+        IFF(
+            tx_succeeded,
+            'SUCCESS',
+            'FAIL'
+        ) AS tx_status,
         CONCAT(
             tx_hash,
             '-',
@@ -69,10 +70,11 @@ lp_evt AS (
         TRY_TO_NUMBER(utils.udf_hex_to_int(segmented_data [2] :: STRING)) AS amount,
         TRY_TO_NUMBER(utils.udf_hex_to_int(segmented_data [3] :: STRING)) AS vUsdAmount,
         TRY_TO_NUMBER(utils.udf_hex_to_int(segmented_data [4] :: STRING)) AS fee,
-        CASE
-            WHEN tx_status = 'SUCCESS' THEN TRUE
-            ELSE FALSE
-        END AS tx_succeeded,
+        IFF(
+            tx_succeeded,
+            'SUCCESS',
+            'FAIL'
+        ) AS tx_status,
         CONCAT(
             tx_hash,
             '-',
@@ -84,7 +86,8 @@ lp_evt AS (
     WHERE
         topics [0] = '0xa930da1d3f27a25892307dd59cec52dd9b881661a0f20364757f83a0da2f6873' --SwappedToVUsd
         AND contract_address IN (
-            '0xf833afa46fcd100e62365a0fdb0734b7c4537811', --USDT LP
+            '0xf833afa46fcd100e62365a0fdb0734b7c4537811',
+            --USDT LP
             '0x8033d5b454ee4758e4bd1d37a49009c1a81d8b10' --USDC LP
         )
         AND tx_hash IN (

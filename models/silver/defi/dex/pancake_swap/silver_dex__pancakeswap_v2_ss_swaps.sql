@@ -57,15 +57,19 @@ swaps_base AS (
             WHEN bought_id = 0 THEN tokenB
             ELSE tokenA
         END AS tokenIn,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
-        {{ ref('silver__logs') }}
+        {{ ref('core__fact_event_logs') }}
         INNER JOIN pools p
         ON p.pool_address = contract_address
     WHERE
         topics [0] :: STRING = '0xb2e76ae99761dc136e598d4a629bb347eccb9532a5f8bbd72e18467c3c34cc98' --TokenExchange
-        AND tx_status = 'SUCCESS'
+        AND tx_succeeded
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
