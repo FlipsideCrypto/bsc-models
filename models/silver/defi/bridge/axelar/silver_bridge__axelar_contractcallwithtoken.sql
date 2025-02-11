@@ -34,7 +34,11 @@ WITH base_evt AS (
         decoded_log :"symbol" :: STRING AS symbol,
         decoded_log,
         event_removed,
-        tx_status,
+        IFF(
+            tx_succeeded,
+            'SUCCESS',
+            'FAIL'
+        ) AS tx_status,
         CONCAT(
             tx_hash :: STRING,
             '-',
@@ -88,7 +92,11 @@ native_gas_paid AS (
         decoded_log :"symbol" :: STRING AS symbol,
         decoded_log,
         event_removed,
-        tx_status,
+        IFF(
+            tx_succeeded,
+            'SUCCESS',
+            'FAIL'
+        ) AS tx_status,
         CONCAT(
             tx_hash :: STRING,
             '-',
@@ -119,8 +127,12 @@ transfers AS (
         tx_hash,
         event_index,
         contract_address AS token_address,
-        _log_id,
-        _inserted_timestamp
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
+        modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('core__ez_token_transfers') }}
     WHERE

@@ -62,7 +62,11 @@ WITH base_evt AS (
         ) AS referralCode,
         decoded_log,
         event_removed,
-        tx_status,
+        IFF(
+            tx_succeeded,
+            'SUCCESS',
+            'FAIL'
+        ) AS tx_status,
         CONCAT(
             tx_hash :: STRING,
             '-',
