@@ -83,7 +83,7 @@ AND _inserted_timestamp >= (
         {{ this }}
 )
 AND _inserted_timestamp >= SYSDATE() - INTERVAL '7 day'
-AND block_timestamp >= SYSDATE() - INTERVAL '7 day'
+
 {% endif %}
 ),
 offer_length_count_buy AS (
