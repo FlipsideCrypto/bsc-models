@@ -149,7 +149,7 @@ SELECT
             )
         )
     END AS destination_chain_token,
-    s.tx_succeeded,
+    s.tx_status,
     s._log_id,
     s._inserted_timestamp
 FROM
