@@ -1,6 +1,7 @@
 {# Set variables #}
-{%- set model_name = 'TRACES' -%}
-{%- set model_type = 'HISTORY' -%}
+{%- set model_name = 'BLOCKS_TRANSACTIONS' -%}
+{%- set model_type = 'REALTIME' -%}
+{%- set min_block = var('GLOBAL_START_UP_BLOCK', none) -%}
 
 {%- set default_vars = set_default_variables_streamline(model_name, model_type) -%}
 
@@ -32,7 +33,8 @@
     new_build=new_build,
     streamline_params=streamline_params,
     method_params=method_params,
-    method=method
+    method=method,
+    min_block=min_block
 ) }}
 
 {# Set up dbt configuration #}
@@ -43,7 +45,7 @@
         target = "{{this.schema}}.{{this.identifier}}",
         params = streamline_params
     ),
-    tags = ['streamline_core_history']
+    tags = ['streamline_core_realtime']
 ) }}
 
 {# Main query starts here #}
@@ -60,26 +62,37 @@ to_do AS (
     SELECT block_number
     FROM {{ ref("streamline__blocks") }}
     WHERE 
-        block_number IS NOT NULL
+    block_number IS NOT NULL
     {% if not new_build %}
-        AND block_number <= (SELECT block_number FROM last_3_days)
+        AND block_number >= (SELECT block_number FROM last_3_days)
+    {% endif %}
+
+    {% if min_block is not none %}
+        AND block_number >= {{ min_block }}
     {% endif %}
 
     EXCEPT
 
-    {# Exclude blocks that have already been processed #}
     SELECT block_number
-    FROM {{ ref('streamline__' ~ model_name.lower() ~ '_complete') }}
+    FROM {{ ref("streamline__blocks_complete") }} b
+    INNER JOIN {{ ref("streamline__transactions_complete") }} t USING(block_number)
     WHERE 1=1
     {% if not new_build %}
-        AND block_number <= (SELECT block_number FROM last_3_days)
+        AND block_number >= (SELECT block_number FROM last_3_days)
     {% endif %}
-)
-
-{# Prepare the final list of blocks to process #}
-,ready_blocks AS (
+),
+ready_blocks AS (
     SELECT block_number
     FROM to_do
+
+    {% if not new_build %}
+        UNION
+        SELECT block_number
+        FROM {{ ref("_unconfirmed_blocks") }}
+        UNION
+        SELECT block_number
+        FROM {{ ref("_missing_txs") }}
+    {% endif %}
 
     {% if testing_limit is not none %}
         LIMIT {{ testing_limit }} 

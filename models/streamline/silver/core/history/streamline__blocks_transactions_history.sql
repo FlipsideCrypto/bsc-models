@@ -1,10 +1,11 @@
 {# Set variables #}
-{%- set model_name = 'TRACES' -%}
+{%- set model_name = 'BLOCKS_TRANSACTIONS' -%}
 {%- set model_type = 'HISTORY' -%}
 
 {%- set default_vars = set_default_variables_streamline(model_name, model_type) -%}
 
 {# Set up parameters for the streamline process. These will come from the vars set in dbt_project.yml #}
+
 {%- set streamline_params = set_streamline_parameters(
     model_name=model_name,
     model_type=model_type
@@ -60,24 +61,22 @@ to_do AS (
     SELECT block_number
     FROM {{ ref("streamline__blocks") }}
     WHERE 
-        block_number IS NOT NULL
+    block_number IS NOT NULL
     {% if not new_build %}
         AND block_number <= (SELECT block_number FROM last_3_days)
     {% endif %}
 
     EXCEPT
 
-    {# Exclude blocks that have already been processed #}
     SELECT block_number
-    FROM {{ ref('streamline__' ~ model_name.lower() ~ '_complete') }}
+    FROM {{ ref("streamline__blocks_complete") }} b
+    INNER JOIN {{ ref("streamline__transactions_complete") }} t USING(block_number)
     WHERE 1=1
     {% if not new_build %}
         AND block_number <= (SELECT block_number FROM last_3_days)
     {% endif %}
-)
-
-{# Prepare the final list of blocks to process #}
-,ready_blocks AS (
+),
+ready_blocks AS (
     SELECT block_number
     FROM to_do
 
