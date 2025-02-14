@@ -45,6 +45,7 @@ FROM
         )
     {% else %}
         {{ ref('bronze__' ~ source_name.lower() ~ '_fr') }}
+        WHERE block_number > 46578997
     {% endif %}
 
 QUALIFY (ROW_NUMBER() OVER (PARTITION BY block_number ORDER BY _inserted_timestamp DESC)) = 1

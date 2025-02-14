@@ -13,7 +13,7 @@ WITH missing_txs AS (
     FROM
         {{ ref("silver__receipts") }}
         r
-        JOIN {{ ref("streamline__complete_receipts") }}
+        JOIN {{ ref("streamline__receipts_complete") }}
         cr
         ON r.block_number = cr.block_number
         LEFT JOIN {{ ref("silver__logs") }}
