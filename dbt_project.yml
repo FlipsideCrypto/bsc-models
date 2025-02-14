@@ -109,6 +109,7 @@ vars:
   ## REQUIRED
   GLOBAL_PROD_DB_NAME: 'bsc' 
   GLOBAL_NODE_SECRET_PATH: 'Vault/prod/bsc/quicknode/mainnet'
+  GLOBAL_NODE_URL: '{service}/{Authentication}'
   GLOBAL_BLOCKS_PER_HOUR: 1200 
   GLOBAL_USES_STREAMLINE_V1: True
 
