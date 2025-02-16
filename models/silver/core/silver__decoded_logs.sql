@@ -241,4 +241,4 @@ FROM
 
 qualify(ROW_NUMBER() over (PARTITION BY block_number, event_index
 ORDER BY
-    _inserted_timestamp DESC, _partition_by_created_date DESC)) = 1
+    _inserted_timestamp DESC)) = 1
