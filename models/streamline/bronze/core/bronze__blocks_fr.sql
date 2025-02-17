@@ -19,7 +19,7 @@ SELECT
     _partition_by_block_id AS partition_key,
     block_number,
     VALUE,
-    DATA,
+    DATA :result AS DATA, --add to fsc-evm with if logic and new var, specific to BSC only
     metadata,
     file_name,
     _inserted_timestamp
