@@ -177,6 +177,7 @@ missing_data AS (
         AND l.block_timestamp IS NOT NULL
 )
 {% endif %}
+, final_data AS (
 SELECT
     tx_hash,
     block_number,
@@ -237,3 +238,8 @@ SELECT
 FROM
     missing_data
 {% endif %}
+)
+select * from final_data
+qualify(ROW_NUMBER() over (PARTITION BY block_number, event_index
+ORDER BY
+    _inserted_timestamp DESC)) = 1
