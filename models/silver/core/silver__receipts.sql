@@ -1,4 +1,4 @@
--- depends_on: {{ ref('bronze__streamline_receipts') }}
+-- depends_on: {{ ref('bronze__receipts') }}
 {% set warehouse = 'DBT_SNOWPARK' if var('OVERFLOWED_RECEIPTS') else target.warehouse %}
 {{ config(
     materialized = 'incremental',
@@ -20,7 +20,7 @@ WITH base AS (
     FROM
 
 {% if is_incremental() %}
-{{ ref('bronze__streamline_receipts') }}
+{{ ref('bronze__receipts') }}
 WHERE
     _inserted_timestamp >= (
         SELECT
@@ -30,7 +30,7 @@ WHERE
     )
     AND IS_OBJECT(DATA)
 {% else %}
-    {{ ref('bronze__streamline_fr_receipts') }}
+    {{ ref('bronze__receipts_fr') }}
 WHERE
     IS_OBJECT(DATA)
 {% endif %}

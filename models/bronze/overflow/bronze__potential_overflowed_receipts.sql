@@ -43,7 +43,7 @@ missing_txs AS (
             block_number,
             tx_hash
         )
-        JOIN {{ ref("streamline__complete_receipts") }} USING (block_number)
+        JOIN {{ ref("streamline__receipts_complete") }} USING (block_number)
     WHERE
         tr.tx_hash IS NULL
 )

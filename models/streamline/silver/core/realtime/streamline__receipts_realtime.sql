@@ -1,101 +1,130 @@
-{{ config (
-    materialized = "view",
-    post_hook = if_data_call_function(
-        func = "{{this.schema}}.udf_json_rpc(object_construct('sql_source', '{{this.identifier}}', 'external_table', 'receipts', 'exploded_key','[\"result\"]', 'method', 'eth_getBlockReceipts', 'producer_batch_size',2400, 'producer_limit_size',4800, 'worker_batch_size',1200))",
-        target = "{{this.schema}}.{{this.identifier}}"
-    ),
-    tags = ['streamline_core_realtime']
+{# Set variables #}
+{%- set model_name = 'RECEIPTS' -%}
+{%- set model_type = 'REALTIME' -%}
+{%- set min_block = var('GLOBAL_START_UP_BLOCK', none) -%}
+
+{%- set default_vars = set_default_variables_streamline(model_name, model_type) -%}
+
+{# Set up parameters for the streamline process. These will come from the vars set in dbt_project.yml #}
+{%- set streamline_params = set_streamline_parameters(
+    model_name=model_name,
+    model_type=model_type
+) -%}
+
+{%- set node_url = default_vars['node_url'] -%}
+{%- set node_secret_path = default_vars['node_secret_path'] -%}
+{%- set model_quantum_state = default_vars['model_quantum_state'] -%}
+{%- set sql_limit = streamline_params['sql_limit'] -%}
+{%- set testing_limit = default_vars['testing_limit'] -%}
+{%- set order_by_clause = default_vars['order_by_clause'] -%}
+{%- set new_build = default_vars['new_build'] -%}
+{%- set method_params = streamline_params['method_params'] -%}
+{%- set method = streamline_params['method'] -%}
+
+{# Log configuration details #}
+{{ log_streamline_details(
+    model_name=model_name,
+    model_type=model_type,
+    node_url=node_url,
+    model_quantum_state=model_quantum_state,
+    sql_limit=sql_limit,
+    testing_limit=testing_limit,
+    order_by_clause=order_by_clause,
+    new_build=new_build,
+    streamline_params=streamline_params,
+    method_params=method_params,
+    method=method,
+    min_block=min_block
 ) }}
 
-WITH last_3_days AS (
+{# Set up dbt configuration #}
+{{ config (
+    materialized = "view",
+    post_hook = fsc_utils.if_data_call_function_v2(
+        func = 'streamline.udf_bulk_rest_api_v2',
+        target = "{{this.schema}}.{{this.identifier}}",
+        params = streamline_params
+    ),
+    tags = ['streamline_core_realtime_receipts']
+) }}
 
-    SELECT
-        block_number
-    FROM
-        {{ ref("_block_lookback") }}
-),
-tbl AS (
-    SELECT
-        block_number,
-        block_number_hex
-    FROM
-        {{ ref("streamline__blocks") }}
-    WHERE
+{# Main query starts here #}
+WITH 
+{% if not new_build %}
+    last_3_days AS (
+        SELECT block_number
+        FROM {{ ref("_block_lookback") }}
+    ),
+{% endif %}
+
+{# Identify blocks that need processing #}
+to_do AS (
+    SELECT block_number
+    FROM {{ ref("streamline__blocks") }}
+    WHERE 
         block_number IS NOT NULL
-        AND (
-            block_number >= (
-                SELECT
-                    block_number
-                FROM
-                    last_3_days
-            )
-        )
+    {% if not new_build %}
+        AND block_number >= (SELECT block_number FROM last_3_days)
+    {% endif %}
+    {% if min_block is not none %}
+        AND block_number >= {{ min_block }}
+    {% endif %}
+
     EXCEPT
-    SELECT
-        block_number,
-        REPLACE(
-            concat_ws('', '0x', to_char(block_number, 'XXXXXXXX')),
-            ' ',
-            ''
-        ) AS block_number_hex
-    FROM
-        {{ ref("streamline__complete_receipts") }}
-    WHERE
-        block_number IS NOT NULL
-        AND _inserted_timestamp >= DATEADD(
-            'day',
-            -4,
-            SYSDATE()
-        )
-        AND (
-            block_number >= (
-                SELECT
-                    block_number
-                FROM
-                    last_3_days
-            )
-        )
-),
-retry_blocks AS (
-    SELECT
-        block_number,
-        REPLACE(
-            concat_ws('', '0x', to_char(block_number, 'XXXXXXXX')),
-            ' ',
-            ''
-        ) AS block_number_hex
-    FROM
-        (
-            SELECT
-                block_number
-            FROM
-                {{ ref("_missing_receipts") }}
-            UNION
-            SELECT
-                block_number
-            FROM
-                {{ ref("_missing_txs") }}
-            UNION
-            SELECT
-                block_number
-            FROM
-                {{ ref("_unconfirmed_blocks") }}
-        )
+
+    {# Exclude blocks that have already been processed #}
+    SELECT block_number
+    FROM {{ ref('streamline__' ~ model_name.lower() ~ '_complete') }}
+    WHERE 1=1
+    {% if not new_build %}
+        AND block_number >= (SELECT block_number FROM last_3_days)
+    {% endif %}
 )
+
+{# Prepare the final list of blocks to process #}
+,ready_blocks AS (
+    SELECT block_number
+    FROM to_do
+
+    {% if not new_build %}
+        UNION
+        SELECT block_number
+        FROM {{ ref("_unconfirmed_blocks") }}
+        UNION
+        SELECT block_number
+        FROM {{ ref("_missing_txs") }}
+        UNION
+        SELECT block_number
+        FROM {{ ref("_missing_receipts") }}
+    {% endif %}
+
+    {% if testing_limit is not none %}
+        LIMIT {{ testing_limit }} 
+    {% endif %}
+)
+
+{# Generate API requests for each block #}
 SELECT
     block_number,
-    'eth_getBlockReceipts' AS method,
-    block_number_hex AS params
+    ROUND(block_number, -3) AS partition_key,
+    live.udf_api(
+        'POST',
+        '{{ node_url }}',
+        OBJECT_CONSTRUCT(
+            'Content-Type', 'application/json',
+            'fsc-quantum-state', '{{ model_quantum_state }}'
+        ),
+        OBJECT_CONSTRUCT(
+            'id', block_number,
+            'jsonrpc', '2.0',
+            'method', '{{ method }}',
+            'params', {{ method_params }}
+        ),
+        '{{ node_secret_path }}'
+    ) AS request
 FROM
-    tbl
-UNION
-SELECT
-    block_number,
-    'eth_getBlockReceipts' AS method,
-    block_number_hex AS params
-FROM
-    retry_blocks
-ORDER BY
-    block_number ASC
-LIMIT
-    4800
+    ready_blocks
+    
+{{ order_by_clause }}
+
+LIMIT {{ sql_limit }}

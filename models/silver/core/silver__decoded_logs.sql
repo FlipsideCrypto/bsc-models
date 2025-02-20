@@ -42,7 +42,7 @@ WHERE
     )
     AND DATA NOT ILIKE '%Event topic is not present in given ABI%'
 {% else %}
-    {{ ref('bronze__fr_decoded_logs') }}
+    {{ ref('bronze__decoded_logs_fr') }}
 WHERE
     _partition_by_block_number <= 2500000
     AND DATA NOT ILIKE '%Event topic is not present in given ABI%'

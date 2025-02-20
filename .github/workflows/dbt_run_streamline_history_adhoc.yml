@@ -29,7 +29,7 @@ on:
         description: 'DBT Run Command'
         required: true
         options:
-          - dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True}' -m "bsc_models,tag:streamline_core_complete" "bsc_models,tag:streamline_core_history"
+          - dbt run --vars '{"STREAMLINE_INVOKE_STREAMS":True}' -m "bsc_models,tag:streamline_core_complete" "bsc_models,tag:streamline_core_history" "bsc_models,tag:streamline_core_complete_receipts" "bsc_models,tag:streamline_core_history_receipts" "bsc_models,tag:streamline_core_complete_confirm_blocks" "bsc_models,tag:streamline_core_history_confirm_blocks"
     
 env:
   DBT_PROFILES_DIR: ./
