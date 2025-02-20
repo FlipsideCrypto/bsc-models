@@ -13,46 +13,46 @@ SELECT
     block_number,
     TRY_TO_NUMBER(
         utils.udf_hex_to_int(
-            DATA :result :baseFeePerGas :: STRING
+            DATA :baseFeePerGas :: STRING
         )
     ) AS base_fee_per_gas,
     utils.udf_hex_to_int(
-        DATA :result :difficulty :: STRING
+        DATA :difficulty :: STRING
     ) :: INT AS difficulty,
-    DATA :result :extraData :: STRING AS extra_data,
+    DATA :extraData :: STRING AS extra_data,
     utils.udf_hex_to_int(
-        DATA :result :gasLimit :: STRING
+        DATA :gasLimit :: STRING
     ) :: INT AS gas_limit,
     utils.udf_hex_to_int(
-        DATA :result :gasUsed :: STRING
+        DATA :gasUsed :: STRING
     ) :: INT AS gas_used,
-    DATA :result :hash :: STRING AS HASH,
-    DATA :result :logsBloom :: STRING AS logs_bloom,
-    DATA :result :miner :: STRING AS miner,
+    DATA :hash :: STRING AS HASH,
+    DATA :logsBloom :: STRING AS logs_bloom,
+    DATA :miner :: STRING AS miner,
     utils.udf_hex_to_int(
-        DATA :result :nonce :: STRING
+        DATA :nonce :: STRING
     ) :: INT AS nonce,
     utils.udf_hex_to_int(
-        DATA :result :number :: STRING
+        DATA :number :: STRING
     ) :: INT AS NUMBER,
-    DATA :result :parentHash :: STRING AS parent_hash,
-    DATA :result :receiptsRoot :: STRING AS receipts_root,
-    DATA :result :sha3Uncles :: STRING AS sha3_uncles,
+    DATA :parentHash :: STRING AS parent_hash,
+    DATA :receiptsRoot :: STRING AS receipts_root,
+    DATA :sha3Uncles :: STRING AS sha3_uncles,
     utils.udf_hex_to_int(
-        DATA :result :size :: STRING
+        DATA :size :: STRING
     ) :: INT AS SIZE,
-    DATA :result :stateRoot :: STRING AS state_root,
+    DATA :stateRoot :: STRING AS state_root,
     utils.udf_hex_to_int(
-        DATA :result :timestamp :: STRING
+        DATA :timestamp :: STRING
     ) :: TIMESTAMP AS block_timestamp,
     utils.udf_hex_to_int(
-        DATA :result :totalDifficulty :: STRING
+        DATA :totalDifficulty :: STRING
     ) :: INT AS total_difficulty,
     ARRAY_SIZE(
-        DATA :result :transactions
+        DATA :transactions
     ) AS tx_count,
-    DATA :result :transactionsRoot :: STRING AS transactions_root,
-    DATA :result :uncles AS uncles,
+    DATA :transactionsRoot :: STRING AS transactions_root,
+    DATA :uncles AS uncles,
     DATA,
     _inserted_timestamp,
     {{ dbt_utils.generate_surrogate_key(
