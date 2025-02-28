@@ -39,17 +39,6 @@ log_pull AS (
     WHERE
         topics [0] :: STRING = '0x7ac369dbd14fa5ea3f473ed67cc9d598964a77501540ba6751eb0b3decf5870d'
         AND C.token_name LIKE 'Venus%'
-        AND origin_from_address IN (
-            '0x55a9f5374af30e3045fb491f1da3c2e8a74d168d',
-            '0x1ca3ac3686071be692be7f1fbecd668641476d7e',
-            '0x12bdf8ae9fe2047809080412d7341044b910ef10',
-            '0x03862dfa5d0be8f64509c001cb8c6188194469df',
-            '0xa05f990d647287e4e84715b813bc000aea970467',
-            '0x8bda9f9e1fef0dfd404fef338d9fe4c543d172e1',
-            '0xa6575f1d5bd6545fbd34be05259d9d6ae60641f2',
-            '0x92054edbb53ecc4f2a1787e92f479ce10392a658',
-            '0xc9e3eb04aae820a1aa77789e699e7c433f75e216'
-        )
 
 {% if is_incremental() %}
 AND _inserted_timestamp >= (
