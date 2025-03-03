@@ -52,7 +52,7 @@ SELECT
     POSITION,
     file_name,
     build_scoped_file_url(
-        @streamline.bronze.external_tables,
+        @streamline.bronze.BSC_SERVERLESS_PROD,
         file_name
     ) AS file_url,
     ['block_number', 'array_index'] AS index_cols,
