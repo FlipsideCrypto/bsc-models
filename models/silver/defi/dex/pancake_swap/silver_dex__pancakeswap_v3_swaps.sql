@@ -84,12 +84,12 @@ base_swaps AS (
         token0_address,
         token1_address,
         CASE
-            WHEN amount0 < 0 THEN token0_address
+            WHEN amount0 > 0 THEN token0_address
             ELSE token1_address
         END AS token_in,
         CASE
-            WHEN amount0 > 0 THEN token0_address
-            ELSE token1_address
+            WHEN amount1 < 0 THEN token1_address
+            ELSE token0_address
         END AS token_out,
         fee,
         tick_spacing,
