@@ -1,6 +1,6 @@
 {% docs __overview__ %}
 
-# Welcome to the Flipside Crypto Binance Smart Chain Models Documentation!
+# Welcome to the Flipside Crypto BSC Models Documentation!
 
 ## **What does this documentation cover?**
 The documentation included here details the design of the BSC tables and views available via [Flipside Crypto.](https://flipsidecrypto.xyz/) For more information on how these models are built, please see [the github repository.](https://github.com/FlipsideCrypto/bsc-models)
@@ -16,48 +16,49 @@ There is more information on how to use dbt docs in the last section of this doc
 
 **Click on the links below to jump to the documentation for each schema.**
 
-### Core Tables (bsc.core)
+### Core Tables
 
-**Dimension Tables:**
-- [dim_labels](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__dim_labels)
-- [dim_contracts](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__dim_contracts)
+**Dimensional Tables**
+- [dim_contracts](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.core__dim_contracts)
+- [dim_contract_abis](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.core__dim_contract_abis)
+- [dim_labels](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.core__dim_labels)
 
 **Fact Tables:**
-- [fact_blocks](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_blocks)
-- [fact_event_logs](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_event_logs)
-- [fact_decoded_event_logs](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_decoded_event_logs)
-- [fact_token_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_token_transfers)
-- [fact_traces](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_traces)
-- [fact_transactions](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__fact_transactions)
+- [fact_blocks](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.core__fact_blocks)
+- [fact_transactions](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.core__fact_transactions)
+- [fact_event_logs](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.core__fact_event_logs)
+- [fact_traces](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.core__fact_traces)
+
+**Convenience Tables:**
+- [ez_decoded_event_logs](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.core__ez_decoded_event_logs)
+- [ez_native_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.core__ez_native_transfers)
+- [ez_token_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.core__ez_token_transfers)
 
 ### Price Tables (bsc.price)
-- [dim_asset_metadata](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.price__dim_asset_metadata)
-- [fact_prices_ohlc_hourly](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.price__fact_prices_ohlc_hourly)
-- [ez_asset_metadata](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.price__ez_asset_metadata)
-- [ez_prices_hourly](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.price__ez_prices_hourly)
-- 
-**Convenience Tables:**
-- [ez_native_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_native_transfers)
-- [ez_decoded_event_logs](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_decoded_event_logs)
-- [ez_token_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_token_transfers)
+- [dim_asset_metadata](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.price__dim_asset_metadata)
+- [fact_prices_ohlc_hourly](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.price__fact_prices_ohlc_hourly)
+- [ez_asset_metadata](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.price__ez_asset_metadata)
+- [ez_prices_hourly](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.price__ez_prices_hourly)
 
 ### DeFi Tables (bsc.defi)
+- [ez_bridge_activity](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_bridge_activity)
+- [ez_dex_swaps](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_dex_swaps)
 - [dim_dex_liquidity_pools](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__dim_dex_liquidity_pools)
-- [ez_dex_swaps](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.core__ez_dex_swaps)
 - [ez_lending_borrows](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_lending_borrows) 
 - [ez_lending_deposits](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_lending_deposits)
 - [ez_lending_flashloans](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_lending_flashloans)
 - [ez_lending_liquidations](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_lending_liquidations)
 - [ez_lending_repayments](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_lending_repayments)
 - [ez_lending_withdraws](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_lending_withdraws)
-- [ez_bridge_activity](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_bridge_activity)
+
+### Flipside Partner Tables (bsc.partner_name)
 
 ### NFT Tables (bsc.nft)
-- [ez_nft_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.nft__ez_nft_transfers)
+- [ez_nft_transfers](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.nft__ez_nft_transfers)
 - [ez_nft_sales](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.nft__ez_nft_sales)
 
 ### Stats Tables (bsc.stats)
-- [ez_core_metrics_hourly](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.stats__ez_core_metrics_hourly)
+- [ez_core_metrics_hourly](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.stats__ez_core_metrics_hourly)
 
 ## **Helpful User-Defined Functions (UDFs)**
 
@@ -77,6 +78,8 @@ The dimension tables are sourced from a variety of on-chain and off-chain source
 
 Convenience views (denoted ez_) are a combination of different fact and dimension tables. These views are built to make it easier to query the data.
 
+NOTE: BSC is currently operating in it's Testnet phase. Flipside will provide Mainnet data tables once BSC Mainnet is deployed. 
+
 ## **Using dbt docs**
 ### Navigation
 
@@ -84,7 +87,7 @@ You can use the ```Project``` and ```Database``` navigation tabs on the left sid
 
 ### Database Tab
 
-This view shows relations (tables and views) grouped into database schemas. Note that ephemeral models are *not* shown in this interface, as they do not exist in the database.
+This view shows relations (tables and views) grouped into database schemas. Note that ephemeral models are *not* shown in this interface, as they do not exist in the databsc.
 
 ### Graph Exploration
 
@@ -98,10 +101,11 @@ Note that you can also right-click on models to interactively filter and explore
 
 
 ### **More information**
-- [Flipside](https://flipsidecrypto.xyz)
+- [Flipside](https://flipsidecrypto.xyz/)
+- [Velocity](https://app.flipsidecrypto.com/velocity?nav=Discover)
 - [Tutorials](https://docs.flipsidecrypto.com/our-data/tutorials)
 - [Github](https://github.com/FlipsideCrypto/bsc-models)
-- [Query Editor Shortcuts](https://docs.flipsidecrypto.com/velocity/query-editor-shortcuts)
 - [What is dbt?](https://docs.getdbt.com/docs/introduction)
+
 
 {% enddocs %}
