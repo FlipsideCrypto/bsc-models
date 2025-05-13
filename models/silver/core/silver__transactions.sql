@@ -18,7 +18,7 @@ WITH base AS (
 
 {% if is_incremental() %}
 {{ ref('bronze__transactions') }}
-WHERE (block_number <= 46809362 OR block_number >= 47981402)
+WHERE block_number > 47981402
 AND
     _inserted_timestamp >= (
         SELECT
