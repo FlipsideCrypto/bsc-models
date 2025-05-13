@@ -65,8 +65,8 @@ FROM
 
 {% if is_incremental() %}
 {{ ref('bronze__blocks') }}
-WHERE
-    _inserted_timestamp >= (
+WHERE (block_number <= 46809362 OR block_number >= 47981402)
+AND _inserted_timestamp >= (
         SELECT
             MAX(_inserted_timestamp) _inserted_timestamp
         FROM
