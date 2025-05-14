@@ -10,6 +10,7 @@ sources:
       - name: blocks
       - name: transactions
       - name: debug_traceblockbynumber
+      - name: traces
       - name: decoded_logs
       - name: confirm_blocks
       - name: blocks_v2
