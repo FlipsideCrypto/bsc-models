@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     unique_key = "block_number",
     cluster_by = ['block_timestamp::DATE'],
-    tags = ['curated','reorg']
+    tags = ['silver_bridge','defi','bridge','curated']
 ) }}
 
 WITH token_transfers AS (
@@ -49,7 +49,6 @@ native_transfers AS (
         et.from_address,
         et.to_address,
         amount_precise_raw,
-        identifier,
         et.ez_native_transfers_id AS _call_id,
         et.modified_timestamp AS _inserted_timestamp
     FROM

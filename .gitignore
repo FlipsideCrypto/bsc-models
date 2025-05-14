@@ -18,4 +18,4 @@ dbt-env/
 .env
 .user.yml
 
-package-lock.yml
+/package-lock.yml

@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     unique_key = "block_number",
     cluster_by = ['block_timestamp::DATE'],
-    tags = ['reorg','curated']
+    tags = ['silver','defi','lending','curated']
 ) }}
 
 WITH contracts AS (
@@ -63,7 +63,7 @@ traces_pull AS (
         t.from_address AS token_address,
         t.to_address AS underlying_asset,
         CASE
-            WHEN identifier = 'STATICCALL_0_2' THEN 1
+            WHEN CONCAT(TYPE,'_',TRACE_ADDRESS) = 'STATICCALL_0_2' THEN 1
             ELSE NULL
         END AS asset_identifier
     FROM

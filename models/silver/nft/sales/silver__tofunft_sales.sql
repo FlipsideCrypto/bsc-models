@@ -3,7 +3,7 @@
     incremental_strategy = 'delete+insert',
     unique_key = 'block_number',
     cluster_by = ['block_timestamp::DATE'],
-    tags = ['curated','reorg']
+    tags = ['silver','nft','curated']
 ) }}
 
 WITH logs_raw AS (
@@ -295,7 +295,7 @@ nft_details AS (
         contract_address AS nft_address,
         token_transfer_type
     FROM
-        {{ ref('silver__nft_transfers') }}
+        {{ ref('nft__ez_nft_transfers') }}
     WHERE
         block_timestamp :: DATE >= '2021-10-01'
         AND tx_hash IN (

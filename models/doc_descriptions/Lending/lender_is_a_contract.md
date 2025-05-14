@@ -1,5 +1,0 @@
-{% docs lending_lender_is_a_contract %}
-
-If the depositor is a contract then its a Yes, if the depositor is a normal address it is a No.
-
-{% enddocs %}
