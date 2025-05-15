@@ -34,7 +34,7 @@ WITH base_swaps AS (
             segmented_data [4] :: STRING
         ) :: FLOAT AS tick,
         modified_timestamp AS _inserted_timestamp,
-        concat(block_number, '-', tx_hash) AS _log_id
+        concat(tx_hash, '-', event_index) AS _log_id
     FROM
         {{ ref('core__fact_event_logs') }}
     WHERE
