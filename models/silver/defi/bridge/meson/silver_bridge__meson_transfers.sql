@@ -20,7 +20,11 @@ WITH token_transfers AS (
         from_address,
         to_address,
         raw_amount,
-        CONCAT(tx_hash :: STRING, '-', event_index :: STRING) AS _log_id,
+        CONCAT(
+            tx_hash :: STRING,
+            '-',
+            event_index :: STRING
+        ) AS _log_id,
         modified_timestamp AS _inserted_timestamp
     FROM
         {{ ref('core__ez_token_transfers') }}
@@ -129,7 +133,10 @@ dst_info AS (
         {{ ref('core__fact_event_logs') }}
     WHERE
         contract_address = '0x25ab3efd52e6470681ce037cd546dc60726948d3'
-        AND topics [0] :: STRING = '0x5ce4019f772fda6cb703b26bce3ec3006eb36b73f1d3a0eb441213317d9f5e9d'
+        AND topic_0 IN (
+            '0x5ce4019f772fda6cb703b26bce3ec3006eb36b73f1d3a0eb441213317d9f5e9d',
+            '0x8d92c805c252261fcfff21ee60740eb8a38922469a7e6ee396976d57c22fc1c9'
+        )
         AND tx_succeeded
 
 {% if is_incremental() %}
