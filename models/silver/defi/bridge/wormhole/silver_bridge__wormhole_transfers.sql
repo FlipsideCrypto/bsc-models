@@ -65,7 +65,7 @@ WITH token_transfers AS (
         AND destination_chain_id <> 0
 
 {% if is_incremental() %}
-AND tr._inserted_timestamp >= (
+AND tr.modified_timestamp >= (
     SELECT
         MAX(_inserted_timestamp) - INTERVAL '12 hours'
     FROM
