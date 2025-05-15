@@ -13,7 +13,6 @@ jobs:
   called_workflow_template:
     uses: FlipsideCrypto/fsc-evm/.github/workflows/dbt_run_template.yml@pre-release/v4-beta
     with:
-      warehouse: DBT_EMERGENCY
       command_name: Run Decoder Models
       command: |
         dbt run -m "fsc_evm,tag:bronze,tag:decoded_logs" "fsc_evm,tag:silver,tag:decoded_logs" "fsc_evm,tag:gold,tag:decoded_logs"
