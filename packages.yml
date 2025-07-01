@@ -1,3 +1,3 @@
 packages:
   - git: https://github.com/FlipsideCrypto/fsc-evm.git
-    revision: improve/ez-token-transfers-heal
+    revision: v4.5.5
