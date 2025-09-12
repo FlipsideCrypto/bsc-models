@@ -41,15 +41,16 @@ There is more information on how to use dbt docs in the last section of this doc
 - [ez_prices_hourly](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.price__ez_prices_hourly)
 
 ### DeFi Tables (bsc.defi)
-- [ez_bridge_activity](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_bridge_activity)
-- [ez_dex_swaps](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_dex_swaps)
-- [dim_dex_liquidity_pools](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__dim_dex_liquidity_pools)
-- [ez_lending_borrows](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_lending_borrows) 
-- [ez_lending_deposits](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_lending_deposits)
-- [ez_lending_flashloans](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_lending_flashloans)
-- [ez_lending_liquidations](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_lending_liquidations)
-- [ez_lending_repayments](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_lending_repayments)
-- [ez_lending_withdraws](https://flipsidecrypto.github.io/bsc-models/#!/model/model.bsc_models.defi__ez_lending_withdraws)
+- [ez_bridge_activity](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.defi__ez_bridge_activity)
+- [ez_dex_swaps](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.defi__ez_dex_swaps)
+- [dim_dex_liquidity_pools](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.defi__dim_dex_liquidity_pools)
+- [ez_lending_borrows](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.defi__ez_lending_borrows) 
+- [ez_lending_deposits](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.defi__ez_lending_deposits)
+- [ez_lending_flashloans](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.defi__ez_lending_flashloans)
+- [ez_lending_liquidations](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.defi__ez_lending_liquidations)
+- [ez_lending_repayments](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.defi__ez_lending_repayments)
+- [ez_lending_withdraws](https://flipsidecrypto.github.io/bsc-models/#!/model/model.fsc_evm.defi__ez_lending_withdraws)
+- 
 
 ### Flipside Partner Tables (bsc.partner_name)
 
