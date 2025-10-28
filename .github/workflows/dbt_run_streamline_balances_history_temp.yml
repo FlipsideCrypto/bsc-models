@@ -6,7 +6,7 @@ on:
     branches:
       - "main"
   schedule:
-    - cron: '14 */4 * * *'
+    - cron: '14 */3 * * *'
 
 
 concurrency:
