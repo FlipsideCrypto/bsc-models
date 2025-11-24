@@ -16,6 +16,7 @@ sources:
       - name: token_reads
       - name: balances_erc20
       - name: balances_native
+      - name: stablecoin_reads
   - name: crosschain_silver
     database: >-
       {{ 'CROSSCHAIN_DEV' if '_DEV' in target.database.upper() else 'CROSSCHAIN' }}
@@ -29,6 +30,12 @@ sources:
       - name: complete_provider_prices
       - name: complete_token_asset_metadata
       - name: complete_token_prices
+      - name: tokens_stablecoins
+  - name: crosschain_gold
+    database: crosschain
+    schema: core
+    tables:
+      - name: dim_dates
   - name: crosschain_public
     database: crosschain
     schema: bronze_public
